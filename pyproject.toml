@@ -15,6 +15,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 click = "^8.0.0"
+SQLAlchemy = "^1.4.22"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
