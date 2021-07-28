@@ -6,10 +6,12 @@ import sys
 import yaml
 import multiprocessing.dummy as mp
 from multiprocessing import cpu_count
+from concurrent.futures import ThreadPoolExecutor
 from loguru import logger as log
 
+from .Writer.CSVWriter import CSVWriter
+
 from .read import read
-from .writer import writer
 
 @click.command()
 @click.argument('input', type=click.Path(exists=True))
