@@ -64,11 +64,22 @@ def run(
     else:
         log.warning(f'Reader {reader} cannot be found')
 
+    # Fire up the engines and find in all matching files
+    files = read(input, pattern, recursive=recursive)
+
+    def proop(thing: Path) -> any:
+        readerInstance = ReaderClass(thing)
+        log.debug(f'Reading {thing}')
+
+        return readerInstance.read()
+        
+    with mp.Pool(int(n_workers)) as pool:
+        data = pool.map(proop, files, chunksize=1)
+        print(data)
+
     # start $n_workers workers to read the data
     # if JSON accecssor is given, apply it to each loaded file
-    print(f'{input} will be written to {host}:{port}/{dbname} with {n_workers} parallel threads')
-
-
+    # writer(host, port, dbname)
 
 if __name__ == '__main__':
     run()
