@@ -41,6 +41,16 @@ def run(
     
     log.debug('Using this configuration', config)
     
+    # Validate all inputs
+    if logfile is not None:
+        log.add(logfile, level=loglevel, rotation="64 MB")
+        log.add(sys.stderr, level='ERROR')
+
+    log.add('errors.log', level='ERROR')
+    log.add('warnings.log', level='WARNING')
+
+    log.info(f'{input}**/*.{pattern} will be written to {host}:{port}/{dbname} with {n_workers} parallel threads')
+
     # start $n_workers workers to read the data
     # if JSON accecssor is given, apply it to each loaded file
     print(f'{input} will be written to {host}:{port}/{dbname} with {n_workers} parallel threads')
