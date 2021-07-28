@@ -71,11 +71,11 @@ def run(
         readerInstance = ReaderClass(thing)
         log.debug(f'Reading {thing}')
 
-        return readerInstance.read()
+    # with mp.Pool(int(n_workers)) as pool:
+    #     pool.map(proop, files, chunksize=1)
         
-    with mp.Pool(int(n_workers)) as pool:
-        data = pool.map(proop, files, chunksize=1)
-        print(data)
+    with ThreadPoolExecutor() as executor:
+        executor.map(proop, files)
 
     # start $n_workers workers to read the data
     # if JSON accecssor is given, apply it to each loaded file
