@@ -51,6 +51,19 @@ def run(
 
     log.info(f'{input}**/*.{pattern} will be written to {host}:{port}/{dbname} with {n_workers} parallel threads')
 
+    ReaderClass = None
+    # Load the reader:
+    if (reader is not None and reader in config['plugins']['reader'].keys()):
+        log.debug(f'Using this reader: {reader}')
+        try:
+            moduleName = config['plugins']['reader'][reader]['moduleName']
+            className = config['plugins']['reader'][reader]['className']
+            ReaderClass = importlib.import_module(moduleName, package='dabapush').__getattribute__(className)
+        except Exception as e:
+            log.error(e)
+    else:
+        log.warning(f'Reader {reader} cannot be found')
+
     # start $n_workers workers to read the data
     # if JSON accecssor is given, apply it to each loaded file
     print(f'{input} will be written to {host}:{port}/{dbname} with {n_workers} parallel threads')
