@@ -1,12 +1,14 @@
+import json
 from pathlib import Path
 from dabapush.reader import read
 
 def test_read():
+    testFile = Path('./test_case_1/test_case_1.json')
+    testFile.resolve()
     gen = [
-        Path('./test_case_1/test_case_1.json')
+        testFile    
     ]
-    i = 0
-    for path in read('./stubs/test_case_1/', pattern='json'):
-        _gen = gen[i]
-        i += 1
+
+    for count, path in enumerate(read('./stubs/test_case_1/', pattern='json', recursive=True)):
+        _gen = gen[count]
         assert  path == _gen
