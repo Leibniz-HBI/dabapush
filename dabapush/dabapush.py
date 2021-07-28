@@ -67,9 +67,14 @@ def run(
     # Fire up the engines and find in all matching files
     files = read(input, pattern, recursive=recursive)
 
+    # Get a Writer (WARN: this is a stub)
+    writerInstance = CSVWriter()
+
     def proop(thing: Path) -> any:
         readerInstance = ReaderClass(thing)
         log.debug(f'Reading {thing}')
+        writerInstance.write(readerInstance.read())
+        return 
 
     # with mp.Pool(int(n_workers)) as pool:
     #     pool.map(proop, files, chunksize=1)
