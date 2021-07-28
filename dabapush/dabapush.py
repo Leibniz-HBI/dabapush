@@ -41,8 +41,9 @@ def run(
     # load config
     config = yaml.load(Path('config.yml').open(), Loader=yaml.FullLoader)
     
+    log.remove()
+    log.add(sys.stdout, level=loglevel)
     log.debug('Using this configuration', config)
-    
     # Validate all inputs
     if logfile is not None:
         log.add(logfile, level=loglevel, rotation="64 MB")
