@@ -52,36 +52,39 @@ def run(
     log.info(f'{input}**/*.{pattern} will be written to {host}:{port}/{dbname} with {n_workers} parallel threads')
 
     ReaderClass = None
-    # Load the reader:
-    if (reader is not None and reader in config['plugins']['reader'].keys()):
-        log.debug(f'Using this reader: {reader}')
-        try:
-            moduleName = config['plugins']['reader'][reader]['moduleName']
-            className = config['plugins']['reader'][reader]['className']
-            ReaderClass = importlib.import_module(moduleName, package='dabapush').__getattribute__(className)
-        except Exception as e:
-            log.error(e)
-    else:
-        log.warning(f'Reader {reader} cannot be found')
+    # Load the reader/writer:
+    ReaderClass = load_from_config(reader, 'reader', config)
+    WriterClass = load_from_config(writer, 'writer', config)
 
     # Fire up the engines and find in all matching files
     files = read(input, pattern, recursive=recursive)
 
-    # Get a Writer (WARN: this is a stub)
-    writerInstance = CSVWriter()
+    # Get a Writer
+    writerInstance = WriterClass(multi_thread)
 
     def proop(thing: Path) -> any:
         readerInstance = ReaderClass(thing)
-        log.debug(f'Reading {thing}')
-        writerInstance.write(readerInstance.read())
-        return 
-
-    # with mp.Pool(int(n_workers)) as pool:
-    #     pool.map(proop, files, chunksize=1)
+        tid = get_ident()
+        log.debug(f'Reading {thing} with Thread ID: {tid}')
+        return writerInstance.write(readerInstance.read())
         
     with ThreadPoolExecutor() as executor:
-        executor.map(proop, files)
+        # log.debug(f'Starting {active_count()} threads.')
+        lines = executor.map(proop, files)
+        # log.info(f'Read a total of {sum(lines)} records')
 
+def load_from_config(name: str, key: str, config: Dict):
+    if (name is not None and name in config['plugins'][key].keys()):
+        log.debug(f'Using this {key}: {name}')
+        try:
+            moduleName = config['plugins'][key][name]['moduleName']
+            className = config['plugins'][key][name]['className']
+            ReaderClass = importlib.import_module(moduleName, package='dabapush').__getattribute__(className)
+        except Exception as e:
+            log.error(e)
+    else:
+        log.warning(f'{key.upper()} {name} cannot be found')
+    return ReaderClass
     # start $n_workers workers to read the data
     # if JSON accecssor is given, apply it to each loaded file
     # writer(host, port, dbname)
