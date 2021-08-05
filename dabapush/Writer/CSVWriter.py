@@ -4,12 +4,17 @@ from .Writer import Writer
 
 class CSVWriter(Writer):
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self, mp: bool):
+        super().__init__(mp)
 
     def persist(self, chunkSize: int):
-        self.buffer,last_row=self.buffer.drop(self.buffer.tail(chunkSize).index),self.buffer.tail(chunkSize)
+
+        last_row = self.buffer.head(chunkSize)
+        self.buffer.drop(last_row.index, inplace=True)
+
         log.info(f'Persisted {len(last_row)} records')
-        with Path('res.csv').open('a') as file:
-            last_row.to_csv(file, index=False)
-        return
+        
+        with self.path.open('a') as file:
+            last_row.replace(r'\n|\r', r'\\n', regex=True, inplace=True)
+            last_row[self.schema].to_csv(file, index=False, header=False)
+        return len(last_row)
