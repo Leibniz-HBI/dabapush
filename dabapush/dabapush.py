@@ -18,7 +18,7 @@ from .read import read
 @click.option('--dbname', default='dabapushed', help='Name of the dabase too write to.')
 @click.option('--n_workers', default=cpu_count, help="Number of worker threads to read/write data")
 @click.option('--reader', default='Twacapic', help='python class to read stuff (see docs). Possible values: Twacapic')
-@click.option('--writer', help='python class to write stuff (see docs)')
+@click.option('--writer', default='CSV',help='python class to write stuff (see docs)')
 @click.option('--recursive', '-r', help='should the reader recurse in subdirectories? Default: TRUE.', is_flag=True)
 @click.option('--logfile', help='file to logi in (optional)')
 @click.option('--loglevel', default='INFO', help='the level to log, yk')
