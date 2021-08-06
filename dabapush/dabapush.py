@@ -60,7 +60,7 @@ def run(
     files = read(input, pattern, recursive=recursive)
 
     # Get a Writer
-    writerInstance = WriterClass(multi_thread)
+    writerInstance = WriterClass()
 
     def proop(thing: Path) -> any:
         readerInstance = ReaderClass(thing)

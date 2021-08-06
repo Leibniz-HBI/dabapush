@@ -4,8 +4,8 @@ from .Writer import Writer
 
 class CSVWriter(Writer):
     
-    def __init__(self, mp: bool):
-        super().__init__(mp)
+    def __init__(self):
+        super().__init__()
 
     def persist(self, chunkSize: int):
 

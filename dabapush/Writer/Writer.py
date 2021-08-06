@@ -9,7 +9,7 @@ from pathlib import Path
 class Writer(object):
 
     # TODO: get chunksize from config
-    def __init__(self, mp: bool):
+    def __init__(self):
         self.schema = [
             'source',
             'created_at',
@@ -33,7 +33,6 @@ class Writer(object):
             'context_annotations'
         ]
         self.buffer = pd.DataFrame()
-        self.mp = mp
         # if (self.mp == True):
         self.lock = threading.Lock()
         self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.csv')
