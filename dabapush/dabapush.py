@@ -1,12 +1,17 @@
 import click
-# from pathlib import Path
+import sys
+import os
+import yaml
+from pathlib import Path
+
 # import importlib
 # from typing import Dict, Literal
 # import sys
-# import yaml
 # from multiprocessing import cpu_count
 # from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 # from threading import get_ident, active_count
+from loguru import logger as log
+
 from .reader_subcommand import reader
 from .writer_subcommand import writer
 # from .read import read
@@ -27,7 +32,7 @@ def cli(ctx, logfile, loglevel):
     sd = Path(__file__).parent.parent # arkwardly fetch the package dir
 
     log.debug(f'Starting DaBaPush in {wd} fom {__file__}')
-
+    
     # prepare context
     ctx.ensure_object(dict)
     ctx.obj['wd'] = wd # store working dir in context
@@ -35,46 +40,7 @@ def cli(ctx, logfile, loglevel):
     with Path(sd/'config.yml').open('r') as file:
         ctx.obj['globconf'] = yaml.safe_load(file)
 
-@reader.command()
-def remove():
-    pass
 
-@reader.command()
-def list():
-    pass
-
-@reader.command()
-def configure():
-    pass
-
-@reader.command()
-def register():
-    pass
-
-# Writer
-@cli.group()
-def writer():
-    pass
-
-@writer.command()
-def add():
-    pass
-
-@writer.command()
-def remove():
-    pass
-
-@writer.command()
-def list():
-    pass
-
-@writer.command()
-def configure():
-    pass
-
-@writer.command()
-def register():
-    pass
 
 # CREATE
 @cli.command()
@@ -102,8 +68,11 @@ def discover():
     pass
 
 # RUN
-@cli.command()
-def run():
+@cli.command(help="Run the specified target, if specified target is 'all' all targets are run.")
+@click.argument('target')
+@click.pass_context
+def run(ctx, target):
+    log.debug(f'Runrunrun {target} in {ctx.obj["wd"]}')
     pass
 
 @cli.command()
