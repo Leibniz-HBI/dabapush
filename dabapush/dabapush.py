@@ -7,7 +7,8 @@ import click
 # from multiprocessing import cpu_count
 # from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 # from threading import get_ident, active_count
-# from loguru import logger as log
+from .reader_subcommand import reader
+from .writer_subcommand import writer
 # from .read import read
 
 @click.group()
@@ -110,7 +111,8 @@ def update():
     pass
 
 
-
+cli.add_command(reader)
+cli.add_command(writer)
 
 
 
@@ -194,4 +196,4 @@ def update():
 #     # writer(host, port, dbname)
 
 if __name__ == '__main__':
-    cli()
+    cli(obj={})
