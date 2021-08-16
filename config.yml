@@ -1,6 +1,7 @@
 plugins:
   reader:
     Twacapic:
+      description: "A twacapic reader"
       moduleName: ".Reader.TwacapicReader"
       className: "TwacapicReader"
   writer:
