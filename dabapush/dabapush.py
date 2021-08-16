@@ -11,18 +11,28 @@ import click
 # from .read import read
 
 @click.group()
-@click.option('--debug/--no-debug', default=False)
-def cli(debug):
-    print(f'Start with debug: {debug}')
+@click.option('--logfile', help='file to log in (optional)')
+@click.option('--loglevel', default='INFO', help='the level to log, yk')
+@click.pass_context
+def cli(ctx, logfile, loglevel):
+    # prepare log options
+    if (logfile != None):
+        log.remove()
+        if (loglevel == None):
+            loglevel = 'DEBUG'
+            log.add(sys.stdout, loglevel)
+        log.add(logfile, loglevel)
+    wd = Path(os.getcwd())
+    sd = Path(__file__).parent.parent # arkwardly fetch the package dir
 
-# Reader
-@cli.group()
-def reader():
-    print('I will read you stuff')
+    log.debug(f'Starting DaBaPush in {wd} fom {__file__}')
 
-@reader.command()
-def add():
-    print('I will add a entity thatreads stuff to you!')
+    # prepare context
+    ctx.ensure_object(dict)
+    ctx.obj['wd'] = wd # store working dir in context
+    ctx.obj['sd'] = sd
+    with Path(sd/'config.yml').open('r') as file:
+        ctx.obj['globconf'] = yaml.safe_load(file)
 
 @reader.command()
 def remove():
