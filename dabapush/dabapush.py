@@ -67,8 +67,23 @@ def register():
 
 # CREATE
 @cli.command()
-def create():
-    pass
+@click.pass_context
+def create(ctx):
+    log.debug(f'Creating project in {ctx.obj["wd"]}')
+    prj_name = click.prompt('project name', type=str)
+    prj_author = click.prompt('author name (split several authors with ";")', type=str)
+    man_config = click.confirm("Should we configure readers and writers?")
+    while (man_config == True):
+        thing_to_configure = click.prompt('Reader/Writer?', default='Writer')
+        if (thing_to_configure != 'Reader' and thing_to_configure != 'Writer'):
+            log.debug(f'Try again')
+        else:
+            if (thing_to_configure == 'Reader'):
+                log.debug(f'Configuring a Reader')
+            if (thing_to_configure == 'Writer'):
+                log.debug(f'Configuring a Reader')
+            man_config = click.confirm('do another')
+
 
 # DISCOVER
 @cli.command()
