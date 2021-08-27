@@ -9,7 +9,7 @@ class Configuration(yaml.YAMLObject):
     def __repr__(self) -> str:
         return super().__repr__()
 
-
+    
 
 
 

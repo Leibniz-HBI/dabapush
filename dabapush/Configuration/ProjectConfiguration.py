@@ -2,6 +2,8 @@ import yaml
 from typing import List
 from .ConfigurationError import ConfigurationError
 from .Configuration import Configuration
+from .ReaderConfiguration import ReaderConfiguration
+from .WriterConfiguration import WriterConfiguration
 
 
 class ProjectConfiguration(yaml.YAMLObject):
