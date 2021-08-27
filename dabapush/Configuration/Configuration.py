@@ -1,16 +1,13 @@
 import yaml
-import collections
-import importlib
-from pathlib import Path
-from typing import ChainMap, List
+from typing import Dict, List
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 class Configuration(yaml.YAMLObject):
     def __init__(
-            self,
-            readers: ChainMap[str, str] = collections.ChainMap(),
-            writers: ChainMap[str, str] = collections.ChainMap()
-        ) -> None:
+        self,
+        readers: Dict[str, str] = {},
+        writers: Dict[str, str] = {}
+    ) -> None:
         super().__init__()
 
         self.readers = readers
@@ -21,10 +18,12 @@ class Configuration(yaml.YAMLObject):
 
     def get_reader(self, type: str) -> ReaderConfiguration:
         if type in self.readers:
+            # TODO: look up ReaderConfiguration subclasses from registered plugins
             return ReaderConfiguration
 
     def get_writer(self, type: str) -> WriterConfiguration:
         if type in self.writers:
+            # TODO: look up WriterConfiguration subclasses from registered plugins
             return WriterConfiguration
 
     def register_reader(self, name: str, constructor) -> None:
@@ -40,7 +39,7 @@ class Configuration(yaml.YAMLObject):
         pass
 
     def list_writers(self) -> List[str]:
-        return ['a','b','c']
+        pass
 
     def list_writers(self) -> List[str]:
         pass
