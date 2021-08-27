@@ -7,7 +7,7 @@ import pytest
 def conf():
     project = ProjectConfiguration()
     project.initialize(Configuration())
-    return 
+    return project
 
 def test_ProjectConfiguration(conf):
     pass
