@@ -129,5 +129,7 @@ dmypy.json
 .pyre/
 
 # project specific
-.vscode/settings.json
 poetry.lock
+.vscode/*
+*.csv
+*.code-workspace
