@@ -4,6 +4,8 @@ from typing import Dict, List
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 class Configuration(yaml.YAMLObject):
+    yaml_tag = '!Configuration'
+
     """ """
     def __init__(
         self,
