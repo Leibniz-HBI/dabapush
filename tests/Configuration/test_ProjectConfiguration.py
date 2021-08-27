@@ -53,3 +53,15 @@ def test_remove_writer(conf):
 # should list configured writer plugins
 def test_list_writers(conf):
     skip()
+
+def test_initialize():
+    # we expect ProjectConfig to raise an exception
+    # if accessed bfore intializiation
+    raised = False
+    try:
+        p = ProjectConfiguration()
+        p.add_reader('Thing', 'thing')
+    except:
+        raised = True
+
+    assert raised == True
