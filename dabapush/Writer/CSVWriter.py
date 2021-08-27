@@ -3,11 +3,20 @@ from pathlib import Path
 from .Writer import Writer
 
 class CSVWriter(Writer):
+    """ """
     
     def __init__(self):
         super().__init__()
 
     def persist(self, chunkSize: int):
+        """
+
+        Args:
+          chunkSize: int: 
+
+        Returns:
+
+        """
 
         last_row = self.buffer.head(chunkSize)
         self.buffer.drop(last_row.index, inplace=True)

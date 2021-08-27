@@ -6,14 +6,31 @@ from loguru import logger as log
 from .Reader import Reader
 
 class TwacapicReader(Reader):
+    """ """
 
     @staticmethod
     def setup(path: Path) -> None:
+        """
+
+        Args:
+          path: Path: 
+
+        Returns:
+
+        """
         # what did I want do here?
         return
    
     @staticmethod
     def getSchema() -> list(str):
+        """
+
+        Args:
+          ) -> list(str: 
+
+        Returns:
+
+        """
         if (TwacapicReader.__setup == False):
             raise 'Tryed to use TwacapicReader without setting it up first'
         if (TwacapicReader.config is None):
@@ -25,6 +42,7 @@ class TwacapicReader(Reader):
         self.property = property
     
     def read(self):
+        """ """
         schema = TwacapicReader.getSchema()
         data = None
         with self.path.open('r') as file:

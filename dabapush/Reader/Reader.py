@@ -3,6 +3,7 @@ import abc
 from typing import Dict
 
 class Reader(object):
+    """ """
     
     config: Dict
     workingPath: Path
@@ -10,11 +11,16 @@ class Reader(object):
 
     @staticmethod
     def setup(path: Path) -> None:
-        """
-        This hook is called by programm start up in order to load additional resources and/or configuration from the working folder.
+        """This hook is called by programm start up in order to load additional resources and/or configuration from the working folder.
         Implementation here serves solely as an interface and guideline for implmentation in subclasses.
-
+        
         Never call this static method from your class definition to set `__setup` to true!
+
+        Args:
+          path: Path: 
+
+        Returns:
+
         """
         raise "You shall not call me, understand!"
         Reader.workingPath = Path
@@ -27,4 +33,5 @@ class Reader(object):
 
     @abc.abstractmethod
     def read(self):
+        """ """
         return

@@ -4,12 +4,29 @@ from loguru import logger as log
 @click.group()
 @click.pass_context
 def reader(ctx):
+    """
+
+    Args:
+      ctx: 
+
+    Returns:
+
+    """
     pass
 
 @reader.command(help="Add a reader to the project.")
 @click.argument('name')
 @click.pass_context
 def add(ctx, name):
+    """
+
+    Args:
+      ctx: 
+      name: 
+
+    Returns:
+
+    """
     # get reader
     # set id
     # splice into local config
@@ -20,11 +37,28 @@ def add(ctx, name):
 @click.argument('name')
 @click.pass_context
 def remove(ctx, name):
+    """
+
+    Args:
+      ctx: 
+      name: 
+
+    Returns:
+
+    """
     pass
 
 @reader.command(help="lists all available reader plugins")
 @click.pass_context
 def list(ctx):
+    """
+
+    Args:
+      ctx: 
+
+    Returns:
+
+    """
     readers = ctx.obj['globconf']['plugins']['reader']
     for key in readers:
         o = readers[key]
@@ -37,6 +71,18 @@ def list(ctx):
 @click.option('--pattern', '-P', type=click.STRING, help='overwrite the default search pattern of the reader')
 @click.pass_context
 def configure(ctx, name, path, recursive, pattern):
+    """
+
+    Args:
+      ctx: 
+      name: 
+      path: 
+      recursive: 
+      pattern: 
+
+    Returns:
+
+    """
     
     pass
 
@@ -45,6 +91,7 @@ def configure(ctx, name, path, recursive, pattern):
 @click.argument('path', type=click.Path(dir_okay=False, exists=True))
 @click.option('--global', '-g', help='register globally, files are copied into plugin folder', default=False)
 def register():
+    """ """
     # branch if global
         # check wether class is valid, i.e. is a descendant of Reader
         # copy to source file pluginfolder (is that a good idea?)
@@ -58,6 +105,7 @@ def register():
 @click.argument('name')
 @click.option('--global', '-g', help='register globally, files are copied into plugin folder', default=False)
 def unregister():
+    """ """
     # branch if global
         # check wether name exists in registry
         # delete source file from pluginfolder (is that a good idea?)

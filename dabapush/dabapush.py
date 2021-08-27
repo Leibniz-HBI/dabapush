@@ -22,6 +22,16 @@ from .writer_subcommand import writer
 @click.option('--loglevel', default='INFO', help='the level to log, yk')
 @click.pass_context
 def cli(ctx, logfile, loglevel):
+    """
+
+    Args:
+      ctx: 
+      logfile: 
+      loglevel: 
+
+    Returns:
+
+    """
     # prepare log options
     if (logfile != None):
         log.remove()
@@ -62,12 +72,14 @@ def cli(ctx, logfile, loglevel):
 # DISCOVER
 @cli.command()
 def discover():
+    """ """
     pass
 
 
 
 @cli.command()
 def update():
+    """ """
     pass
 
 cli.add_command(reader)

@@ -7,6 +7,7 @@ from loguru import logger as log
 from pathlib import Path
 
 class Writer(object):
+    """ """
 
     # TODO: get chunksize from config
     def __init__(self):
@@ -46,6 +47,14 @@ class Writer(object):
         self.persist(len(self.buffer))
 
     def write(self, df: pd.DataFrame):
+        """
+
+        Args:
+          df: pd.DataFrame: 
+
+        Returns:
+
+        """
         # if (self.mp == True):
         with self.lock:
             self.buffer = pd.concat([self.buffer, df], ignore_index=True, sort=False)
@@ -64,4 +73,12 @@ class Writer(object):
 
     @abc.abstractmethod
     def persist(self, chunkSize: int) -> None:
+        """
+
+        Args:
+          chunkSize: int: 
+
+        Returns:
+
+        """
         return None

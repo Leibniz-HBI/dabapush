@@ -6,6 +6,14 @@ import yaml
 @click.command()
 @click.pass_context
 def create(ctx):
+    """
+
+    Args:
+      ctx: 
+
+    Returns:
+
+    """
     log.debug(f'Creating project in {ctx.obj["wd"]}')
     globconf = ctx.obj["globconf"]
     
