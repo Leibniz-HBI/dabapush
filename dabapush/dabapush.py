@@ -1,20 +1,21 @@
-import click
-import sys
-import os
-import yaml
-from pathlib import Path
-
 # import importlib
 # from typing import Dict, Literal
 # import sys
 # from multiprocessing import cpu_count
 # from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 # from threading import get_ident, active_count
+from logging import error
+import click
+import sys
+import os
+import yaml
+from pathlib import Path
 from loguru import logger as log
 
+from .create_subcommand import create
+from .run_subcommand import run
 from .reader_subcommand import reader
 from .writer_subcommand import writer
-# from .read import read
 
 @click.group()
 @click.option('--logfile', help='file to log in (optional)')
@@ -30,59 +31,49 @@ def cli(ctx, logfile, loglevel):
         log.add(logfile, loglevel)
     wd = Path(os.getcwd())
     sd = Path(__file__).parent.parent # arkwardly fetch the package dir
-
-    log.debug(f'Starting DaBaPush in {wd} fom {__file__}')
     
     # prepare context
     ctx.ensure_object(dict)
     ctx.obj['wd'] = wd # store working dir in context
-    ctx.obj['sd'] = sd
-    with Path(sd/'config.yml').open('r') as file:
+    ctx.obj['sd'] = sd # store source dir in context
+    
+    loc_conf_path = wd/'dabapush.yml'
+    glob_conf_path = sd/'config.yml'
+
+    # copy paths to conf
+    ctx.obj['locconf_path']  = loc_conf_path
+    ctx.obj['globconf_path'] = glob_conf_path
+
+    if (not loc_conf_path.exists()):
+        log.warning(f'Found no dabapush.yml in {wd}. Do you need to create one?')
+        pass
+    else:  
+        # load local conf
+        with loc_conf_path.open('r') as file:
+            ctx.obj['locconf'] = yaml.safe_load(file)
+    
+    # load glob conf
+    with glob_conf_path.open('r') as file:
         ctx.obj['globconf'] = yaml.safe_load(file)
-
-
-
-# CREATE
-@cli.command()
-@click.pass_context
-def create(ctx):
-    log.debug(f'Creating project in {ctx.obj["wd"]}')
-    prj_name = click.prompt('project name', type=str)
-    prj_author = click.prompt('author name (split several authors with ";")', type=str)
-    man_config = click.confirm("Should we configure readers and writers?")
-    while (man_config == True):
-        thing_to_configure = click.prompt('Reader/Writer?', default='Writer')
-        if (thing_to_configure != 'Reader' and thing_to_configure != 'Writer'):
-            log.debug(f'Try again')
-        else:
-            if (thing_to_configure == 'Reader'):
-                log.debug(f'Configuring a Reader')
-            if (thing_to_configure == 'Writer'):
-                log.debug(f'Configuring a Reader')
-            man_config = click.confirm('do another')
-
+    
+    # LOG END OF ROUTINE AND DABAPUSH START UP
+    log.debug(f'Starting DaBaPush in {wd} from {__file__}')
 
 # DISCOVER
 @cli.command()
 def discover():
     pass
 
-# RUN
-@cli.command(help="Run the specified target, if specified target is 'all' all targets are run.")
-@click.argument('target')
-@click.pass_context
-def run(ctx, target):
-    log.debug(f'Runrunrun {target} in {ctx.obj["wd"]}')
-    pass
+
 
 @cli.command()
 def update():
     pass
 
-
 cli.add_command(reader)
 cli.add_command(writer)
-
+cli.add_command(run)
+cli.add_command(create)
 
 
 # @click.command()
