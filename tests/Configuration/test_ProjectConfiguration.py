@@ -21,8 +21,6 @@ def conf_loaded_single(conf: ProjectConfiguration) -> ProjectConfiguration:
 
     return conf
 
-def test_ProjectConfiguration(conf):
-    skip()
 # should serialize
 def test_serialize(conf):
     skip()
