@@ -1,5 +1,5 @@
 import yaml
-from typing import List, Mapping
+from typing import List, Dict
 from .ConfigurationError import ConfigurationError
 from .Configuration import Configuration
 from .ReaderConfiguration import ReaderConfiguration
@@ -7,17 +7,30 @@ from .WriterConfiguration import WriterConfiguration
 
 
 class ProjectConfiguration(yaml.YAMLObject):
+    """
+    ProjectConfiguration hold necessary configuration informations
+    
+    
+    A PojectConfiguration is for reading and writing data as well as the project's meta data
+    e.g. author name(s) and email addresses.
+
+    Attributes:
+        readers (Dict[str, ReaderConfiguration]): Dict of ReaderConfigurations 
+        writers (Dict[str, WriterConfiguration]): Dict of WriterConfigurations
+    """
+
     def __init__(
-            self,
-            readers: Mapping[str, ReaderConfiguration] = {},
-            writers: Mapping[str, WriterConfiguration] = {}
-        ) -> None:
+        self,
+        readers: Dict[str, ReaderConfiguration] = {},
+        writers: Dict[str, WriterConfiguration] = {}
+    ) -> None:
+        """Initialize a ProjectConfiguration with optional arguments"""
         super().__init__()
 
-        # store readers if they are passed into the constructor or else intialize new list
-        self.readers: Mapping[str, ReaderConfiguration] = readers
-        # store writers if they are passed into the constructor or else intialize new list
-        self.writers: Mapping[str, WriterConfiguration] = writers
+        # store readers if they are passed into the constructor or else intialize new list via default arg
+        self.readers: Dict[str, ReaderConfiguration] = readers
+        # store writers if they are passed into the constructor or else intialize new list via default arg
+        self.writers: Dict[str, WriterConfiguration] = writers
         # the global and/or local configurations are sepratedly stored objects and are, thus,
         # not deserialized and requiere further setup in our class, see property `self.is_initialized`
         # and method `self.initialize()`.
@@ -26,7 +39,21 @@ class ProjectConfiguration(yaml.YAMLObject):
     def __repr__(self) -> str:
         return super().__repr__()
 
-    def add_reader(self, type: str, name: str):
+    def add_reader(self, type: str, name: str) -> None:
+        '''add a reader configuration to the project
+
+        Args:
+            self (ProjectConfiguration):
+                selfy-self
+            type (str):
+                name of the configuration to add
+            name (str):
+                name given to the configuration
+        Returns:
+            None:
+        Raises:
+            ConfigurationError: ff no local or global configurations are found
+        '''
         # check wether global/local configuration is set up
         if (self.is_initialized == True): 
             pass
@@ -40,6 +67,8 @@ class ProjectConfiguration(yaml.YAMLObject):
         return pinst.id
 
     def remove_reader(self, name: str) -> None:
+        ''' remove a reader from the configuration
+        '''
         if name in self.readers:
             self.readers.pop(name)
 
