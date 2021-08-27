@@ -1,5 +1,5 @@
 import yaml
-from typing import List
+from typing import List, Mapping
 from .ConfigurationError import ConfigurationError
 from .Configuration import Configuration
 from .ReaderConfiguration import ReaderConfiguration
@@ -7,13 +7,17 @@ from .WriterConfiguration import WriterConfiguration
 
 
 class ProjectConfiguration(yaml.YAMLObject):
-    def __init__(self, readers=[] , writers=[]) -> None:
+    def __init__(
+            self,
+            readers: Mapping[str, ReaderConfiguration] = {},
+            writers: Mapping[str, WriterConfiguration] = {}
+        ) -> None:
         super().__init__()
 
         # store readers if they are passed into the constructor or else intialize new list
-        self.readers: List(ReaderConfiguration) = readers
+        self.readers: Mapping[str, ReaderConfiguration] = readers
         # store writers if they are passed into the constructor or else intialize new list
-        self.writers: List(WriterConfiguration) = writers
+        self.writers: Mapping[str, WriterConfiguration] = writers
         # the global and/or local configurations are sepratedly stored objects and are, thus,
         # not deserialized and requiere further setup in our class, see property `self.is_initialized`
         # and method `self.initialize()`.
@@ -27,20 +31,22 @@ class ProjectConfiguration(yaml.YAMLObject):
         if (self.is_initialized == True): 
             pass
         else:
-            raise ConfigurationError()
+            raise ConfigurationError('dabapush project could not acquire a dabapush configuration')
         # get constructor from registry
-        constructor = self.configuration.get_reader(type)
-        # instantiate with name
-        instance = constructor(name)
-        self.writers.reader.append(instance)
+        pinst = self.configuration.get_reader(type)(name)
+        self.readers[name] = pinst
+
         # return id
-        return instance.id
+        return pinst.id
 
-    def remove_reader(name: str):
-        pass
+    def remove_reader(self, name: str) -> None:
+        if name in self.readers:
+            self.readers.pop(name)
 
-    def list_readers():
-        pass
+    def list_readers(self) -> List[str]:
+        return [
+            f'{key.name}\t{key.id}' for key in self.readers.values()
+        ]
 
     def add_writer(type: str, name: str):
         pass
