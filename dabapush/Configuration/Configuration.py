@@ -1,10 +1,11 @@
 import yaml
 from typing import Dict, List
-
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
+
 class Configuration(yaml.YAMLObject):
-    yaml_tag = '!Configuration'
+    yaml_tag = '!dabapush:Configuration'
+    _instances = []
 
     """ """
     def __init__(
@@ -16,6 +17,11 @@ class Configuration(yaml.YAMLObject):
 
         self.readers = readers
         self.writers = writers
+
+        Configuration._instances.append(self)
+
+    def __del__(self):
+        Configuration._instances.remove(self)
 
     def __repr__(self) -> str:
         return super().__repr__()
