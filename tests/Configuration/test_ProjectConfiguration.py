@@ -43,7 +43,7 @@ def test_remove_reader(conf_loaded_single: ProjectConfiguration):
 # should list configured reader plugins
 def test_list_reader(conf_loaded_single: ProjectConfiguration):
     entries = conf_loaded_single.list_readers()
-    assert entries[0].startswith('name')
+    assert entries[0].name == 'name'
 # should add writer plugins and assign it an ID and name
 def test_add_writer(conf):
     skip()

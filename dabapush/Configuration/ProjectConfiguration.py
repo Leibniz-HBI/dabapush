@@ -43,9 +43,10 @@ class ProjectConfiguration(yaml.YAMLObject):
         if name in self.readers:
             self.readers.pop(name)
 
-    def list_readers(self) -> List[str]:
+    def list_readers(self) -> List[dict]:
+        # copy stuff
         return [
-            f'{key.name}\t{key.id}' for key in self.readers.values()
+            value for value in self.readers.values()
         ]
 
     def add_writer(type: str, name: str):
