@@ -1,11 +1,16 @@
-from pathlib import Path
-from typing import ChainMap, List
-from dabapush.Reader.Reader import Reader
-from dabapush.Writer.Writer import Writer
 import yaml
 import collections
+import importlib
+from pathlib import Path
+from typing import ChainMap, List
+from .ReaderConfiguration import ReaderConfiguration
+from .WriterConfiguration import WriterConfiguration
 class Configuration(yaml.YAMLObject):
-    def __init__(self, readers: ChainMap[str, Reader] = collections.ChainMap(), writers: ChainMap[str, Writer] = collections.ChainMap()) -> None:
+    def __init__(
+            self,
+            readers: ChainMap[str, str] = collections.ChainMap(),
+            writers: ChainMap[str, str] = collections.ChainMap()
+        ) -> None:
         super().__init__()
 
         self.readers = readers
@@ -14,11 +19,13 @@ class Configuration(yaml.YAMLObject):
     def __repr__(self) -> str:
         return super().__repr__()
 
-    def get_reader(self, type: str) -> Reader:
-        pass
+    def get_reader(self, type: str) -> ReaderConfiguration:
+        if type in self.readers:
+            return ReaderConfiguration
 
-    def get_writer(self, type: str) -> Writer:
-        pass
+    def get_writer(self, type: str) -> WriterConfiguration:
+        if type in self.writers:
+            return WriterConfiguration
 
     def register_reader(self, name: str, constructor) -> None:
         pass
