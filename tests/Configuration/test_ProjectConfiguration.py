@@ -1,9 +1,13 @@
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
+from dabapush.Configuration.Configuration import Configuration
 import pytest
+
 
 @pytest.fixture
 def conf():
-    return ProjectConfiguration()
+    project = ProjectConfiguration()
+    project.initialize(Configuration())
+    return 
 
 def test_ProjectConfiguration(conf):
     pass

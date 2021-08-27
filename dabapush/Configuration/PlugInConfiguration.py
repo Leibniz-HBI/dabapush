@@ -1,3 +1,4 @@
+import yaml
 from uuid import uuid4
 
 class PlugInConfiguration(yaml.YAMLObject):

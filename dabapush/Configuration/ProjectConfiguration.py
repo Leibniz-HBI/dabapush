@@ -1,17 +1,21 @@
-from Configuration.ConfigurationError import ConfigurationError
-from tests.Configuration.test_ProjectConfiguration import conf
-from typing import List
 import yaml
+from typing import List
+from .ConfigurationError import ConfigurationError
+from .Configuration import Configuration
 
-from Configuration.Configuration import Configuration
 
 class ProjectConfiguration(yaml.YAMLObject):
-    def __init__(self) -> None:
+    def __init__(self, readers=[] , writers=[]) -> None:
         super().__init__()
 
-        self.readers: List(ReaderConfiguration) = []
-        self.writers: List(WriterConfiguration) = []
-        self.configuration: Configuration
+        # store readers if they are passed into the constructor or else intialize new list
+        self.readers: List(ReaderConfiguration) = readers
+        # store writers if they are passed into the constructor or else intialize new list
+        self.writers: List(WriterConfiguration) = writers
+        # the global and/or local configurations are sepratedly stored objects and are, thus,
+        # not deserialized and requiere further setup in our class, see property `self.is_initialized`
+        # and method `self.initialize()`.
+        self.configuration: Configuration = None
 
     def __repr__(self) -> str:
         return super().__repr__()
@@ -49,5 +53,7 @@ class ProjectConfiguration(yaml.YAMLObject):
     def is_initialized(self) -> bool:
         return self.configuration is not None
 
+
+    # pass a global/local/merged configuration to the project
     def initialize(self, conf: Configuration) -> None:
         self.configuration = conf
