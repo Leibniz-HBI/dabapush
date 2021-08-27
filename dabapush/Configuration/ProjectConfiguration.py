@@ -5,18 +5,12 @@ from .Configuration import Configuration
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
-
 class ProjectConfiguration(yaml.YAMLObject):
     """ProjectConfiguration hold necessary configuration informations
     
     
-    A PojectConfiguration is for reading and writing data as well as the project's meta data
+    A ProjectConfiguration is for reading and writing data as well as the project's meta data
     e.g. author name(s) and email addresses.
-
-    Args:
-
-    Returns:
-
     """
 
     def __init__(
@@ -80,25 +74,34 @@ class ProjectConfiguration(yaml.YAMLObject):
             self.readers.pop(name)
 
     def list_readers(self) -> List[dict]:
-        """ """
+        """list all configured readers
+
+        Returns: List[Dict]: list of dicts with name- and id-fields
+        
+        """
         # copy stuff
         return [
             value for value in self.readers.values()
         ]
 
-    def add_writer(type: str, name: str):
+    def add_writer(self, type: str, name: str) -> None:
         """
 
         Args:
           type: str: 
           name: str: 
 
-        Returns:
+        Returns: None: nothing to see, carry on.
 
         """
-        pass
+        if self.is_initialized == True:
+            writer = self.configuration.get_writer(type)(name)
+            self.writers[name] = writer
+            return writer.id
+        else:
+            raise ConfigurationError('Could not acquire a local/global configuration')
 
-    def remove_writer(name: str):
+    def remove_writer(self, name: str):
         """
 
         Args:
@@ -107,11 +110,19 @@ class ProjectConfiguration(yaml.YAMLObject):
         Returns:
 
         """
-        pass
+        if name in self.writers:
+            self.writers.pop(name)
 
-    def list_writers():
-        """ """
-        pass
+    def list_writers(self):
+        """list all configured writers
+
+        Returns: List[Dict]: list of dicts with name- and id-fields
+        
+        """
+        # copy stuff
+        return [
+            value for value in self.writers.values()
+        ]
 
     @property
     def is_initialized(self) -> bool:
