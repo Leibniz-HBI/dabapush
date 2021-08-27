@@ -1,4 +1,5 @@
 import yaml
+from copy import copy
 from typing import List, Dict
 from .ConfigurationError import ConfigurationError
 from .Configuration import Configuration
@@ -12,6 +13,8 @@ class ProjectConfiguration(yaml.YAMLObject):
     A ProjectConfiguration is for reading and writing data as well as the project's meta data
     e.g. author name(s) and email addresses.
     """
+    yaml_tag = '!dabapush:ProjectConfiguration'
+
 
     def __init__(
         self,
@@ -28,10 +31,10 @@ class ProjectConfiguration(yaml.YAMLObject):
         # the global and/or local configurations are sepratedly stored objects and are, thus,
         # not deserialized and requiere further setup in our class, see property `self.is_initialized`
         # and method `self.initialize()`.
-        self.configuration: Configuration = None
+        self.__configuration__: Configuration = None
 
     def __repr__(self) -> str:
-        return super().__repr__()
+        return f'{self.__class__.__name__}({self.readers},{self.writers})'
 
     def add_reader(self, type: str, name: str) -> None:
         """add a reader configuration to the project
@@ -55,7 +58,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         else:
             raise ConfigurationError('dabapush project could not acquire a dabapush configuration')
         # get constructor from registry
-        pinst = self.configuration.get_reader(type)(name)
+        pinst = self.__configuration__.get_reader(type)(name)
         self.readers[name] = pinst
 
         # return id
@@ -95,7 +98,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         if self.is_initialized == True:
-            writer = self.configuration.get_writer(type)(name)
+            writer = self.__configuration__.get_writer(type)(name)
             self.writers[name] = writer
             return writer.id
         else:
@@ -127,7 +130,7 @@ class ProjectConfiguration(yaml.YAMLObject):
     @property
     def is_initialized(self) -> bool:
         """ """
-        return self.configuration is not None
+        return self.__configuration__ is not None
 
 
     # pass a global/local/merged configuration to the project
@@ -140,4 +143,9 @@ class ProjectConfiguration(yaml.YAMLObject):
         Returns:
 
         """
-        self.configuration = conf
+        self.__configuration__ = conf
+
+    def to_yaml(self, path) -> None:
+        dumpy = copy(self)
+        dumpy.__configuration__= None
+        return yaml.dump(dumpy)
