@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from dabapush.reader import read
+from dabapush.read import read
 
 def test_read():
     testFile = Path('./test_case_1/test_case_1.json')
