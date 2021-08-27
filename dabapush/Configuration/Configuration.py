@@ -1,5 +1,6 @@
 import yaml
 from typing import Dict, List
+
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 class Configuration(yaml.YAMLObject):
@@ -17,7 +18,7 @@ class Configuration(yaml.YAMLObject):
     def __repr__(self) -> str:
         return super().__repr__()
 
-    def get_reader(self, type: str) -> ReaderConfiguration:
+    def get_reader(self, type: str) -> ReaderConfiguration or None:
         """
 
         Args:
@@ -30,7 +31,7 @@ class Configuration(yaml.YAMLObject):
             # TODO: look up ReaderConfiguration subclasses from registered plugins
             return ReaderConfiguration
 
-    def get_writer(self, type: str) -> WriterConfiguration:
+    def get_writer(self, type: str) -> WriterConfiguration or None:
         """
 
         Args:
@@ -42,8 +43,10 @@ class Configuration(yaml.YAMLObject):
         if type in self.writers:
             # TODO: look up WriterConfiguration subclasses from registered plugins
             return WriterConfiguration
+        else:
+            return None
 
-    def register_reader(self, name: str, constructor) -> None:
+    def register_reader(self, name: str, plugin_configuration) -> None:
         """
 
         Args:
@@ -53,7 +56,8 @@ class Configuration(yaml.YAMLObject):
         Returns:
 
         """
-        pass
+        if self.__ensure_reader__(plugin_configuration):
+            self.readers[name] = plugin_configuration
 
     def register_writer(self, name: str, constructor) -> None:
         """
@@ -107,26 +111,15 @@ class Configuration(yaml.YAMLObject):
 
         """
         pass
-
-
-# class DabapushConfiguration(object):
-#     def __init__(self) -> None:
-#         super().__init__()
-#         self.plugins: Mapping(str, PluginConfiguration)
-
-# class Configuration(object):
-
-#     def __init__(self, glob_conf: DabapushConfiguration, loc_conf: DabapushConfiguration, wd: Path, sd: Path) -> None:
-#         super().__init__()
-#         self.glob_conf = glob_conf
-#         self.loc_conf = loc_conf
-#         self.wd = wd
-#         self.sd = sd
-
-# class PluginConfiguration(object):
-#     def __init__(self, description: str, module_name: str, class_name: str) -> None:
-#         super().__init__()
-
-#         self.description = description
-#         self.module_name = module_name
-#         self.class_name = class_name
+    
+    def __ensure_reader__(self, arg: any) -> bool:
+        # TODO: this is a stun function, which _shopuld_ ensure that
+        # things passed in here are actually ReaderConfigurations _OR_
+        # classes that inherit from that.
+        return True
+        
+    def __ensure_writer__(self, arg: any) -> bool:
+        # TODO: this is a stun function, which _shopuld_ ensure that
+        # things passed in here are actually ReaderConfigurations _OR_
+        # classes that inherit from that.
+        return True
