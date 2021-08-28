@@ -2,19 +2,19 @@ from pytest import fixture, skip
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
 from dabapush.Configuration.Configuration import Configuration
 import pytest
+import yaml
 
 @pytest.fixture
 def conf() -> ProjectConfiguration:
-    configuration = Configuration(
+    Configuration(
         {
             "Twacapic": 'dabapush.Reader.TwacapicReader'
         }, {
             'CSV': 'dabpush.Writer.CSVWriter'
         }
     )
-    project = ProjectConfiguration()
-    project.initialize(configuration)
-    return project
+
+    return ProjectConfiguration()
 
 @fixture
 def conf_loaded_single_reader(conf: ProjectConfiguration) -> ProjectConfiguration:
@@ -25,19 +25,21 @@ def conf_loaded_single_reader(conf: ProjectConfiguration) -> ProjectConfiguratio
 @fixture
 def conf_loaded_single_writer(conf: ProjectConfiguration) -> ProjectConfiguration:
     conf.add_writer('CSV', 'name')
-
     return conf
 
 # should serialize
-def test_serialize(conf):
+def test_serialize(conf: ProjectConfiguration):
     skip()
+    thing = yaml.dump(conf)
+    print(thing)
+
 # should deserialize
 def test_deserialize(conf):
     skip()
+
 # should add reader plugin and assign it an ID and name
 def test_add_reader(conf: ProjectConfiguration):
     id = conf.add_reader('Twacapic', 'name')
-
     assert 'name' in conf.readers
 
 # should remove reader plugin by name
@@ -45,14 +47,15 @@ def test_remove_reader(conf_loaded_single_reader: ProjectConfiguration):
     conf_loaded_single_reader.remove_reader('name')
 
     assert 'name' not in conf_loaded_single_reader.readers
+
 # should list configured reader plugins
 def test_list_reader(conf_loaded_single_reader: ProjectConfiguration):
     entries = conf_loaded_single_reader.list_readers()
     assert entries[0].name == 'name'
+
 # should add writer plugins and assign it an ID and name
 def test_add_writer(conf: ProjectConfiguration):
     conf.add_writer('CSV', "name")
-
     assert 'name' in conf.writers
 
 # should remove writer plugins by ID or name
