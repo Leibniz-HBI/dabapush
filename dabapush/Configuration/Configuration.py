@@ -1,5 +1,5 @@
 import yaml
-from typing import Dict, List
+from typing import ChainMap, Dict, List
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
@@ -18,6 +18,7 @@ class Configuration(yaml.YAMLObject):
         self.readers = readers
         self.writers = writers
 
+
         Configuration._instances.append(self)
 
     def __del__(self):
@@ -26,7 +27,8 @@ class Configuration(yaml.YAMLObject):
     def __repr__(self) -> str:
         return super().__repr__()
 
-    def get_reader(self, type: str) -> ReaderConfiguration or None:
+    @staticmethod
+    def get_reader(type: str) -> ReaderConfiguration or None:
         """
 
         Args:
@@ -35,11 +37,15 @@ class Configuration(yaml.YAMLObject):
         Returns:
 
         """
-        if type in self.readers:
+        a = [inst.readers for inst in Configuration._instances]
+        readers = ChainMap(*a)
+
+        if type in readers:
             # TODO: look up ReaderConfiguration subclasses from registered plugins
             return ReaderConfiguration
 
-    def get_writer(self, type: str) -> WriterConfiguration or None:
+    @staticmethod
+    def get_writer(type: str) -> WriterConfiguration or None:
         """
 
         Args:
@@ -48,11 +54,12 @@ class Configuration(yaml.YAMLObject):
         Returns:
 
         """
-        if type in self.writers:
+        a = [inst.writers for inst in Configuration._instances]
+        writers = ChainMap(*a)
+
+        if type in writers:
             # TODO: look up WriterConfiguration subclasses from registered plugins
             return WriterConfiguration
-        else:
-            return None
 
     def register_reader(self, name: str, plugin_configuration) -> None:
         """
