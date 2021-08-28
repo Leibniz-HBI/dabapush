@@ -15,7 +15,6 @@ class ProjectConfiguration(yaml.YAMLObject):
     """
     yaml_tag = '!dabapush:ProjectConfiguration'
 
-
     def __init__(
         self,
         readers: Dict[str, ReaderConfiguration] = {},
@@ -28,10 +27,6 @@ class ProjectConfiguration(yaml.YAMLObject):
         self.readers: Dict[str, ReaderConfiguration] = readers
         # store writers if they are passed into the constructor or else intialize new list via default arg
         self.writers: Dict[str, WriterConfiguration] = writers
-        # the global and/or local configurations are sepratedly stored objects and are, thus,
-        # not deserialized and requiere further setup in our class, see property `self.is_initialized`
-        # and method `self.initialize()`.
-        self.__configuration__: Configuration = None
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self.readers},{self.writers})'
@@ -52,13 +47,8 @@ class ProjectConfiguration(yaml.YAMLObject):
           ConfigurationError: ff no local or global configurations are found
 
         """
-        # check wether global/local configuration is set up
-        if (self.is_initialized == True): 
-            pass
-        else:
-            raise ConfigurationError('dabapush project could not acquire a dabapush configuration')
         # get constructor from registry
-        pinst = self.__configuration__.get_reader(type)(name)
+        pinst = Configuration.get_reader(type)(name)
         self.readers[name] = pinst
 
         # return id
@@ -97,12 +87,9 @@ class ProjectConfiguration(yaml.YAMLObject):
         Returns: None: nothing to see, carry on.
 
         """
-        if self.is_initialized == True:
-            writer = self.__configuration__.get_writer(type)(name)
-            self.writers[name] = writer
-            return writer.id
-        else:
-            raise ConfigurationError('Could not acquire a local/global configuration')
+        writer = self.__configuration__.get_writer(type)(name)
+        self.writers[name] = writer
+        return writer.id
 
     def remove_writer(self, name: str):
         """
@@ -128,24 +115,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         ]
 
     @property
-    def is_initialized(self) -> bool:
-        """ """
-        return self.__configuration__ is not None
-
-
-    # pass a global/local/merged configuration to the project
-    def initialize(self, conf: Configuration) -> None:
-        """
-
-        Args:
-          conf: Configuration: 
-
-        Returns:
-
-        """
-        self.__configuration__ = conf
-
-    def to_yaml(self, path) -> None:
-        dumpy = copy(self)
-        dumpy.__configuration__= None
-        return yaml.dump(dumpy)
+    def __configuration__(self):
+        a = Configuration()
+        print(Configuration._instances)
+        return a
