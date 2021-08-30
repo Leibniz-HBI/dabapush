@@ -26,6 +26,8 @@ class Configuration(yaml.YAMLObject):
 
     def __repr__(self) -> str:
         return super().__repr__()
+    
+    # --- static methods --- #
 
     @staticmethod
     def get_reader(type: str) -> ReaderConfiguration or None:
@@ -61,6 +63,32 @@ class Configuration(yaml.YAMLObject):
             # TODO: look up WriterConfiguration subclasses from registered plugins
             return WriterConfiguration
 
+    @staticmethod
+    def __ensure_reader__(arg: any) -> bool:
+        # TODO: this is a stub function, which _should_ ensure that
+        # things passed in here are actually ReaderConfigurations _OR_
+        # classes that inherit from that.
+        return issubclass(arg, ReaderConfiguration)
+    
+    @staticmethod
+    def __ensure_writer__(arg: any) -> bool:
+        # TODO: this is a stub function, which _should_ ensure that
+        # things passed in here are actually WriterConfigurations _OR_
+        # classes that inherit from that.
+        return True
+    
+    @staticmethod
+    def list_all_writers(self) -> List[str]:
+        """ """
+        pass
+
+    @staticmethod
+    def list_all_writers(self) -> List[str]:
+        """ """
+        pass
+
+
+    # --- instance methods --- #
     def register_reader(self, name: str, plugin_configuration) -> None:
         """
 
@@ -71,7 +99,7 @@ class Configuration(yaml.YAMLObject):
         Returns:
 
         """
-        if self.__ensure_reader__(plugin_configuration):
+        if Configuration.__ensure_reader__(plugin_configuration):
             self.readers[name] = plugin_configuration
 
     def register_writer(self, name: str, constructor) -> None:
@@ -115,26 +143,4 @@ class Configuration(yaml.YAMLObject):
     def list_writers(self) -> List[str]:
         """ """
         pass
-
-    def merge_with(conf: 'Configuration') -> 'Configuration':
-        """
-
-        Args:
-          conf: 'Configuration': 
-
-        Returns:
-
-        """
-        pass
     
-    def __ensure_reader__(self, arg: any) -> bool:
-        # TODO: this is a stun function, which _shopuld_ ensure that
-        # things passed in here are actually ReaderConfigurations _OR_
-        # classes that inherit from that.
-        return True
-        
-    def __ensure_writer__(self, arg: any) -> bool:
-        # TODO: this is a stun function, which _shopuld_ ensure that
-        # things passed in here are actually ReaderConfigurations _OR_
-        # classes that inherit from that.
-        return True
