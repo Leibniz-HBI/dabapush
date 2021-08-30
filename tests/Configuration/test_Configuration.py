@@ -1,5 +1,6 @@
 from pytest import fixture, skip, mark
 from dabapush.Configuration.Configuration import Configuration
+from dabapush.Configuration.ReaderConfiguration import ReaderConfiguration
 
 @fixture
 def conf():
@@ -22,7 +23,11 @@ def test_get_reader(conf: Configuration):
     assert conf.get_reader('twacapic') is not None
 # should register a reader plugin and assign it a name
 def test_register_reader(conf: Configuration):
-    conf.register_reader('doopy', 'snoopy')
+    class Blub(ReaderConfiguration):
+        def __init__(self, name, id) -> None:
+            super().__init__(name, id=id)
+
+    conf.register_reader('doopy', Blub)
 
     assert 'doopy' in conf.readers
 # should remove reader plugin by name
