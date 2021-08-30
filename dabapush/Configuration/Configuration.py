@@ -34,15 +34,17 @@ class Configuration(yaml.YAMLObject):
         """
 
         Args:
-          type: str: 
+          type: str: registry key
 
-        Returns:
+        Returns: ReaderConfiguration or None: the requested ReaderConfiguration or None if
+        no matching configuration is found. 
 
         """
         a = [inst.readers for inst in Configuration._instances]
         readers = ChainMap(*a)
 
         if type in readers:
+            return readers[type]
             # TODO: look up ReaderConfiguration subclasses from registered plugins
             return ReaderConfiguration
 
