@@ -75,7 +75,7 @@ class Configuration(yaml.YAMLObject):
         # TODO: this is a stub function, which _should_ ensure that
         # things passed in here are actually WriterConfigurations _OR_
         # classes that inherit from that.
-        return True
+        return issubclass(arg, WriterConfiguration)
     
     @staticmethod
     def list_all_writers(self) -> List[str]:
