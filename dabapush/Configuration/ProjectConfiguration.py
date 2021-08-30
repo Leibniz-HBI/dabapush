@@ -20,7 +20,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         readers: Dict[str, ReaderConfiguration] = {},
         writers: Dict[str, WriterConfiguration] = {}
     ) -> None:
-        """Initialize a ProjectConfiguration with optional arguments"""
+        """Initialize a ProjectConfiguration with optional reader and/or writer dicts"""
         super().__init__()
 
         # store readers if they are passed into the constructor or else intialize new list via default arg
@@ -35,20 +35,17 @@ class ProjectConfiguration(yaml.YAMLObject):
         """add a reader configuration to the project
 
         Args:
-          self(ProjectConfiguration): selfy-self
-          type(str): name of the configuration to add
-          name(str): 
-          type: str: 
-          name: str: 
+          type: str: registry of the configuration to add 
+          name: str: name of the configuration to add
 
-        Returns:
+        Returns: Nothing.
 
         Raises:
           ConfigurationError: ff no local or global configurations are found
 
         """
         # get constructor from registry
-        pinst = Configuration.get_reader(type)(name)
+        pinst = Configuration .get_reader(type)(name)
         self.readers[name] = pinst
 
         # return id
@@ -58,9 +55,9 @@ class ProjectConfiguration(yaml.YAMLObject):
         """remove a reader from the configuration
 
         Args:
-          name: str: 
+          name: str: name of the reader to be removed
 
-        Returns:
+        Returns: Nada.
 
         """
         if name in self.readers:
