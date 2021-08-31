@@ -1,7 +1,6 @@
 import yaml
 from copy import copy
 from typing import List, Dict
-from .ConfigurationError import ConfigurationError
 from .Configuration import Configuration
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
@@ -41,11 +40,11 @@ class ProjectConfiguration(yaml.YAMLObject):
         Returns: Nothing.
 
         Raises:
-          ConfigurationError: ff no local or global configurations are found
+          ConfigurationError: if no local or global configurations are found
 
         """
         # get constructor from registry
-        pinst = Configuration .get_reader(type)(name)
+        pinst = Configuration.get_reader(type)(name)
         self.readers[name] = pinst
 
         # return id
