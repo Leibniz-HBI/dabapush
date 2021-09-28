@@ -84,11 +84,10 @@ def run(
 
     def proop(thing: Path) -> any:
         if str(thing) not in touched:
-        readerInstance = ReaderClass(thing)
-        tid = get_ident()
-        log.debug(f'Reading {thing} with Thread ID: {tid}')
+            readerInstance = ReaderClass(thing)
+            log.debug(f'Reading {thing}')
             touched.append(str(thing))
-        return writerInstance.write(readerInstance.read())
+            return writerInstance.write(readerInstance.read())
         
     with ThreadPoolExecutor() as executor:
         # log.debug(f'Starting {active_count()} threads.')
