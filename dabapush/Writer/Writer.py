@@ -32,7 +32,7 @@ class Writer(object):
             'attachments.media_keys',
             'context_annotations'
         ]
-        self.buffer = pd.DataFrame()
+        self.buffer = pd.DataFrame(columns=self.schema)
         # if (self.mp == True):
         self.lock = threading.Lock()
         self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.csv')
