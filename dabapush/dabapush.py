@@ -1,4 +1,5 @@
 from pathlib import Path
+import pathlib
 import importlib
 from typing import Dict, Literal
 import click
@@ -6,12 +7,12 @@ import sys
 import yaml
 from multiprocessing import cpu_count
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from threading import get_ident, active_count
+from threading import get_ident
 from loguru import logger as log
 from .read import read
 
 @click.command()
-@click.argument('input', type=click.Path(exists=True))
+@click.argument('input', type=click.Path(path_type=pathlib.Path))
 @click.option('--pattern', default='*.json', help='file extension to look for')
 @click.option('--host', default='localhost', help='Host address of the dabase too write to.')
 @click.option('--port', default='5432', help='Host port of the dabase-server.')
@@ -23,7 +24,7 @@ from .read import read
 @click.option('--logfile', help='file to logi in (optional)')
 @click.option('--loglevel', default='INFO', help='the level to log, yk')
 def run(
-    input: str,
+    input: Path,
     pattern: str,
     reader: str,
     writer: str,
@@ -35,6 +36,20 @@ def run(
     logfile: str,
     loglevel: str
 ):
+    # guard against non-existent read directory
+    if not input.exists():
+        log.error('input directory must exist')
+        exit(128)
+    if not input.is_dir():
+        log.error('input must be a directory')
+        exit(128)
+
+    # inititalize file tracking
+    touched_path = Path()/'.dabapush.touched.yml'
+    touched = yaml.safe_load(touched_path.open('r')) \
+        if touched_path.exists() \
+        else []
+    
     # load config
     config_path = Path()/'config.yml'
     config = None
