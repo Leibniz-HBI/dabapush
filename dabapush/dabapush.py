@@ -36,8 +36,13 @@ def run(
     loglevel: str
 ):
     # load config
-    config = yaml.load(Path('config.yml').open(), Loader=yaml.FullLoader)
-    
+    config_path = Path()/'config.yml'
+    config = None
+    with config_path.open() as file:
+        config = yaml.load(file, Loader=yaml.SafeLoader)
+    if config is None:
+        raise
+    print(config)
     log.remove()
     log.add(sys.stdout, level=loglevel)
     log.debug('Using this configuration', config)
@@ -63,9 +68,11 @@ def run(
     writerInstance = WriterClass()
 
     def proop(thing: Path) -> any:
+        if str(thing) not in touched:
         readerInstance = ReaderClass(thing)
         tid = get_ident()
         log.debug(f'Reading {thing} with Thread ID: {tid}')
+            touched.append(str(thing))
         return writerInstance.write(readerInstance.read())
         
     with ThreadPoolExecutor() as executor:
@@ -73,18 +80,22 @@ def run(
         lines = executor.map(proop, files)
         # log.info(f'Read a total of {sum(lines)} records')
 
+    with touched_path.open('w') as file:
+        yaml.dump(touched,file)
+
 def load_from_config(name: str, key: str, config: Dict):
     if (name is not None and name in config['plugins'][key].keys()):
         log.debug(f'Using this {key}: {name}')
+        ReaderClass = None
         try:
             moduleName = config['plugins'][key][name]['moduleName']
             className = config['plugins'][key][name]['className']
             ReaderClass = importlib.import_module(moduleName, package='dabapush').__getattribute__(className)
         except Exception as e:
             log.error(e)
+        return ReaderClass
     else:
         log.warning(f'{key.upper()} {name} cannot be found')
-    return ReaderClass
     # start $n_workers workers to read the data
     # if JSON accecssor is given, apply it to each loaded file
     # writer(host, port, dbname)
