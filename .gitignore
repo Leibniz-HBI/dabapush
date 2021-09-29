@@ -131,3 +131,6 @@ dmypy.json
 # project specific
 .vscode/settings.json
 poetry.lock
+
+# data
+*.csv
