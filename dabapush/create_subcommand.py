@@ -30,7 +30,7 @@ def create(ctx, interactive):
             click.prompt('author name (split several authors with ";")', type=str)
         )
 
-        man_config = click.confirmp("Should we configure readers and writers?")
+        man_config = click.confirm("Should we configure readers and writers?")
         while (man_config == True):
             thing_to_configure = click.prompt('Reader/Writer?', default='Writer')
             if (thing_to_configure != 'Reader' and thing_to_configure != 'Writer'):
