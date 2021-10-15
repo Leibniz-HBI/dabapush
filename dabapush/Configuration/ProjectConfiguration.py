@@ -17,7 +17,9 @@ class ProjectConfiguration(yaml.YAMLObject):
     def __init__(
         self,
         readers: Dict[str, ReaderConfiguration] = {},
-        writers: Dict[str, WriterConfiguration] = {}
+        writers: Dict[str, WriterConfiguration] = {},
+        author: str = '',
+        name: str = ''
     ) -> None:
         """Initialize a ProjectConfiguration with optional reader and/or writer dicts"""
         super().__init__()
@@ -26,6 +28,10 @@ class ProjectConfiguration(yaml.YAMLObject):
         self.readers: Dict[str, ReaderConfiguration] = readers
         # store writers if they are passed into the constructor or else intialize new list via default arg
         self.writers: Dict[str, WriterConfiguration] = writers
+
+        # initialize project metadata
+        self.author = author
+        self.name   = name
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self.readers},{self.writers})'
@@ -109,6 +115,12 @@ class ProjectConfiguration(yaml.YAMLObject):
         return [
             value for value in self.writers.values()
         ]
+
+    def set_name(self, name):
+        self.name = name
+    
+    def set_author(self, author):
+        self.author = author
 
     @property
     def __configuration__(self):
