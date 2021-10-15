@@ -29,7 +29,7 @@ class Dabapush(object):
             inst.source_dir  = Path(__file__).parent.parent
             
             cls.__instance__ = inst
-        return inst
+        return cls.__instance__
 
     def update_reader_targets(self, name: str) -> None:
         pass
