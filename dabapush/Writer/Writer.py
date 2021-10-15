@@ -11,6 +11,7 @@ class Writer(object):
 
     # TODO: get chunksize from config
     def __init__(self):
+        # TODO: schema schould not be here and should not be hard-coded!!!!!!!!!!!!1 
         self.schema = [
             'source',
             'created_at',
@@ -36,10 +37,12 @@ class Writer(object):
         self.buffer = pd.DataFrame()
         # if (self.mp == True):
         self.lock = threading.Lock()
+        # TODO: remove path attribute from from this class
         self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.csv')
         # create output file
         with self.path.open('w') as file:
             file.writelines(f'{",".join(self.schema)}\n')
+        # TODO: use this chunkSize, or rather read chunkSize from configuration
         self.chunkSize = 100
 
     def __del__(self):
