@@ -44,13 +44,16 @@ def create(ctx, interactive):
                         'Which Reader should we configure?',
                         type=click.Choice([i for i in globconf['plugins']['reader'].keys()]))
                     if (reader_name in globconf['plugins']['reader']):
-                        # if (not 'reader' in conf):
-                        #     conf["reader"] = {}
-                        # conf["reader"]["someid"] = reader_name
                         conf.add_reader(reader_name, 'default')
                         log.debug(f'Success! Found the reader you\'re looking for!')
                 if (thing_to_configure == 'Writer'):
-                    log.debug(f'Configuring a Reader')
-                man_config = click.confirm('do another')
+                    writer_name = click.prompt(
+                        'Which Writer should we configure?',
+                        type=click.Choice([i for i in globconf['plugins']['writer'].keys()]))
+                    if (writer_name in globconf['plugins']['writer']):
+                        conf.add_reader(writer_name, 'default')
+                        log.debug(f'Success! Found the writer you\'re looking for!')
+                man_config = click.confirm('Do another?')
+
     with (ctx.obj.working_dir/"dabapush.yml").open('w') as file:
         yaml.dump(conf, file)
