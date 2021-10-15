@@ -2,7 +2,7 @@
 name = "dabapush"
 version = "0.1.0"
 description = ""
-authors = ["Felix Victor Münch <f.muench@leibniz-hbi.de>"]
+authors = ["Philipp Kessling <p.kessling@leibniz-hbi.de>", "Felix Victor Münch <f.muench@leibniz-hbi.de>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/Leibniz-HBI/dabapush"
@@ -13,7 +13,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 click = "^8.0.0"
 SQLAlchemy = "^1.4.22"
 loguru = "^0.5.3"
