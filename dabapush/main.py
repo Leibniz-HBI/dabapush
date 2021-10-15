@@ -16,12 +16,17 @@ from .create_subcommand import create
 from .run_subcommand import run
 from .reader_subcommand import reader
 from .writer_subcommand import writer
+from .Dabapush import Dabapush
 
 @click.group()
 @click.option('--logfile', help='file to log in (optional)')
 @click.option('--loglevel', default='INFO', help='the level to log, yk')
 @click.pass_context
-def cli(ctx, logfile, loglevel):
+def cli(
+    ctx: click.Context,
+    logfile,
+    loglevel
+):
     """
 
     Args:
@@ -39,20 +44,20 @@ def cli(ctx, logfile, loglevel):
             loglevel = 'DEBUG'
             log.add(sys.stdout, loglevel)
         log.add(logfile, loglevel)
-    wd = Path(os.getcwd())
-    sd = Path(__file__).parent.parent # arkwardly fetch the package dir
     
     # prepare context
-    ctx.ensure_object(dict)
-    ctx.obj['wd'] = wd # store working dir in context
-    ctx.obj['sd'] = sd # store source dir in context
+    ctx.ensure_object(Dabapush)
+
+    db: Dabapush = ctx.obj
+    # ctx.obj['wd'] = wd # store working dir in context
+    # ctx.obj['sd'] = sd # store source dir in context
     
-    loc_conf_path = wd/'dabapush.yml'
-    glob_conf_path = sd/'config.yml'
+    loc_conf_path = db.working_dir/'dabapush.yml'
+    glob_conf_path = db.source_dir/'config.yml'
 
     # copy paths to conf
-    ctx.obj['locconf_path']  = loc_conf_path
-    ctx.obj['globconf_path'] = glob_conf_path
+    # ctx.obj['locconf_path']  = loc_conf_path
+    # ctx.obj['globconf_path'] = glob_conf_path
 
     if (not loc_conf_path.exists()):
         log.warning(f'Found no dabapush.yml in {wd}. Do you need to create one?')
@@ -60,14 +65,14 @@ def cli(ctx, logfile, loglevel):
     else:  
         # load local conf
         with loc_conf_path.open('r') as file:
-            ctx.obj['locconf'] = yaml.full_load(file)
+            db.set_local_config(yaml.full_load(file))
     
     # load glob conf
     with glob_conf_path.open('r') as file:
-        ctx.obj['globconf'] = yaml.safe_load(file)
+        db.set_global_config(yaml.safe_load(file))
     
     # LOG END OF ROUTINE AND DABAPUSH START UP
-    log.debug(f'Starting DaBaPush in {wd} from {__file__}')
+    log.debug(f'Starting DabaPush in {db.working_dir} from {__file__}')
 
 # DISCOVER
 @cli.command()
@@ -168,4 +173,4 @@ cli.add_command(create)
 #     # writer(host, port, dbname)
 
 if __name__ == '__main__':
-    cli(obj={})
+    cli(obj = Dabapush())
