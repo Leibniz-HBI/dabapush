@@ -36,11 +36,14 @@ class Writer(object):
         self.buffer = pd.DataFrame()
         # if (self.mp == True):
         self.lock = threading.Lock()
-        self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.csv')
-        # create output file
-        with self.path.open('w') as file:
-            file.writelines(f'{",".join(self.schema)}\n')
-        self.chunkSize = 100
+
+        if self.file_format == "csv":
+
+            self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.{self.file_format}')
+            # create output file
+            with self.path.open('w') as file:
+                file.writelines(f'{",".join(self.schema)}\n')
+            self.chunkSize = 100
 
     def __del__(self):
         # flush buffer before destruction
