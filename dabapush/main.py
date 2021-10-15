@@ -60,7 +60,7 @@ def cli(ctx, logfile, loglevel):
     else:  
         # load local conf
         with loc_conf_path.open('r') as file:
-            ctx.obj['locconf'] = yaml.safe_load(file)
+            ctx.obj['locconf'] = yaml.full_load(file)
     
     # load glob conf
     with glob_conf_path.open('r') as file:
