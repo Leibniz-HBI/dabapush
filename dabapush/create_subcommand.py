@@ -1,11 +1,13 @@
 import click
 from loguru import logger as log
 import yaml
+from .Configuration.ProjectConfiguration import ProjectConfiguration
 
 # CREATE
 @click.command()
+@click.option('--interactive/--non-interactive', default=True, show_default=True, help='should we run an interactive prompt to create the configuration?')
 @click.pass_context
-def create(ctx):
+def create(ctx, interactive):
     """
 
     Args:
@@ -18,10 +20,16 @@ def create(ctx):
     globconf = ctx.obj["globconf"]
     
     # Initialize configuration dict
-    conf = {}
-    conf["prj_name"]    = click.prompt('project name', type=str)
-    conf["prj_author"]  = click.prompt('author name (split several authors with ";")', type=str)
-    
+    conf = ProjectConfiguration()
+
+    if (interactive):
+        conf.set_name(
+            click.prompt('project name', type=str)
+        )
+        conf.set_author(
+            click.prompt('author name (split several authors with ";")', type=str)
+        )
+
     man_config = click.confirm("Should we configure readers and writers?")
     while (man_config == True):
         thing_to_configure = click.prompt('Reader/Writer?', default='Writer')
