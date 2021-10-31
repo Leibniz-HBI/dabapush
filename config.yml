@@ -8,6 +8,9 @@ plugins:
     CSV:
       moduleName: ".Writer.CSVWriter"
       className: "CSVWriter"
+    NDJSON:
+      moduleName: ".Writer.NdjsonWriter"
+      className: "NdjsonWriter"
     SMODBTwitter:
       moduleName: ".Writer.SMODBTwitter"
       className: "SMODBTwitter"
