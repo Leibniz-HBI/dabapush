@@ -33,7 +33,11 @@ def create(ctx, interactive):
         man_config = click.confirm("Should we configure readers and writers?")
         
         while (man_config == True):
-            thing_to_configure = click.prompt('What do you want to configure?', default='Writer', type=click.Choice(['Reader','Writer']))
+            thing_to_configure = click.prompt(
+                'What do you want to configure?',
+                default='Writer',
+                type=click.Choice(['Reader','Writer'])
+            )
             if (thing_to_configure != 'Reader' and thing_to_configure != 'Writer'):
                 log.debug(f'Try again')
             else:
