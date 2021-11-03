@@ -13,7 +13,7 @@ class DBWriter(Writer):
         engine = create_engine('postgresql+psycopg2://username:password@host:port/database')
         df = self.buffer.head(chunkSize)
 
-        df.head(0).to_sql('table_name', engine, if_exists='fail',index=False) #drops old table and creates new empty table
+        df.head(0).to_sql('table_name', engine, if_exists='fail',index=False) 
 
         conn = engine.raw_connection()
         cur = conn.cursor()
