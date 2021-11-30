@@ -1,6 +1,9 @@
 from loguru import logger as log
 from pathlib import Path
 
+import yaml
+from .Configuration.Configuration import Configuration
+
 class Dabapush(object):
     """ This is the main class for this application.
 
@@ -27,12 +30,19 @@ class Dabapush(object):
         """
         Initliaze a new project in the current directory
         """
-        pass
+        self.config = Configuration()
+        self.pr_write()
     def pr_write(self):
         """
         Write the current configuration to the project configuration file in the current directory
         """
-        pass
+        if self.config is not None:
+            conf_path = self.working_dir / 'dabapush.yml'
+            with conf_path.open('w') as file:
+                yaml.dump(
+                    self.config,
+                    file
+                )
     def pr_read(self):
         """
         Read the project configuration file in the current directory

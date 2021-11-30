@@ -30,7 +30,8 @@ def test_persist_state(dabapush: Dabapush):
 def test_initiliaze(dabapush: Dabapush, tmpdir: Path):
     dabapush.working_dir = tmpdir
     dabapush.pr_init()
-    assert True
+    test_path = Path(tmpdir) / 'dabapush.yml'
+    assert test_path.exists()
 # should write a project configration
 def test_write_conf(dabapush: Dabapush):
     skip()
