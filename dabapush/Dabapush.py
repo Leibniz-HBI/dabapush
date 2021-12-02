@@ -14,13 +14,14 @@ class Dabapush(object):
 
     def __new__(
         cls,
-        working_dir: Path = Path()
+        working_dir: Path = Path() # automagically defaults to cwd
     ):
         if (cls.__instance__ is None):
             cls.__instance__ = super(Dabapush, cls).__new__(cls)
             # init code here: ...
             cls.__instance__.working_dir = working_dir
-            cls.pr_read()
+            if not cls.__instance__.pr_read():
+                cls.__instance__.pr_init()
         return cls.__instance__
 
     def update_reader_targets(self, name: str) -> None:
@@ -33,6 +34,7 @@ class Dabapush(object):
         """
         self.config = Configuration()
         self.pr_write()
+
     def pr_write(self):
         """
         Write the current configuration to the project configuration file in the current directory
@@ -44,6 +46,7 @@ class Dabapush(object):
                     self.config,
                     file
                 )
+
     def pr_read(self) -> bool:
         """
         Read the project configuration file in the current directory
@@ -53,11 +56,12 @@ class Dabapush(object):
         """
         conf_path = self.working_dir / 'dabapush.yml'
         if conf_path.exists():
-            self.config = yaml.full_load(conf_path)
+            with conf_path.open('r') as file:
+                self.config = yaml.full_load(file)
             return True
         else:
             return False
-       
+
     # READER specific methods
     def rd_add(self):
         """
