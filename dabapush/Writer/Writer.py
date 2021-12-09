@@ -11,6 +11,7 @@ class Writer(object):
 
     # TODO: get chunksize from config
     def __init__(self):
+        # TODO: schema schould not be here and should not be hard-coded!!!!!!!!!!!!1 
         self.schema = [
             'source',
             'created_at',

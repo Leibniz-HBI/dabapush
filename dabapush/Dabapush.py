@@ -1,5 +1,9 @@
 from loguru import logger as log
 from pathlib import Path
+import os
+
+from .Configuration.ProjectConfiguration import ProjectConfiguration
+from .Configuration.Configuration import Configuration
 
 import yaml
 
@@ -20,7 +24,7 @@ class Dabapush(object):
         working_dir: Path = Path() # automagically defaults to cwd
     ):
         if (cls.__instance__ is None):
-            cls.__instance__ = super(Dabapush, cls).__new__(cls)
+            inst = super(Dabapush, cls).__new__(cls)
             # init code here: ...
             cls.__instance__.working_dir = working_dir
             cls.__instance__.install_dir = install_dir

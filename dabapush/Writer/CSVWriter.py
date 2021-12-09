@@ -23,6 +23,7 @@ class CSVWriter(Writer):
 
         log.info(f'Persisted {len(last_row)} records')
         
+        # TODO: make path configurable!!!
         with self.path.open('a') as file:
             last_row.replace(r'\n|\r', r'\\n', regex=True, inplace=True)
             last_row[self.schema].to_csv(file, index=False, header=False)
