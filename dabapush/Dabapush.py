@@ -2,7 +2,9 @@ from loguru import logger as log
 from pathlib import Path
 
 import yaml
+
 from .Configuration.Configuration import Configuration
+from .Configuration.ProjectConfiguration import ProjectConfiguration
 
 class Dabapush(object):
     """ This is the main class for this application.
@@ -14,12 +16,16 @@ class Dabapush(object):
 
     def __new__(
         cls,
+        install_dir: Path = Path(__file__).parent.parent,
         working_dir: Path = Path() # automagically defaults to cwd
     ):
         if (cls.__instance__ is None):
             cls.__instance__ = super(Dabapush, cls).__new__(cls)
             # init code here: ...
             cls.__instance__.working_dir = working_dir
+            cls.__instance__.install_dir = install_dir
+            # load global config
+            cls.__instance__.gc_load()
             if not cls.__instance__.pr_read():
                 cls.__instance__.pr_init()
         return cls.__instance__
@@ -32,7 +38,7 @@ class Dabapush(object):
         """
         Initliaze a new project in the current directory
         """
-        self.config = Configuration()
+        self.config = ProjectConfiguration()
         self.pr_write()
 
     def pr_write(self):
@@ -63,11 +69,15 @@ class Dabapush(object):
             return False
 
     # READER specific methods
-    def rd_add(self):
+    def rd_add(self, reader: str, name: str):
         """
         add a reader to the current project
         """
-        pass
+        self.config.add_reader(
+            reader,
+            name
+        )
+
     def rd_rm(self):
         """
         remove a reader from the current configuration
@@ -108,3 +118,11 @@ class Dabapush(object):
         """
         pass
     
+    def gc_load(self):
+        """
+        load the global registry and configuration
+        """
+        conf_path = self.install_dir / 'config.yml'
+        with conf_path.open('r') as file:
+            self.global_config = yaml.full_load(file)
+        

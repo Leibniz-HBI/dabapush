@@ -44,11 +44,11 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # get constructor from registry
-        pinst = Configuration.get_reader(type)(name)
+        pinst = Configuration.get_reader(type)
         self.readers[name] = pinst
 
         # return id
-        return pinst.id
+        # return pinst.id
 
     def remove_reader(self, name: str) -> None:
         """remove a reader from the configuration

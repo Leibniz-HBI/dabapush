@@ -18,7 +18,6 @@ class Configuration(yaml.YAMLObject):
         self.readers = readers
         self.writers = writers
 
-
         Configuration._instances.append(self)
 
     def __del__(self):
@@ -40,7 +39,7 @@ class Configuration(yaml.YAMLObject):
         no matching configuration is found. 
 
         """
-        a = [inst.readers for inst in Configuration._instances]
+        a: list[ReaderConfiguration] = [inst.readers for inst in Configuration._instances]
         readers = ChainMap(*a)
 
         if type in readers:
