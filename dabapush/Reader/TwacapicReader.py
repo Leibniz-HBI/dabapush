@@ -37,7 +37,11 @@ class TwacapicReader(Reader):
             raise 'Tryed to use TwacapicReader without proper configuration'
         return [""]
 
-    def __init__(self, path: Path, property: str = 'data'):
+    def __init__(
+            self,
+            path: Path,
+            property: str = 'data'
+        ):
         super().__init__(path)
         self.property = property
     
