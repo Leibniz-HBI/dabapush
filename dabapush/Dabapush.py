@@ -21,7 +21,7 @@ class Dabapush(object):
     def __new__(
         cls,
         install_dir: Path = Path(__file__).parent.parent,
-        working_dir: Path = Path() # automagically defaults to cwd
+        working_dir: Path = Path().resolve() # automagically defaults to cwd
     ):
         if (cls.__instance__ is None):
             cls.__instance__ = super(Dabapush, cls).__new__(cls)
