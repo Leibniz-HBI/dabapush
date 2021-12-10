@@ -9,6 +9,6 @@ def writer_config() -> FileWriterConfiguration:
 
 def test_make_file_name(writer_config: FileWriterConfiguration):
     regex = re.compile(r'(\d{2}-){3}\d{4}-test')
+    writer_config.set_name_template('$name')
     name = writer_config.make_file_name()
-    print(name)
-    assert name is not None
+    assert name == writer_config.name
