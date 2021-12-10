@@ -4,15 +4,12 @@ from .Writer import Writer
 from ..Configuration.WriterConfiguration import WriterConfiguration
 
 class CSVWriterConfiguration(WriterConfiguration):
-    type = "CSV" # static of CSVWriterConfiguration
+    type = "CSV" # static property of CSVWriterConfiguration
 
     def __init__(self, name, id=None, chunk_size: int = 2000, path: Path = Path()) -> None:
-        super().__init__(name, id=id)
-        
-        self.chunk_size = chunk_size
-        self.path = path
-        self.name_template # template for string interpolation for the filename
+        super().__init__(name, id=id, chunk_size=chunk_size)
 
+       
     @property
     def file_path(self) -> Path:
         # evalutate self.name_template
