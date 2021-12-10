@@ -12,7 +12,7 @@ def test_singleton(dabapush):
 
 # should accept a working directory
 def test_working_directory(dabapush):
-    assert dabapush.working_dir == Path()
+    assert dabapush.working_dir == Path().resolve()
 
 # should accept a installation directory (or a directory for a global conf)
 def test_install_directory(dabapush: Dabapush):
