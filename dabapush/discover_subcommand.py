@@ -4,5 +4,3 @@ import click
 def discover():
     """ """
     pass
-
-
