@@ -1,54 +1,67 @@
-from datetime import datetime
-from typing import Dict
 import pandas as pd
 import abc
 import threading
+from datetime import datetime
+from typing import Dict
 from loguru import logger as log
 from pathlib import Path
+from ..Configuration.WriterConfiguration import WriterConfiguration
 
 class Writer(object):
     """ """
 
     # TODO: get chunksize from config
-    def __init__(self):
+    def __init__(self, config: WriterConfiguration):
+        super().__init__()
+
+        self.config = config
+
+        #
+        #
+        #
+        #
+        #
+        #
+        #
         # TODO: schema schould not be here and should not be hard-coded!!!!!!!!!!!!1 
-        self.schema = [
-            'source',
-            'created_at',
-            'lang',
-            'reply_settings',
-            'referenced_tweets',
-            'possibly_sensitive',
-            'author_id',
-            'id',
-            'text',
-            'conversation_id',
-            'public_metrics.retweet_count',
-            'public_metrics.reply_count',
-            'public_metrics.like_count',
-            'public_metrics.quote_count',
-            'entities.mentions',
-            'in_reply_to_user_id',
-            'entities.urls',
-            'entities.hashtags',
-            'attachments.media_keys',
-            'context_annotations'
-        ]
-        self.buffer = pd.DataFrame(columns=self.schema)
-        # if (self.mp == True):
-        self.lock = threading.Lock()
+        # self.schema = [
+        #     'source',
+        #     'created_at',
+        #     'lang',
+        #     'reply_settings',
+        #     'referenced_tweets',
+        #     'possibly_sensitive',
+        #     'author_id',
+        #     'id',
+        #     'text',
+        #     'conversation_id',
+        #     'public_metrics.retweet_count',
+        #     'public_metrics.reply_count',
+        #     'public_metrics.like_count',
+        #     'public_metrics.quote_count',
+        #     'entities.mentions',
+        #     'in_reply_to_user_id',
+        #     'entities.urls',
+        #     'entities.hashtags',
+        #     'attachments.media_keys',
+        #     'context_annotations'
+        # ]
+        # self.buffer = pd.DataFrame(columns=self.schema)
+        # # if (self.mp == True):
+        # self.lock = threading.Lock()
 
-        if self.file_format == "csv":
+        # if self.file_format == "csv":
 
-            self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.{self.file_format}')
-            # create output file
-            with self.path.open('w') as file:
-                file.writelines(f'{",".join(self.schema)}\n')
-            self.chunkSize = 100
+        #     self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.{self.file_format}')
+        #     # create output file
+        #     with self.path.open('w') as file:
+        #         file.writelines(f'{",".join(self.schema)}\n')
+        #     self.chunkSize = 100
 
     def __del__(self):
         # flush buffer before destruction
         self.persist(len(self.buffer))
+        super().__del__(self)
 
     def write(self, df: pd.DataFrame):
         """
@@ -86,3 +99,11 @@ class Writer(object):
 
         """
         return None
+
+    @property
+    def name(self):
+        return self.config.name
+
+    @property
+    def id(self):
+        return self.config.id
