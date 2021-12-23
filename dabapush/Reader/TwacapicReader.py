@@ -4,6 +4,16 @@ from typing import Dict
 import pandas as pd
 from loguru import logger as log
 from .Reader import Reader
+from ..Configuration.ReaderConfiguration import ReaderConfiguration
+class TwacapicReaderConfiguration(ReaderConfiguration):
+
+    yaml_tag = '!dabapush:TwacapicReaderConfiguration'
+
+    def __init__(self, name, id=None, read_path: Path = ...) -> None:
+        super().__init__(name, id=id, read_path=read_path)
+
+    def __repr__(self) -> str:
+        return super().__repr__()
 
 class TwacapicReader(Reader):
     """ """
