@@ -40,7 +40,7 @@ class Dabapush(object):
     # PROJECT specific methods
     def pr_init(self):
         """
-        Initliaze a new project in the current directory
+        Initialize a new project in the current directory
         """
         self.config = ProjectConfiguration()
         self.pr_write()
