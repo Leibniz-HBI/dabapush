@@ -2,6 +2,7 @@ import click
 from loguru import logger as log
 import yaml
 from .Configuration.ProjectConfiguration import ProjectConfiguration
+from .Configuration.Configuration import Configuration
 
 # CREATE
 @click.command()
@@ -17,7 +18,7 @@ def create(ctx, interactive):
 
     """
     log.debug(f'Creating project in {ctx.obj.working_dir}')
-    globconf = ctx.obj.global_config
+    globconf: Configuration = ctx.obj.global_config
     
     # Initialize configuration dict
     conf = ProjectConfiguration()
