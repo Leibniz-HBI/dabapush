@@ -1,13 +1,23 @@
 import yaml
 from typing import ChainMap, Dict, List
+from importlib import import_module
+from loguru import logger as log
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
 class Configuration(yaml.YAMLObject):
     yaml_tag = '!dabapush:Configuration'
+
     _instances = []
 
     """ """
+
+    def __new__(cls):
+        t = super(Configuration, cls).__new__(cls)
+        Configuration._instances.append(t)
+
+        return t
+        
     def __init__(
         self,
         readers: Dict[str, str] = {},
@@ -17,8 +27,6 @@ class Configuration(yaml.YAMLObject):
 
         self.readers = readers
         self.writers = writers
-
-        Configuration._instances.append(self)
 
     def __del__(self):
         Configuration._instances.remove(self)
