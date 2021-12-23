@@ -111,11 +111,31 @@ class Dabapush(object):
         pass
 
     # JOB specific methods
-    def jb_run(self):
+    def jb_run(self, targets: list[str]):
         """
-        run the job configured in the current directory
+        runs the job(s) configured in the current directory
         """
+        conf_targets = [reader for reader in self.config.readers]
+        
+        if len(conf_targets) == 0:
+            log.error('No jobs are configured. Nothing to run.')
+            return
+        # single dispatch all jobs
+        if len(targets) == 1 and targets[0] == 'all':
+                log.debug(f'Running all jobs: {", ".join(targets)}.')
+                [self.__dispatch_job__(target) for target in targets]
+        # run multiple jobs
+        else:
+            for target in targets:
+                if target in conf_targets:
+                    self.__dispatch_job__(target)
+                else:
+                    # run specific jop
+                    log.error(f'Target {target} is not configured. Consider adding it yourself.')
+
+    def __dispatch_job__(self, target: str) -> None:
         pass
+
     def jb_update(self):
         """
         update the current job's targets
