@@ -87,14 +87,19 @@ class Configuration(yaml.YAMLObject):
         return issubclass(arg, WriterConfiguration)
     
     @staticmethod
-    def list_all_writers(self) -> List[str]:
+    def list_all_readers() -> List[str]:
         """ """
-        pass
+        a = [inst.readers for inst in Configuration._instances]
+        readers = ChainMap(*a)
+        return [i for i in readers]
 
     @staticmethod
-    def list_all_writers(self) -> List[str]:
+    def list_all_writers() -> List[str]:
         """ """
-        pass
+        a = [inst.writers for inst in Configuration._instances]
+        writers = ChainMap(*a)
+        return [i for i in writers]
+
 
 
     # --- instance methods --- #
