@@ -32,6 +32,7 @@ class Dabapush(object):
             cls.__instance__.gc_load()
             if not cls.__instance__.pr_read():
                 cls.__instance__.pr_init()
+            log.debug(f'Staring DabaPush instance with gc: {cls.__instance__.global_config} and cf: {cls.__instance__.config}')
         return cls.__instance__
 
     def update_reader_targets(self, name: str) -> None:
