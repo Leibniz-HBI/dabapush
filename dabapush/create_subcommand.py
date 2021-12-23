@@ -3,6 +3,7 @@ from loguru import logger as log
 import yaml
 from .Configuration.ProjectConfiguration import ProjectConfiguration
 from .Configuration.Configuration import Configuration
+from .Dabapush import Dabapush
 
 # CREATE
 @click.command()
@@ -18,10 +19,9 @@ def create(ctx, interactive):
 
     """
     log.debug(f'Creating project in {ctx.obj.working_dir}')
-    globconf: Configuration = ctx.obj.global_config
-    
-    # Initialize configuration dict
-    conf = ProjectConfiguration()
+    # Initialize configuration dict, setup work is already done by db.pr_init, has it has not found a configuration
+    db: Dabapush = ctx.obj
+    conf: ProjectConfiguration = db.config    
 
     if (interactive):
         conf.set_name(
@@ -59,5 +59,6 @@ def create(ctx, interactive):
                         log.debug(f'Success! Found the writer you\'re looking for!')
                 man_config = click.confirm('Do another?')
 
-    with (ctx.obj.working_dir/"dabapush.yml").open('w') as file:
-        yaml.dump(conf, file)
+    db.pr_write()
+#    with (ctx.obj.working_dir/"dabapush.yml").open('w') as file:
+#        yaml.dump(conf, file)
