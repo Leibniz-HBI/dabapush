@@ -1,5 +1,7 @@
 from pytest import fixture, skip, mark
 from pathlib import Path
+
+import yaml
 from dabapush.Dabapush import Dabapush
 
 @fixture
@@ -27,23 +29,33 @@ def test_acquire_targets(dabapush: Dabapush):
     skip()
 
 # should persistently keep state for targets and jobs
-def test_persist_state(dabapush: Dabapush):
-    skip()
+def test_project_configuration_write(dabapush: Dabapush, tmpdir: Path):
+    dabapush.working_dir = tmpdir
+    dabapush.pr_write()
+    test_path = dabapush.working_dir / 'dabapush.yml'
+    with test_path.open('r') as file:
+        conf =  yaml.full_load(file)
+    assert test_path.exists()
+    # assert conf == dabapush.config
 
 # should initilize a project configuration
 def test_initiliaze(dabapush: Dabapush, tmpdir: Path):
     dabapush.working_dir = tmpdir
     dabapush.pr_init()
-    test_path = Path(tmpdir) / 'dabapush.yml'
+    dabapush.pr_write()
+    test_path = tmpdir / 'dabapush.yml'
     assert test_path.exists()
 
-# # should write a project configration
-# def test_write_conf(tmpdir: Path):
-#     dabapush = Dabapush(tmpdir)
-#     dabapush.working_dir = tmpdir
-#     dabapush.pr_init()
-#     test_path = Path(tmpdir) / 'dabapush.yml'
-#     assert test_path.exists()
+# should write a project configration
+def test_write_conf(dabapush: Dabapush, tmpdir: Path):
+    dabapush.working_dir = tmpdir
+    dabapush.pr_init()
+    dabapush.rd_add('Twacapic', 'default')
+    dabapush.pr_write()
+    test_path = Path(tmpdir) / 'dabapush.yml'
+    with test_path.open('r') as file:
+        candidate = yaml.full_load(file)
+    assert dabapush.config.name == candidate.name
 
 # # should read a project configuration
 # def test_read_conf(dabapush: Dabapush, tmpdir: Path):
@@ -51,7 +63,8 @@ def test_initiliaze(dabapush: Dabapush, tmpdir: Path):
 
 # should add a reader and give it a name/id
 @mark.parametrize('reader,name', [('Twacapic', 'reader1')])
-def test_add_reader(dabapush: Dabapush, reader: str, name: str):
+def test_add_reader(tmpdir: Path, reader: str, name: str):
+    dabapush = Dabapush(working_dir=tmpdir)
     dabapush.rd_add(reader, name)
     assert name in dabapush.config.readers
 

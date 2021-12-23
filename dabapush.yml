@@ -1,5 +1,9 @@
 !dabapush:ProjectConfiguration
-author: Pk
-name: Pho
-readers: {}
+author: PK
+name: Hello
+readers:
+  default: !dabapush:TwacapicReaderConfiguration
+    id: 2f7f2eea-4d4b-46e9-bed2-09f52435317e
+    name: default
+    read_path: !!python/object/apply:pathlib.PosixPath []
 writers: {}

@@ -1,5 +1,5 @@
 import yaml
-from copy import copy
+from loguru import logger as log
 from typing import List, Dict
 from .Configuration import Configuration
 from .ReaderConfiguration import ReaderConfiguration
@@ -12,6 +12,7 @@ class ProjectConfiguration(yaml.YAMLObject):
     A ProjectConfiguration is for reading and writing data as well as the project's meta data
     e.g. author name(s) and email addresses.
     """
+    
     yaml_tag = '!dabapush:ProjectConfiguration'
 
     def __init__(
@@ -33,9 +34,6 @@ class ProjectConfiguration(yaml.YAMLObject):
         self.author = author
         self.name   = name
 
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({self.readers},{self.writers})'
-
     def add_reader(self, type: str, name: str) -> None:
         """add a reader configuration to the project
 
@@ -53,6 +51,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         pinst = Configuration.get_reader(type)
         if pinst is not None:
             self.readers[name] = pinst(name)
+            log.debug(f'Currently configured readers: {",".join([a for a in self.readers])}')
         else:
             raise Exception(f'{type} not found')
 

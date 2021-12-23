@@ -9,7 +9,7 @@ class TwacapicReaderConfiguration(ReaderConfiguration):
 
     yaml_tag = '!dabapush:TwacapicReaderConfiguration'
 
-    def __init__(self, name, id=None, read_path: Path = ...) -> None:
+    def __init__(self, name, id=None, read_path: Path = None) -> None:
         super().__init__(name, id=id, read_path=read_path)
 
     def __repr__(self) -> str:

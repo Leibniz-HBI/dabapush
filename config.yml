@@ -3,7 +3,7 @@ readers:
   Twacapic:
     description: "A twacapic reader"
     moduleName: ".Reader.TwacapicReader"
-    className: "TwacapicReader"
+    className: "TwacapicReaderConfiguration"
 writers:
   CSV:
     moduleName: ".Writer.CSVWriter"
