@@ -51,9 +51,14 @@ class Configuration(yaml.YAMLObject):
         readers = ChainMap(*a)
 
         if type in readers:
-            return readers[type]
-            # TODO: look up ReaderConfiguration subclasses from registered plugins
-            return ReaderConfiguration
+            instance_info = readers[type]
+            log.debug(f'Creating Configuration instance from {", ".join(instance_info)}.')
+            reader_configuration = import_module(
+                instance_info['moduleName'],
+                package='dabapush'
+            ).__getattribute__(instance_info['className'])
+            
+            return reader_configuration
 
     @staticmethod
     def get_writer(type: str) -> WriterConfiguration or None:
