@@ -30,23 +30,23 @@ class TwacapicReader(Reader):
         """
         # what did I want do here?
         return
-   
-    @staticmethod
-    def getSchema() -> list(str):
-        """
-
-        Args:
-          ) -> list(str: 
-
-        Returns:
-
-        """
-        if (TwacapicReader.__setup == False):
-            raise 'Tryed to use TwacapicReader without setting it up first'
-        if (TwacapicReader.config is None):
-            raise 'Tryed to use TwacapicReader without proper configuration'
-        return [""]
-
+#   
+#    @staticmethod
+#    def getSchema() -> list(str):
+#        """
+#
+#        Args:
+#          ) -> list(str: 
+#
+#        Returns:
+#
+#        """
+#        if (TwacapicReader.__setup == False):
+#            raise 'Tryed to use TwacapicReader without setting it up first'
+#        if (TwacapicReader.config is None):
+#            raise 'Tryed to use TwacapicReader without proper configuration'
+#        return [""]
+#
     def __init__(
             self,
             path: Path,
@@ -57,7 +57,7 @@ class TwacapicReader(Reader):
     
     def read(self):
         """ """
-        schema = TwacapicReader.getSchema()
+        # schema = TwacapicReader.getSchema()
         data = None
         with self.path.open('r') as file:
             try:
@@ -65,5 +65,7 @@ class TwacapicReader(Reader):
             except Exception as e:
                 log.error(e)
         data = pd.json_normalize(data)
+
         log.debug(f'Found {len(data)} records in {str(self.path)}')
+        
         return data
