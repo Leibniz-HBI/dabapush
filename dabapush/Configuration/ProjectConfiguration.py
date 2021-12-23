@@ -55,8 +55,6 @@ class ProjectConfiguration(yaml.YAMLObject):
             self.readers[name] = pinst(name)
         else:
             raise Exception(f'{type} not found')
-        # return id
-        # return pinst.id
 
     def remove_reader(self, name: str) -> None:
         """remove a reader from the configuration
@@ -91,9 +89,12 @@ class ProjectConfiguration(yaml.YAMLObject):
         Returns: None: nothing to see, carry on.
 
         """
-        writer = self.__configuration__.get_writer(type)(name)
-        self.writers[name] = writer
-        return writer.id
+        # get constructor from registry
+        pinst = Configuration.get_writer(type)
+        if pinst is not None:
+            self.writers[name] = pinst(name)
+        else:
+            raise Exception(f'{type} not found')
 
     def remove_writer(self, name: str):
         """
