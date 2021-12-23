@@ -44,19 +44,18 @@ def create(ctx, interactive):
             else:
                 if (thing_to_configure == 'Reader'):
                     log.debug(f'Configuring a Reader')
-
                     reader_name = click.prompt(
                         'Which Reader should we configure?',
-                        type=click.Choice([i for i in globconf['plugins']['reader'].keys()]))
-                    if (reader_name in globconf['plugins']['reader']):
+                        type=click.Choice(Configuration.list_all_readers()))
+                    if (reader_name in Configuration.list_all_readers()):
                         conf.add_reader(reader_name, 'default')
                         log.debug(f'Success! Found the reader you\'re looking for!')
                 if (thing_to_configure == 'Writer'):
                     writer_name = click.prompt(
                         'Which Writer should we configure?',
-                        type=click.Choice([i for i in globconf['plugins']['writer'].keys()]))
-                    if (writer_name in globconf['plugins']['writer']):
-                        conf.add_reader(writer_name, 'default')
+                        type=click.Choice(Configuration.list_all_writers()))
+                    if (writer_name in Configuration.list_all_writers()):
+                        conf.add_writer(writer_name, 'default')
                         log.debug(f'Success! Found the writer you\'re looking for!')
                 man_config = click.confirm('Do another?')
 
