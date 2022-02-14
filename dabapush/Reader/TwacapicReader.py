@@ -1,6 +1,7 @@
+import json
 from pathlib import Path
-from json import load
-from typing import Dict
+from ujson import load
+from typing import Dict, Generator
 import pandas as pd
 from loguru import logger as log
 from .Reader import Reader
@@ -17,55 +18,39 @@ class TwacapicReaderConfiguration(ReaderConfiguration):
 
 class TwacapicReader(Reader):
     """ """
-
-    @staticmethod
-    def setup(path: Path) -> None:
-        """
-
-        Args:
-          path: Path: 
-
-        Returns:
-
-        """
-        # what did I want do here?
-        return
-#   
-#    @staticmethod
-#    def getSchema() -> list(str):
-#        """
-#
-#        Args:
-#          ) -> list(str: 
-#
-#        Returns:
-#
-#        """
-#        if (TwacapicReader.__setup == False):
-#            raise 'Tryed to use TwacapicReader without setting it up first'
-#        if (TwacapicReader.config is None):
-#            raise 'Tryed to use TwacapicReader without proper configuration'
-#        return [""]
-#
     def __init__(
             self,
-            path: Path,
-            property: str = 'data'
+            config: TwacapicReaderConfiguration
         ):
-        super().__init__(path)
-        self.property = property
+        super().__init__(config)
     
-    def read(self):
-        """ """
-        # schema = TwacapicReader.getSchema()
-        data = None
-        with self.path.open('r') as file:
-            try:
-                data = load(file)['data']
-            except Exception as e:
-                log.error(e)
-        data = pd.json_normalize(data)
+    def join(self, id: str, includes: list[any], id_key: str) -> any or None:
+        """
+        looks up an entity in a array of dicts by given key.
+        """
+        for included in includes:
+            if id == included[id_key]:
+                return included
 
-        log.debug(f'Found {len(data)} records in {str(self.path)}')
-        
-        return data
+    def read(self) -> Generator[any]:
+        """
+        reads the configured path a returns a generator of single posts
+        """
+
+        for i in self.config.read_path.rglob(self.config.pattern):
+            with i.open() as file:
+                res = load(file)
+
+            if 'data' in res:
+                for post in res['data']:
+                    user = self.join(post['author_id'], res['includes']['includes'], 'id')
+                    if user is not None:
+                        post['user'] = user
+                    yield post
+                if 'includes' in res:
+                    if 'tweets' in res['includes']:
+                        for post in res['includes']['tweets']:
+                            user = self.join(post['author_id'], res['includes']['users'], 'id')
+                            if user is not None:
+                                post['user'] = user
+                            yield post
