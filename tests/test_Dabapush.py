@@ -3,6 +3,7 @@ from pathlib import Path
 
 import yaml
 from dabapush.Dabapush import Dabapush
+from dabapush.Reader.TwacapicReader import TwacapicReaderConfiguration
 
 @fixture
 def dabapush():
