@@ -1,10 +1,7 @@
+from typing import Generator
 import pandas as pd
 import abc
-import threading
-from datetime import datetime
-from typing import Dict
 from loguru import logger as log
-from pathlib import Path
 from ..Configuration.WriterConfiguration import WriterConfiguration
 
 class Writer(object):
@@ -15,90 +12,37 @@ class Writer(object):
         super().__init__()
 
         self.config = config
-
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        # TODO: schema schould not be here and should not be hard-coded!!!!!!!!!!!!1 
-        # self.schema = [
-        #     'source',
-        #     'created_at',
-        #     'lang',
-        #     'reply_settings',
-        #     'referenced_tweets',
-        #     'possibly_sensitive',
-        #     'author_id',
-        #     'id',
-        #     'text',
-        #     'conversation_id',
-        #     'public_metrics.retweet_count',
-        #     'public_metrics.reply_count',
-        #     'public_metrics.like_count',
-        #     'public_metrics.quote_count',
-        #     'entities.mentions',
-        #     'in_reply_to_user_id',
-        #     'entities.urls',
-        #     'entities.hashtags',
-        #     'attachments.media_keys',
-        #     'context_annotations'
-        # ]
-        # self.buffer = pd.DataFrame(columns=self.schema)
-        # # if (self.mp == True):
-        # self.lock = threading.Lock()
-
-        # if self.file_format == "csv":
-
-        #     self.path = Path(f'{datetime.strftime(datetime.now(), "%Y%m%d_%H%M")}_twacapic.{self.file_format}')
-        #     # create output file
-        #     with self.path.open('w') as file:
-        #         file.writelines(f'{",".join(self.schema)}\n')
-        #     self.chunkSize = 100
+        self.buffer = []
 
     def __del__(self):
         # flush buffer before destruction
         self.persist(len(self.buffer))
         super().__del__(self)
 
-    def write(self, df: pd.DataFrame):
+    def write(self, queue: Generator[any, any, any]):
         """
 
         Args:
-          df: pd.DataFrame: 
+          df: dict
 
         Returns:
 
         """
-        # if (self.mp == True):
-        with self.lock:
-            self.buffer = pd.concat([self.buffer, df], ignore_index=True, sort=False)
-            log.info(f'Buffer now contains {len(self.buffer)} records for thread {id}.')
-
-            # Call write persistance loop to empty buffer
-            while (len(self.buffer) > self.chunkSize):
-                self.persist(len(self.buffer))
-    # else:
-        #     self.buffer = pd.concat([self.buffer, df], ignore_index=True, sort=False)
-        #     log.info(f'Buffer now contains {len(self.buffer)} records for thread {id}.')
-
-        #     # Call write persistance loop to empty buffer
-        #     while (len(self.buffer) > self.chunkSize):
-        #         self.persist(len(self.buffer))
+        for item in queue:
+            self.buffer.append(item)
+            if len(self.buffer) >= self.config.chunck_size:
+                self.persist()
 
     @abc.abstractmethod
-    def persist(self, chunkSize: int) -> None:
+    def persist(self) -> None:
         """
 
         Args:
-          chunkSize: int: 
-
+   
         Returns:
 
         """
-        return None
+        pass
 
     @property
     def name(self):
