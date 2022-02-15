@@ -5,7 +5,7 @@ from loguru import logger as log
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
-class Configuration(yaml.YAMLObject):
+class Registry(yaml.YAMLObject):
     yaml_tag = '!dabapush:Configuration'
 
     _instances = []
@@ -13,8 +13,8 @@ class Configuration(yaml.YAMLObject):
     """ """
 
     def __new__(cls):
-        t = super(Configuration, cls).__new__(cls)
-        Configuration._instances.append(t)
+        t = super(Registry, cls).__new__(cls)
+        Registry._instances.append(t)
 
         return t
         
@@ -29,7 +29,7 @@ class Configuration(yaml.YAMLObject):
         self.writers = writers
 
     def __del__(self):
-        Configuration._instances.remove(self)
+        Registry._instances.remove(self)
 
     def __repr__(self) -> str:
         return super().__repr__()
@@ -47,7 +47,7 @@ class Configuration(yaml.YAMLObject):
         no matching configuration is found. 
 
         """
-        a: list[ReaderConfiguration] = [inst.readers for inst in Configuration._instances]
+        a: list[ReaderConfiguration] = [inst.readers for inst in Registry._instances]
         readers = ChainMap(*a)
 
         if type in readers:
@@ -70,7 +70,7 @@ class Configuration(yaml.YAMLObject):
         Returns:
 
         """
-        a = [inst.writers for inst in Configuration._instances]
+        a = [inst.writers for inst in Registry._instances]
         writers = ChainMap(*a)
 
         if type in writers:
@@ -94,14 +94,14 @@ class Configuration(yaml.YAMLObject):
     @staticmethod
     def list_all_readers() -> List[str]:
         """ """
-        a = [inst.readers for inst in Configuration._instances]
+        a = [inst.readers for inst in Registry._instances]
         readers = ChainMap(*a)
         return [i for i in readers]
 
     @staticmethod
     def list_all_writers() -> List[str]:
         """ """
-        a = [inst.writers for inst in Configuration._instances]
+        a = [inst.writers for inst in Registry._instances]
         writers = ChainMap(*a)
         return [i for i in writers]
 
@@ -118,7 +118,7 @@ class Configuration(yaml.YAMLObject):
         Returns:
 
         """
-        if Configuration.__ensure_reader__(plugin_configuration):
+        if Registry.__ensure_reader__(plugin_configuration):
             self.readers[name] = plugin_configuration
 
     def register_writer(self, name: str, constructor) -> None:

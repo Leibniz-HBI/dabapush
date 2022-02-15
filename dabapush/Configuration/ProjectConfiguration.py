@@ -1,7 +1,7 @@
 import yaml
 from loguru import logger as log
 from typing import List, Dict
-from .Configuration import Configuration
+from .Registry import Registry
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
@@ -48,7 +48,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # get constructor from registry
-        pinst = Configuration.get_reader(type)
+        pinst = Registry.get_reader(type)
         if pinst is not None:
             self.readers[name] = pinst(name)
             log.debug(f'Currently configured readers: {",".join([a for a in self.readers])}')
@@ -89,7 +89,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # get constructor from registry
-        pinst = Configuration.get_writer(type)
+        pinst = Registry.get_writer(type)
         if pinst is not None:
             self.writers[name] = pinst(name)
         else:
@@ -126,6 +126,6 @@ class ProjectConfiguration(yaml.YAMLObject):
 
     @property
     def __configuration__(self):
-        a = Configuration()
-        print(Configuration._instances)
+        a = Registry()
+        print(Registry._instances)
         return a

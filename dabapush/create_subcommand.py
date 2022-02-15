@@ -2,7 +2,7 @@ import click
 from loguru import logger as log
 import yaml
 from .Configuration.ProjectConfiguration import ProjectConfiguration
-from .Configuration.Configuration import Configuration
+from .Configuration.Registry import Registry
 from .Dabapush import Dabapush
 
 # CREATE
@@ -46,15 +46,15 @@ def create(ctx, interactive):
                     log.debug(f'Configuring a Reader')
                     reader_name = click.prompt(
                         'Which Reader should we configure?',
-                        type=click.Choice(Configuration.list_all_readers()))
-                    if (reader_name in Configuration.list_all_readers()):
+                        type=click.Choice(Registry.list_all_readers()))
+                    if (reader_name in Registry.list_all_readers()):
                         conf.add_reader(reader_name, 'default')
                         log.debug(f'Success! Found the reader you\'re looking for!')
                 if (thing_to_configure == 'Writer'):
                     writer_name = click.prompt(
                         'Which Writer should we configure?',
-                        type=click.Choice(Configuration.list_all_writers()))
-                    if (writer_name in Configuration.list_all_writers()):
+                        type=click.Choice(Registry.list_all_writers()))
+                    if (writer_name in Registry.list_all_writers()):
                         conf.add_writer(writer_name, 'default')
                         log.debug(f'Success! Found the writer you\'re looking for!')
                 man_config = click.confirm('Do another?')
