@@ -1,6 +1,7 @@
+from pathlib import Path
 from loguru import logger as log
 
-from Configuration.FileWriterConfiguration import FileWriterConfiguration
+from ..Configuration.FileWriterConfiguration import FileWriterConfiguration
 from .Writer import Writer
 import ujson
 
@@ -31,6 +32,8 @@ class NDJSONWriter(Writer):
         return len(last_rows)
 
 class NDJSONWriterConfiguration(FileWriterConfiguration):
+
+    yaml_tag = '!dabapush:NDJSONWriterConfiguration'
 
     def __init__(self, name, id=None, chunk_size: int = 2000, path: Path = ..., name_template: str = "__.") -> None:
         super().__init__(name, id, chunk_size, path, name_template)
