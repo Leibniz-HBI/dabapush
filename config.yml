@@ -1,4 +1,4 @@
-!dabapush:Configuration
+!dabapush:Registry
 readers:
   Twacapic:
     description: "A twacapic reader"
@@ -7,13 +7,13 @@ readers:
 writers:
   CSV:
     moduleName: ".Writer.CSVWriter"
-    className: "CSVWriter"
+    className: "CSVWriterConfiguration"
   NDJSON:
-    moduleName: ".Writer.NdjsonWriter"
-    className: "NdjsonWriter"
+    moduleName: ".Writer.NDJSONWriter"
+    className: "NDJSONWriterConfiguration"
   SMODBTwitter:
     moduleName: ".Writer.SMODBTwitter"
-    className: "SMODBTwitter"
+    className: "SMODBTwitterConfiguration"
     config:
       dbuser: "postgres"
       dbpass: "postgres"
