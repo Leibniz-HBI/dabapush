@@ -16,8 +16,7 @@ class Writer(object):
 
     def __del__(self):
         # flush buffer before destruction
-        self.persist(len(self.buffer))
-        super().__del__(self)
+        self.persist()
 
     def write(self, queue: Generator[any, any, any]):
         """
