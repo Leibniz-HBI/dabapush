@@ -6,7 +6,7 @@ from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
 class Registry(yaml.YAMLObject):
-    yaml_tag = '!dabapush:Configuration'
+    yaml_tag = '!dabapush:Registry'
 
     _instances = []
 
