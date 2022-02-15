@@ -1,19 +1,24 @@
 from loguru import logger as log
 from pathlib import Path
 from .Writer import Writer
-from ..Configuration.WriterConfiguration import WriterConfiguration
+from ..Configuration.FileWriterConfiguration import FileWriterConfiguration
 
-class CSVWriterConfiguration(WriterConfiguration):
+class CSVWriterConfiguration(FileWriterConfiguration):
     type = "CSV" # static property of CSVWriterConfiguration
 
-    def __init__(self, name, id=None, chunk_size: int = 2000, path: Path = Path()) -> None:
-        super().__init__(name, id=id, chunk_size=chunk_size)
+    def __init__(self,
+        name,
+        id=None,
+        chunk_size: int = 2000,
+        path: Path = Path()
+    ) -> None:
+        super().__init__(name, id=id, chunk_size=chunk_size, path=path)
 
        
     @property
     def file_path(self) -> Path:
         # evalutate self.name_template
-        file_name = self.name_template
+        file_name = self.make_file_name()
         # append to self.path and return
         return self.path / file_name
 
