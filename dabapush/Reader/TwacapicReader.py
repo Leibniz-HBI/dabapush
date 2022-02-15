@@ -44,7 +44,7 @@ class TwacapicReader(Reader):
         def iterate_tweets():
             pass
 
-        for i in self.config.read_path.rglob(self.config.pattern):
+        for i in Path(self.config.read_path).rglob(self.config.pattern):
             with i.open() as file:
                 res = load(file)
 
