@@ -59,10 +59,9 @@ def list(ctx):
     Returns:
 
     """
-    readers = ctx.obj['globconf']['plugins']['reader']
+    readers = ctx.obj.rd_list()
     for key in readers:
-        o = readers[key]
-        click.echo(f'- {key}:\t{o["description"] if "description" in o else ""}')
+        click.echo(f'- {key}:\t')
 
 @reader.command(help='Configure the reader with given name')
 @click.argument('name')

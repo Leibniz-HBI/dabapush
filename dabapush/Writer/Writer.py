@@ -29,7 +29,7 @@ class Writer(object):
         """
         for item in queue:
             self.buffer.append(item)
-            if len(self.buffer) >= self.config.chunck_size:
+            if len(self.buffer) >= self.config.chunk_size:
                 self.persist()
 
     @abc.abstractmethod
@@ -50,3 +50,4 @@ class Writer(object):
     @property
     def id(self):
         return self.config.id
+        

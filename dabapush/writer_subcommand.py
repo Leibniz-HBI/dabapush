@@ -17,9 +17,19 @@ def remove():
     pass
 
 @writer.command()
-def list():
-    """ """
-    pass
+@click.pass_context
+def list(ctx):
+    """
+
+    Args:
+      ctx: 
+
+    Returns:
+
+    """
+    writers = ctx.obj.wr_list()
+    for key in writers:
+        click.echo(f'- {key}:\t')
 
 @writer.command()
 def configure():

@@ -1,12 +1,9 @@
+import yaml
 from loguru import logger as log
 from pathlib import Path
 
 from .Configuration.ProjectConfiguration import ProjectConfiguration
-from .Configuration.Configuration import Configuration
-
-import yaml
-
-from .Configuration.Configuration import Configuration
+from .Configuration.Registry import Registry
 from .Configuration.ProjectConfiguration import ProjectConfiguration
 
 class Dabapush(object):
@@ -82,7 +79,11 @@ class Dabapush(object):
             reader,
             name
         )
-
+    def rd_list(self):
+        """
+        Lists all available readers
+        """
+        return self.global_config.list_all_readers()
     def rd_rm(self):
         """
         remove a reader from the current configuration
@@ -110,7 +111,11 @@ class Dabapush(object):
         update a reader's configuration
         """
         pass
-
+    def wr_list(self):
+        """
+        Lists all available readers
+        """
+        return self.global_config.list_all_writers()
     # JOB specific methods
     def jb_run(self, targets: list[str]):
         """
@@ -123,8 +128,8 @@ class Dabapush(object):
             return
         # single dispatch all jobs
         if len(targets) == 1 and targets[0] == 'all':
-                log.debug(f'Running all jobs: {", ".join(targets)}.')
-                [self.__dispatch_job__(target) for target in targets]
+                log.debug(f'Running all jobs: {", ".join(conf_targets)}.')
+                [self.__dispatch_job__(target) for target in conf_targets]
         # run multiple jobs
         else:
             for target in targets:
@@ -135,7 +140,13 @@ class Dabapush(object):
                     log.error(f'Target {target} is not configured. Consider adding it yourself.')
 
     def __dispatch_job__(self, target: str) -> None:
-        pass
+        # find all candidate files
+        # process them accordingly
+        # finish
+        log.info(f'Dispatching job for {target}')
+        reader = self.config.readers[target].get_instance()
+        writer = self.config.writers[target].get_instance()
+        writer.write(reader.read())
 
     def jb_update(self):
         """

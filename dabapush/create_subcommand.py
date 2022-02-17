@@ -60,5 +60,3 @@ def create(ctx, interactive):
                 man_config = click.confirm('Do another?')
 
     db.pr_write()
-#    with (ctx.obj.working_dir/"dabapush.yml").open('w') as file:
-#        yaml.dump(conf, file)
