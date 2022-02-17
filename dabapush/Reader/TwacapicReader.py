@@ -1,11 +1,10 @@
 from pathlib import Path
-from pytest import Instance
 from ujson import load
 from typing import Generator
-from loguru import logger as log
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from .Reader import Reader
+from ..utils import join, safe_access, flatten
 
 class TwacapicReader(Reader):
     """
@@ -17,32 +16,10 @@ class TwacapicReader(Reader):
         ):
         super().__init__(config)
     
-    def join(self, id: str, includes: list[any], id_key: str) -> any or None:
-        """
-        looks up an entity in a array of dicts by given key.
-        """
-        for included in includes:
-            if id == included[id_key]:
-                return included
-
     def read(self) -> Generator[any, any, any]:
         """
         reads the configured path a returns a generator of single posts
         """
-
-        def safe_access(thing: dict, path: list[str]):
-            def safety(thing: dict, attr: str) -> any or None:
-                if attr in thing:
-                    return thing[attr]
-            res = thing
-            for attr in path:
-                res = safety(res, attr)
-                if res is None:
-                    break
-            return res
-        
-        def iterate_tweets():
-            pass
 
         for i in Path(self.config.read_path).rglob(self.config.pattern):
             with i.open() as file:
@@ -53,17 +30,17 @@ class TwacapicReader(Reader):
 
             if data is not None:
                 for post in data:
-                    user = self.join(post['author_id'], safe_access(res, ['includes','users']), 'id')
+                    user = join(post['author_id'], safe_access(res, ['includes','users']), 'id')
                     if user is not None:
                         post['user'] = user
-                        yield post
+                        yield flatten(post)
             if includes is not None:
                 if 'tweets' in res['includes']:
                     for post in res['includes']['tweets']:
-                        user = self.join(post['author_id'], res['includes']['users'], 'id')
+                        user = join(post['author_id'], res['includes']['users'], 'id')
                         if user is not None:
                             post['user'] = user
-                        yield post
+                        yield flatten(post)
 
 class TwacapicReaderConfiguration(ReaderConfiguration):
     """ Reader configuration for reading Twacapic's Twitter JSON files.
