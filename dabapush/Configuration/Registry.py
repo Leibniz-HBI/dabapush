@@ -74,8 +74,14 @@ class Registry(yaml.YAMLObject):
         writers = ChainMap(*a)
 
         if type in writers:
-            # TODO: look up WriterConfiguration subclasses from registered plugins
-            return WriterConfiguration
+            instance_info = writers[type]
+            log.debug(f'Creating Configuration instance from {", ".join(instance_info)}.')
+            writer_configuration = import_module(
+                instance_info['moduleName'],
+                package='dabapush'
+            ).__getattribute__(instance_info['className'])
+
+            return writer_configuration
 
     @staticmethod
     def __ensure_reader__(arg: any) -> bool:
