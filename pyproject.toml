@@ -25,6 +25,9 @@ ujson = "^5.1.0"
 [tool.poetry.dev-dependencies]
 pytest = "*"
 flake8 = "*"
+ipykernel = "^6.9.0"
+pdoc3 = "^0.10.0"
+pyment = "^0.3.3"
 
 [tool.poetry.scripts]
 dabapush = 'dabapush.main:cli'
