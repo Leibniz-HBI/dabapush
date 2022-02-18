@@ -4,6 +4,10 @@ readers:
     description: "A twacapic reader"
     moduleName: ".Reader.TwacapicReader"
     className: "TwacapicReaderConfiguration"
+  NDJSON:
+    description: "Read NDJSON"
+    moduleName: ".Reader.NDJSONReader"
+    className: "NDJSONReaderConfiguration"
 writers:
   CSV:
     moduleName: ".Writer.CSVWriter"
