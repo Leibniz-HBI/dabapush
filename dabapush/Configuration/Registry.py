@@ -6,6 +6,7 @@ from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
 class Registry(yaml.YAMLObject):
+    """ """
     yaml_tag = '!dabapush:Registry'
 
     _instances = []
@@ -40,11 +41,21 @@ class Registry(yaml.YAMLObject):
     def get_reader(type: str) -> ReaderConfiguration or None:
         """
 
-        Args:
-          type: str: registry key
+        Parameters
+        ----------
+        type :
+            str: registry key
+            Returns: ReaderConfiguration or None: the requested ReaderConfiguration or None if
+            no matching configuration is found.
+        type :
+            str:
+        type :
+            str:
+        type: str :
+            
 
-        Returns: ReaderConfiguration or None: the requested ReaderConfiguration or None if
-        no matching configuration is found. 
+        Returns
+        -------
 
         """
         a: list[ReaderConfiguration] = [inst.readers for inst in Registry._instances]
@@ -64,10 +75,19 @@ class Registry(yaml.YAMLObject):
     def get_writer(type: str) -> WriterConfiguration or None:
         """
 
-        Args:
-          type: str: 
+        Parameters
+        ----------
+        type :
+            str:
+        type :
+            str:
+        type :
+            str:
+        type: str :
+            
 
-        Returns:
+        Returns
+        -------
 
         """
         a = [inst.writers for inst in Registry._instances]
@@ -117,11 +137,19 @@ class Registry(yaml.YAMLObject):
     def register_reader(self, name: str, plugin_configuration) -> None:
         """
 
-        Args:
-          name: str: 
-          constructor: 
+        Parameters
+        ----------
+        name :
+            str:
+        constructor :
+            param name: str:
+        plugin_configuration :
+            param name: str:
+        name: str :
+            
 
-        Returns:
+        Returns
+        -------
 
         """
         if Registry.__ensure_reader__(plugin_configuration):
@@ -130,11 +158,19 @@ class Registry(yaml.YAMLObject):
     def register_writer(self, name: str, constructor) -> None:
         """
 
-        Args:
-          name: str: 
-          constructor: 
+        Parameters
+        ----------
+        name :
+            str:
+        constructor :
+            param name: str:
+        name :
+            str:
+        name: str :
+            
 
-        Returns:
+        Returns
+        -------
 
         """
         pass
@@ -142,10 +178,19 @@ class Registry(yaml.YAMLObject):
     def remove_reader(self, name: str) -> bool:
         """
 
-        Args:
-          name: str: 
+        Parameters
+        ----------
+        name :
+            str:
+        name :
+            str:
+        name :
+            str:
+        name: str :
+            
 
-        Returns:
+        Returns
+        -------
 
         """
         pass
@@ -153,10 +198,19 @@ class Registry(yaml.YAMLObject):
     def remove_writer(self, name: str) -> bool:
         """
 
-        Args:
-          name: str: 
+        Parameters
+        ----------
+        name :
+            str:
+        name :
+            str:
+        name :
+            str:
+        name: str :
+            
 
-        Returns:
+        Returns
+        -------
 
         """
         pass

@@ -14,13 +14,7 @@ class CSVWriter(Writer):
         self.chunk_number = 1
 
     def persist(self):
-        """
-
-        Args:
-
-        Returns:
-
-        """
+        """ """
 
         last_rows = self.buffer
         self.buffer = []
@@ -40,6 +34,7 @@ class CSVWriter(Writer):
         return len(last_rows)
 
 class CSVWriterConfiguration(FileWriterConfiguration):
+    """ """
 
     yaml_tag = '!dabapush:CSVWriterConfiguration'
 
@@ -55,12 +50,14 @@ class CSVWriterConfiguration(FileWriterConfiguration):
        
     @property
     def file_path(self) -> Path:
+        """ """
         # evalutate self.name_template
         file_name = self.make_file_name()
         # append to self.path and return
         return self.path / file_name
 
     def get_instance(self):
+        """ """
         return CSVWriter(self)
 
     def __repr__(self) -> str:

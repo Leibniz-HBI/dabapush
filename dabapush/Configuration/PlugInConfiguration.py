@@ -18,4 +18,5 @@ class PlugInConfiguration(yaml.YAMLObject):
 
     @abstractclassmethod
     def get_instance(self) -> 'Reader' or 'Writer':
+        """ """
         pass

@@ -4,8 +4,7 @@ from datetime import datetime
 from .WriterConfiguration import WriterConfiguration
 
 class FileWriterConfiguration(WriterConfiguration):
-    """ Abstract class describing configuration items for a file based writer
-    """
+    """Abstract class describing configuration items for a file based writer"""
     def __init__(
         self,
         name,
@@ -20,6 +19,21 @@ class FileWriterConfiguration(WriterConfiguration):
         self.name_template = name_template
 
     def make_file_name(self, additional_keys: dict = {}) -> str:
+        """
+
+        Parameters
+        ----------
+        additional_keys :
+            dict:  (Default value = {})
+        additional_keys :
+            dict:  (Default value = {})
+        additional_keys: dict :
+             (Default value = {})
+
+        Returns
+        -------
+
+        """
         now = datetime.now()
         return Template(self.name_template).substitute(
             ** {
@@ -33,4 +47,19 @@ class FileWriterConfiguration(WriterConfiguration):
         )
 
     def set_name_template(self, template: str):
+        """
+
+        Parameters
+        ----------
+        template :
+            str:
+        template :
+            str:
+        template: str :
+            
+
+        Returns
+        -------
+
+        """
         self.name_template = template

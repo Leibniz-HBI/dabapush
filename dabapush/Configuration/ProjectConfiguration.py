@@ -11,6 +11,13 @@ class ProjectConfiguration(yaml.YAMLObject):
     
     A ProjectConfiguration is for reading and writing data as well as the project's meta data
     e.g. author name(s) and email addresses.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     
     yaml_tag = '!dabapush:ProjectConfiguration'
@@ -37,14 +44,33 @@ class ProjectConfiguration(yaml.YAMLObject):
     def add_reader(self, type: str, name: str) -> None:
         """add a reader configuration to the project
 
-        Args:
-          type: str: registry of the configuration to add 
-          name: str: name of the configuration to add
+        Parameters
+        ----------
+        type :
+            str: registry of the configuration to add
+        name :
+            str: name of the configuration to add
+            Returns: Nothing.
+        type :
+            str:
+        name :
+            str:
+        type :
+            str:
+        name :
+            str:
+        type: str :
+            
+        name: str :
+            
 
-        Returns: Nothing.
+        Returns
+        -------
 
-        Raises:
-          ConfigurationError: if no local or global configurations are found
+        Raises
+        ------
+        ConfigurationError
+            if no local or global configurations are found
 
         """
         # get constructor from registry
@@ -58,10 +84,20 @@ class ProjectConfiguration(yaml.YAMLObject):
     def remove_reader(self, name: str) -> None:
         """remove a reader from the configuration
 
-        Args:
-          name: str: name of the reader to be removed
+        Parameters
+        ----------
+        name :
+            str: name of the reader to be removed
+            Returns: Nada.
+        name :
+            str:
+        name :
+            str:
+        name: str :
+            
 
-        Returns: Nada.
+        Returns
+        -------
 
         """
         if name in self.readers:
@@ -69,9 +105,15 @@ class ProjectConfiguration(yaml.YAMLObject):
 
     def list_readers(self) -> List[dict]:
         """list all configured readers
-
-        Returns: List[Dict]: list of dicts with name- and id-fields
         
+        Returns: List[Dict]: list of dicts with name- and id-fields
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
         """
         # copy stuff
         return [
@@ -81,11 +123,28 @@ class ProjectConfiguration(yaml.YAMLObject):
     def add_writer(self, type: str, name: str) -> None:
         """
 
-        Args:
-          type: str: 
-          name: str: 
+        Parameters
+        ----------
+        type :
+            str:
+        name :
+            str:
+            Returns: None: nothing to see, carry on.
+        type :
+            str:
+        name :
+            str:
+        type :
+            str:
+        name :
+            str:
+        type: str :
+            
+        name: str :
+            
 
-        Returns: None: nothing to see, carry on.
+        Returns
+        -------
 
         """
         # get constructor from registry
@@ -98,10 +157,19 @@ class ProjectConfiguration(yaml.YAMLObject):
     def remove_writer(self, name: str):
         """
 
-        Args:
-          name: str: 
+        Parameters
+        ----------
+        name :
+            str:
+        name :
+            str:
+        name :
+            str:
+        name: str :
+            
 
-        Returns:
+        Returns
+        -------
 
         """
         if name in self.writers:
@@ -109,9 +177,15 @@ class ProjectConfiguration(yaml.YAMLObject):
 
     def list_writers(self):
         """list all configured writers
-
-        Returns: List[Dict]: list of dicts with name- and id-fields
         
+        Returns: List[Dict]: list of dicts with name- and id-fields
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
         """
         # copy stuff
         return [
@@ -119,9 +193,31 @@ class ProjectConfiguration(yaml.YAMLObject):
         ]
 
     def set_name(self, name):
+        """
+
+        Parameters
+        ----------
+        name :
+            
+
+        Returns
+        -------
+
+        """
         self.name = name
     
     def set_author(self, author):
+        """
+
+        Parameters
+        ----------
+        author :
+            
+
+        Returns
+        -------
+
+        """
         self.author = author
 
     @property

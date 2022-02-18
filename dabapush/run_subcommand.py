@@ -1,3 +1,6 @@
+"""Some module documentation
+"""
+
 import click
 from loguru import logger as log
 from .Dabapush import Dabapush
@@ -6,12 +9,19 @@ from .Dabapush import Dabapush
 @click.argument('targets', nargs=-1)
 @click.pass_context
 def run(ctx, targets: list[str]) -> None:
-    """
+    """run verb
 
-    Args:
-      ctx: 
+    Parameters
+    ----------
+    ctx :
+        param targets: list[str]:
+    targets :
+        list[str]:
+    targets: list[str] :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     db: Dabapush = ctx.obj

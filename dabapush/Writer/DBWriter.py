@@ -4,11 +4,27 @@ from .Writer import Writer
 
 
 class DBWriter(Writer):
+    """ """
 
     def __init__(self):
         super().__init__()
 
     def persist(self, chunkSize: int):
+        """
+
+        Parameters
+        ----------
+        chunkSize :
+            int:
+        chunkSize :
+            int:
+        chunkSize: int :
+            
+
+        Returns
+        -------
+
+        """
 
         engine = create_engine('postgresql+psycopg2://username:password@host:port/database')
         df = self.buffer.head(chunkSize)

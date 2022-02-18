@@ -7,14 +7,13 @@ from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..utils import flatten
 
 class NDJSONReader(Reader):
+    """ """
 
     def __init__(self, config: 'NDJSONReaderConfiguration') -> None:
         super().__init__(config)
     
     def read(self) -> Generator[any, any, any]:
-        """
-        reads multiple ndjson files and emits them line by line
-        """
+        """reads multiple ndjson files and emits them line by line"""
         for file_path in Path(self.config.read_path).rglob(self.config.pattern):
             with file_path.open('r') as file:
                 lines = file.readlines()
@@ -26,8 +25,7 @@ class NDJSONReader(Reader):
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):
-    """
-    """
+    """ """
 
     yaml_tag = '!dabapush:NDJSONReaderConfiguration'
 
@@ -46,4 +44,5 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
         return super().__repr__()
 
     def get_instance(self) -> NDJSONReader:
+        """ """
         return NDJSONReader(self)

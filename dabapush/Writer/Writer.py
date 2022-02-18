@@ -21,10 +21,23 @@ class Writer(object):
     def write(self, queue: Generator[any, any, any]):
         """
 
-        Args:
-          df: dict
+        Parameters
+        ----------
+        df :
+            dict
+        queue :
+            Generator[any:
+        any :
+            param any]:
+        queue :
+            Generator[any:
+        queue: Generator[any :
+            
+        any] :
+            
 
-        Returns:
+        Returns
+        -------
 
         """
         for item in queue:
@@ -34,20 +47,16 @@ class Writer(object):
 
     @abc.abstractmethod
     def persist(self) -> None:
-        """
-
-        Args:
-   
-        Returns:
-
-        """
+        """ """
         pass
 
     @property
     def name(self):
+        """ """
         return self.config.name
 
     @property
     def id(self):
+        """ """
         return self.config.id
         

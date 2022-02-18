@@ -21,10 +21,13 @@ def remove():
 def list(ctx):
     """
 
-    Args:
-      ctx: 
+    Parameters
+    ----------
+    ctx :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     writers = ctx.obj.wr_list()

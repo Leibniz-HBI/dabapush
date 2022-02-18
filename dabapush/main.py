@@ -21,12 +21,21 @@ def cli(
 ):
     """
 
-    Args:
-      ctx: 
-      logfile: 
-      loglevel: 
+    Parameters
+    ----------
+    ctx :
+        param logfile:
+    loglevel :
+        param ctx: click.Context:
+    ctx :
+        click.Context:
+    ctx: click.Context :
+        
+    logfile :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     # prepare log options

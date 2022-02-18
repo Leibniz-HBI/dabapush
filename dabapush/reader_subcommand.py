@@ -6,32 +6,43 @@ from loguru import logger as log
 def reader(ctx):
     """
 
-    Args:
-      ctx: 
+    Parameters
+    ----------
+    ctx :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     pass
 
 @reader.command(help="Add a reader to the project.")
+@click.argument('type')
 @click.argument('name')
 @click.pass_context
-def add(ctx, name):
+def add(ctx, type, name):
     """
 
-    Args:
-      ctx: 
-      name: 
+    Parameters
+    ----------
+    ctx :
+        param name:
+    type :
+        
+    name :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     # get reader
     # set id
     # splice into local config
     # persist config
-    log.debug(f'Adding {name} to {ctx.obj["wd"]}')
+    ctx.obj.rd_add(type, name)
+    ctx.obj.pr_write()
 
 @reader.command()
 @click.argument('name')
@@ -39,11 +50,15 @@ def add(ctx, name):
 def remove(ctx, name):
     """
 
-    Args:
-      ctx: 
-      name: 
+    Parameters
+    ----------
+    ctx :
+        param name:
+    name :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     pass
@@ -53,10 +68,13 @@ def remove(ctx, name):
 def list(ctx):
     """
 
-    Args:
-      ctx: 
+    Parameters
+    ----------
+    ctx :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     readers = ctx.obj.rd_list()
@@ -72,14 +90,21 @@ def list(ctx):
 def configure(ctx, name, path, recursive, pattern):
     """
 
-    Args:
-      ctx: 
-      name: 
-      path: 
-      recursive: 
-      pattern: 
+    Parameters
+    ----------
+    ctx :
+        param name:
+    path :
+        param recursive:
+    pattern :
+        
+    name :
+        
+    recursive :
+        
 
-    Returns:
+    Returns
+    -------
 
     """
     

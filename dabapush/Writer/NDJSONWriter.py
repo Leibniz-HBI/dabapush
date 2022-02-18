@@ -13,13 +13,7 @@ class NDJSONWriter(Writer):
         super().__init__(config=config)
 
     def persist(self):
-        """
-
-        Args:
-
-        Returns:
-
-        """
+        """ """
 
         last_rows = self.buffer
         self.buffer = []
@@ -35,6 +29,7 @@ class NDJSONWriter(Writer):
         return len(last_rows)
 
 class NDJSONWriterConfiguration(FileWriterConfiguration):
+    """ """
 
     yaml_tag = '!dabapush:NDJSONWriterConfiguration'
 
@@ -43,6 +38,7 @@ class NDJSONWriterConfiguration(FileWriterConfiguration):
         self.type = 'ndjson'
 
     def get_instance(self):
+        """ """
         return NDJSONWriter(self)
 
     def __repr__(self) -> str:

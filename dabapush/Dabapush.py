@@ -7,9 +7,16 @@ from .Configuration.Registry import Registry
 from .Configuration.ProjectConfiguration import ProjectConfiguration
 
 class Dabapush(object):
-    """ This is the main class for this application.
-
+    """This is the main class for this application.
+    
     It is a Singleton pattern class and follows the interface pattern as well.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     __instance__ = None
@@ -32,20 +39,31 @@ class Dabapush(object):
         return cls.__instance__
 
     def update_reader_targets(self, name: str) -> None:
+        """
+
+        Parameters
+        ----------
+        name :
+            str:
+        name :
+            str:
+        name: str :
+            
+
+        Returns
+        -------
+
+        """
         pass
   
     # PROJECT specific methods
     def pr_init(self):
-        """
-        Initialize a new project in the current directory
-        """
+        """Initialize a new project in the current directory"""
         self.config = ProjectConfiguration()
         # self.pr_write()
 
     def pr_write(self):
-        """
-        Write the current configuration to the project configuration file in the current directory
-        """
+        """Write the current configuration to the project configuration file in the current directory"""
         if self.config is not None:
             conf_path = self.working_dir / 'dabapush.yml'
             log.debug(f'writing the following project configuration: {self.config}')
@@ -56,11 +74,16 @@ class Dabapush(object):
                 )
 
     def pr_read(self) -> bool:
-        """
-        Read the project configuration file in the current directory
+        """Read the project configuration file in the current directory
 
-        returns:
+        Parameters
+        ----------
+
+        Returns
+        -------
+        type
             bool Indicates wether loading load successful
+
         """
         conf_path = self.working_dir / 'dabapush.yml'
         if conf_path.exists():
@@ -72,54 +95,70 @@ class Dabapush(object):
 
     # READER specific methods
     def rd_add(self, reader: str, name: str):
-        """
-        add a reader to the current project
+        """add a reader to the current project
+
+        Parameters
+        ----------
+        reader :
+            str:
+        name :
+            str:
+        reader :
+            str:
+        name :
+            str:
+        reader: str :
+            
+        name: str :
+            
+
+        Returns
+        -------
+
         """
         self.config.add_reader(
             reader,
             name
         )
     def rd_list(self):
-        """
-        Lists all available readers
-        """
+        """Lists all available readers"""
         return self.global_config.list_all_readers()
     def rd_rm(self):
-        """
-        remove a reader from the current configuration
-        """
+        """remove a reader from the current configuration"""
         pass
     def rd_update(self):
-        """
-        update a reader's configuration
-        """
+        """update a reader's configuration"""
         pass
 
     # WRITER specific methods
     def wr_add(self):
-        """
-        add a reader to the current project
-        """
+        """add a reader to the current project"""
         pass
     def wr_rm(self):
-        """
-        remove a reader from the current configuration
-        """
+        """remove a reader from the current configuration"""
         pass
     def wr_update(self):
-        """
-        update a reader's configuration
-        """
+        """update a reader's configuration"""
         pass
     def wr_list(self):
-        """
-        Lists all available readers
-        """
+        """Lists all available readers"""
         return self.global_config.list_all_writers()
     # JOB specific methods
     def jb_run(self, targets: list[str]):
-        """
-        runs the job(s) configured in the current directory
+        """runs the job(s) configured in the current directory
+
+        Parameters
+        ----------
+        targets :
+            list[str]:
+        targets :
+            list[str]:
+        targets: list[str] :
+            
+
+        Returns
+        -------
+
         """
         conf_targets = [reader for reader in self.config.readers]
         
@@ -149,15 +188,11 @@ class Dabapush(object):
         writer.write(reader.read())
 
     def jb_update(self):
-        """
-        update the current job's targets
-        """
+        """update the current job's targets"""
         pass
     
     def gc_load(self):
-        """
-        load the global registry and configuration
-        """
+        """load the global registry and configuration"""
         conf_path = self.install_dir / 'config.yml'
         with conf_path.open('r') as file:
             self.global_config = yaml.full_load(file)
