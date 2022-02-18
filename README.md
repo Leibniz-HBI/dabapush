@@ -77,13 +77,8 @@ Options:
 
 `update` -- update items for target(s)
 
-<subproject>
+`update <target>` or `update all` -- update the target's files-to-be-read list
 
-<subproject/writer>
-
-<target>
-
-all
 
 ----
 
@@ -91,7 +86,7 @@ all
 
 `reader configure <name>` -- configure the reader for one or more subproject(s); Reader configuration is inherited from global to local level; throws if configuration is incomplete and defaults are missing
 
-`reader list`: returns a table of all configured readers, with <path> <subproject-name> <class> <id>
+`reader list`: returns a table of all configured readers, with <path> <target> <class> <id>
 
 `reader list_all`: returns a table of all registered reader plugins
 
@@ -109,39 +104,39 @@ Options:
 
 ----
 
-`discover` -- discover (possible) targtets in project directory and configure them automagically
+`discover` -- discover (possible) targtets in project directory and configure them automagically -- yeah, you dream of that, don't you?
 
 ----
 
-writer -- configure writer(s)
+`writer` -- interact with writers
 
-add <path> <subproject-name> <plugin-name>: 
+`writer add <type> <name>`: 
 
-remove <id> or <path>: removes the writer for given id or all writers for given path
+`writer remove <name>`: removes the writer for the given name
 
-list -- returns table of all writers, with <path> <subproject-name> <class> <id>
+`writer list` -- returns table of all writers, with <path> <subproject-name> <class> <id>
 
-list available: returns a table of all registered writer plugins
+`writer list_all`: returns a table of all registered writer plugins
 
-configure <writer-id> <subproject/name>
+`writer configure <name>` or `writer configure all`
 
-configure all
+Options:
 
---output-dir -o <path>: default for all targets: <project-dir>/output/<target-name>
+`--output-dir, -o <path>`: default for all targets: `<project-dir>/output/<target-name>`
 
---output-pattern -p <pattern>: pattern uesd for file name creation e.g. 'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten
+`--output-pattern, -p <pattern>`: pattern used for file name creation e.g. 'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten
 
---roll-over -r <file-size>:
+`--roll-over, -r `<file-size>:
 
---roll-over -r <lines>: 
+`--roll-over, -r` <lines>: 
 
---roll-over -r <None>: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking
+`--roll-over -r <None>`: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking
 
-register <path> <class-name> <registry-name>
+`writer register <path> <class-name>`: something for the roadmap.
 
-deregister <path> <registry-name>
+`deregister <name> <registry-name>`: something for the roadmap.
 
-## Programmtic documention
+## Programmatic documention
 
 
 ## Extending dabapush and developers guide
@@ -186,3 +181,7 @@ deregister <path> <registry-name>
 4. Run `poetry shell` to start development virtualenv
 5. Run `dabapush create` to create your first project.
 6. Run `pytest` to run all tests
+
+----
+
+Contact: smo (ät) leibniz-hbi.de
