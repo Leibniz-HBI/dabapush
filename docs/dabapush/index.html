@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>dabapush API documentation</title>
+<meta name="description" content="Database pusher for social media data (Twitter for the beginning) – pre-alpha version …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Package <code>dabapush</code></h1>
+</header>
+<section id="section-intro">
+<p>Database pusher for social media data (Twitter for the beginning) – pre-alpha version</p>
+<h2 id="using-dabapush">Using dabapush</h2>
+<p><code><a title="dabapush" href="#dabapush">dabapush</a></code> is a tool to read longer running data collections and write them to another file format or persist them into a database. It is designed to run periodically, e.g. controlled by chron, thus, for convenience ot use project-based configurations which contain all required information on what to read where and what to do with it.
+A <strong>project</strong> may have one or more <strong>jobs</strong>, each job consists of a reader and a writer configuration, e.g. read JSON-files from the Twitter API that we stored in folder <code>/home/user/fancy-project/twitter/</code> and write the flattened and compiled data set in to <code>/some/where/else</code> as CSV files.</p>
+<h3 id="first-steps">First steps</h3>
+<p>In order to run a first <code><a title="dabapush" href="#dabapush">dabapush</a></code>-job we'll need to create a project configuration. This is done by calling:</p>
+<pre><code>dabapush create
+</code></pre>
+<p>By default this walks you through the configuration process in a step-by-step manner. Alternatively, you could call:</p>
+<pre><code>dabapush create --non-interactive
+</code></pre>
+<p>This will create an empty configuration, you'll have to fill out the required information by e.g. calling:</p>
+<pre><code>dabapush reader add NDJSON default
+dabapush writer add CSV default
+</code></pre>
+<p>Whereas <code>reader add</code>/<code>writer add</code> is the verb, <code>NDJSON</code> or <code>CSV</code> is the plugin to add and <code>default</code> is the pipeline name. </p>
+<p>Of course you can edit the configration after creation in your favorite editor, but <strong>BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!</strong>.</p>
+<p>Although, </p>
+<p>To run the newly configured job, please call:</p>
+<pre><code>dabapush run default
+</code></pre>
+<h2 id="command-reference">Command Reference</h2>
+<h3 id="invocation-pattern">Invocation Pattern:</h3>
+<pre><code>dabapush &lt;command&gt; &lt;subcommand?&gt; &lt;options&gt;
+</code></pre>
+<h3 id="commands">Commands:</h3>
+<p><code>create</code> &ndash; creates a dabapush project (invokes interactive prompt)</p>
+<p>Options:</p>
+<p><code>--non-interactive</code>, create an empty configuration and exit</p>
+<p><code>--interactive</code>, <em>this is the default behavior</em>: prompts for user input on</p>
+<ul>
+<li>project name,</li>
+<li>project authors name,</li>
+<li>project author email address(es) for notifications</li>
+<li>manually configure targets or run discover?</li>
+</ul>
+<hr>
+<p><code>run all</code> &ndash; collect all known items and execute targets/destinations</p>
+<p><code>run &lt;target&gt;</code> &ndash; run a single writer and/or named target</p>
+<p>Options:</p>
+<p><code>--force-rerun, -r</code>: forces all data
+to be read, ignores already logged data</p>
+<hr>
+<p><code>update</code> &ndash; update items for target(s)</p>
+<p><code>update &lt;target&gt;</code> or <code>update all</code> &ndash; update the target's files-to-be-read list</p>
+<hr>
+<p><code>reader</code> &ndash; interact with readers</p>
+<p><code>reader configure &lt;name&gt;</code> &ndash; configure the reader for one or more subproject(s); Reader configuration is inherited from global to local level; throws if configuration is incomplete and defaults are missing</p>
+<p><code>reader list</code>: returns a table of all configured readers, with <path> <target> <class> <id></p>
+<p><code>reader list_all</code>: returns a table of all registered reader plugins</p>
+<p><code>reader add &lt;type&gt; &lt;name&gt;</code>: add a reader to the project configuration</p>
+<p>Options:</p>
+<p><code>--input-directory &lt;path&gt;</code>: directory to be read</p>
+<p><code>--pattern &lt;pattern&gt;</code>: pattern for matching file names against.</p>
+<p><code>remove &lt;name&gt;</code>: remove a reader from the project configuration.</p>
+<p><code>register &lt;path&gt;</code>: not there yet</p>
+<hr>
+<p><code>discover</code> &ndash; discover (possible) targtets in project directory and configure them automagically &ndash; yeah, you dream of that, don't you?</p>
+<hr>
+<p><code>writer</code> &ndash; interact with writers</p>
+<p><code>writer add &lt;type&gt; &lt;name&gt;</code>: </p>
+<p><code>writer remove &lt;name&gt;</code>: removes the writer for the given name</p>
+<p><code>writer list</code> &ndash; returns table of all writers, with <path> <subproject-name> <class> <id></p>
+<p><code>writer list_all</code>: returns a table of all registered writer plugins</p>
+<p><code>writer configure &lt;name&gt;</code> or <code>writer configure all</code></p>
+<p>Options:</p>
+<p><code>--output-dir, -o &lt;path&gt;</code>: default for all targets: <code>&lt;project-dir&gt;/output/&lt;target-name&gt;</code></p>
+<p><code>--output-pattern, -p &lt;pattern&gt;</code>: pattern used for file name creation e.g. 'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten</p>
+<p><code>--roll-over, -r</code><file-size>:</p>
+<p><code>--roll-over, -r</code> <lines>: </p>
+<p><code>--roll-over -r &lt;None&gt;</code>: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking</p>
+<p><code>writer register &lt;path&gt; &lt;class-name&gt;</code>: something for the roadmap.</p>
+<p><code>deregister &lt;name&gt; &lt;registry-name&gt;</code>: something for the roadmap.</p>
+<h2 id="programmatic-documention">Programmatic documention</h2>
+<h2 id="extending-dabapush-and-developers-guide">Extending dabapush and developers guide</h2>
+<h3 id="dabapushs-approach-to-projects-and-configuration">dabapush's Approach to Projects and Configuration</h3>
+<h3 id="class-references">Class References</h3>
+<table>
+<thead>
+<tr>
+<th><strong>Dabapush</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><strong>Reader</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><strong>Writer</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><strong>Configuration</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-----------------</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="developer-installation">Developer Installation</h3>
+<ol>
+<li>Install <a href="https://python-poetry.org/docs/#installation">poetry</a>.</li>
+<li>Clone repository.</li>
+<li>In the cloned repository's root directory run <code>poetry install</code>.</li>
+<li>Run <code>poetry shell</code> to start development virtualenv.</li>
+<li>Run <code><a title="dabapush" href="#dabapush">dabapush</a> create</code> to create your first project.</li>
+<li>Run <code>pytest</code> to run all tests.</li>
+<li>Run <code>pdoc --http localhost:8080 dabapush</code> to locally serve this documentation.</li>
+</ol>
+<hr>
+<p>Contact: smo (ät) leibniz-hbi.de</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Database pusher for social media data (Twitter for the beginning) – pre-alpha version
+
+## Using dabapush
+
+`dabapush` is a tool to read longer running data collections and write them to another file format or persist them into a database. It is designed to run periodically, e.g. controlled by chron, thus, for convenience ot use project-based configurations which contain all required information on what to read where and what to do with it.
+A **project** may have one or more **jobs**, each job consists of a reader and a writer configuration, e.g. read JSON-files from the Twitter API that we stored in folder `/home/user/fancy-project/twitter/` and write the flattened and compiled data set in to `/some/where/else` as CSV files.
+
+### First steps
+
+In order to run a first `dabapush`-job we&#39;ll need to create a project configuration. This is done by calling:
+
+```
+dabapush create
+```
+
+By default this walks you through the configuration process in a step-by-step manner. Alternatively, you could call:
+
+```
+dabapush create --non-interactive
+```
+
+This will create an empty configuration, you&#39;ll have to fill out the required information by e.g. calling:
+
+```
+dabapush reader add NDJSON default
+dabapush writer add CSV default
+```
+Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin to add and `default` is the pipeline name. 
+
+Of course you can edit the configration after creation in your favorite editor, but **BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!**.
+
+Although, 
+
+
+To run the newly configured job, please call:
+
+```
+dabapush run default
+```
+
+## Command Reference
+
+### Invocation Pattern:
+
+```
+dabapush &lt;command&gt; &lt;subcommand?&gt; &lt;options&gt;
+```
+
+### Commands:
+
+`create` -- creates a dabapush project (invokes interactive prompt)
+
+Options:
+
+`--non-interactive`, create an empty configuration and exit
+
+`--interactive`, *this is the default behavior*: prompts for user input on
+
+- project name,
+- project authors name,
+- project author email address(es) for notifications
+- manually configure targets or run discover?
+
+----
+
+`run all` -- collect all known items and execute targets/destinations
+
+`run &lt;target&gt;` -- run a single writer and/or named target
+
+Options:
+
+`--force-rerun, -r`: forces all data  to be read, ignores already logged data
+
+----
+
+`update` -- update items for target(s)
+
+`update &lt;target&gt;` or `update all` -- update the target&#39;s files-to-be-read list
+
+
+----
+
+`reader` -- interact with readers
+
+`reader configure &lt;name&gt;` -- configure the reader for one or more subproject(s); Reader configuration is inherited from global to local level; throws if configuration is incomplete and defaults are missing
+
+`reader list`: returns a table of all configured readers, with &lt;path&gt; &lt;target&gt; &lt;class&gt; &lt;id&gt;
+
+`reader list_all`: returns a table of all registered reader plugins
+
+`reader add &lt;type&gt; &lt;name&gt;`: add a reader to the project configuration
+
+Options:
+
+`--input-directory &lt;path&gt;`: directory to be read
+
+`--pattern &lt;pattern&gt;`: pattern for matching file names against.
+
+`remove &lt;name&gt;`: remove a reader from the project configuration.
+
+`register &lt;path&gt;`: not there yet
+
+----
+
+`discover` -- discover (possible) targtets in project directory and configure them automagically -- yeah, you dream of that, don&#39;t you?
+
+----
+
+`writer` -- interact with writers
+
+`writer add &lt;type&gt; &lt;name&gt;`: 
+
+`writer remove &lt;name&gt;`: removes the writer for the given name
+
+`writer list` -- returns table of all writers, with &lt;path&gt; &lt;subproject-name&gt; &lt;class&gt; &lt;id&gt;
+
+`writer list_all`: returns a table of all registered writer plugins
+
+`writer configure &lt;name&gt;` or `writer configure all`
+
+Options:
+
+`--output-dir, -o &lt;path&gt;`: default for all targets: `&lt;project-dir&gt;/output/&lt;target-name&gt;`
+
+`--output-pattern, -p &lt;pattern&gt;`: pattern used for file name creation e.g. &#39;YYYY-MM-dd&#39;, file extension is added by the writer and cannot be overwritten
+
+`--roll-over, -r `&lt;file-size&gt;:
+
+`--roll-over, -r` &lt;lines&gt;: 
+
+`--roll-over -r &lt;None&gt;`: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking
+
+`writer register &lt;path&gt; &lt;class-name&gt;`: something for the roadmap.
+
+`deregister &lt;name&gt; &lt;registry-name&gt;`: something for the roadmap.
+
+## Programmatic documention
+
+
+## Extending dabapush and developers guide
+
+### dabapush&#39;s Approach to Projects and Configuration
+
+### Class References
+
+| **Dabapush** |     |
+| ------------ | --- |
+|              |     |
+|              |     |
+|              |     |
+|              |     |
+
+| **Reader** |     |
+| ---------- | --- |
+|            |     |
+|            |     |
+|            |     |
+|            |     |
+
+| **Writer** |     |
+| ---------- | --- |
+|            |     |
+|            |     |
+|            |     |
+|            |     |
+
+| **Configuration** |     |
+|                   |     |
+| ----------------- | --- |
+|                   |     |
+|                   |     |
+|                   |     |
+|                   |     |
+
+### Developer Installation
+
+1. Install [poetry](https://python-poetry.org/docs/#installation).
+2. Clone repository.
+3. In the cloned repository&#39;s root directory run `poetry install`.
+4. Run `poetry shell` to start development virtualenv.
+5. Run `dabapush create` to create your first project.
+6. Run `pytest` to run all tests.
+7. Run `pdoc --http localhost:8080 dabapush` to locally serve this documentation.
+----
+
+Contact: smo (ät) leibniz-hbi.de
+
+&#34;&#34;&#34;
+
+__version__ = &#39;0.1.0&#39;
+
+from .Reader import TwacapicReaderConfiguration
+from .Writer import NDJSONWriterConfiguration
+from .Writer import CSVWriterConfiguration</code></pre>
+</details>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="dabapush.Configuration" href="Configuration/index.html">dabapush.Configuration</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.Dabapush" href="Dabapush.html">dabapush.Dabapush</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.Reader" href="Reader/index.html">dabapush.Reader</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.Writer" href="Writer/index.html">dabapush.Writer</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.create_subcommand" href="create_subcommand.html">dabapush.create_subcommand</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.discover_subcommand" href="discover_subcommand.html">dabapush.discover_subcommand</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.main" href="main.html">dabapush.main</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.reader_subcommand" href="reader_subcommand.html">dabapush.reader_subcommand</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.run_subcommand" href="run_subcommand.html">dabapush.run_subcommand</a></code></dt>
+<dd>
+<div class="desc"><p>Some module documentation</p></div>
+</dd>
+<dt><code class="name"><a title="dabapush.update_subcommand" href="update_subcommand.html">dabapush.update_subcommand</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.utils" href="utils.html">dabapush.utils</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dabapush.writer_subcommand" href="writer_subcommand.html">dabapush.writer_subcommand</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#using-dabapush">Using dabapush</a><ul>
+<li><a href="#first-steps">First steps</a></li>
+</ul>
+</li>
+<li><a href="#command-reference">Command Reference</a><ul>
+<li><a href="#invocation-pattern">Invocation Pattern:</a></li>
+<li><a href="#commands">Commands:</a></li>
+</ul>
+</li>
+<li><a href="#programmatic-documention">Programmatic documention</a></li>
+<li><a href="#extending-dabapush-and-developers-guide">Extending dabapush and developers guide</a><ul>
+<li><a href="#dabapushs-approach-to-projects-and-configuration">dabapush's Approach to Projects and Configuration</a></li>
+<li><a href="#class-references">Class References</a></li>
+<li><a href="#developer-installation">Developer Installation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="dabapush.Configuration" href="Configuration/index.html">dabapush.Configuration</a></code></li>
+<li><code><a title="dabapush.Dabapush" href="Dabapush.html">dabapush.Dabapush</a></code></li>
+<li><code><a title="dabapush.Reader" href="Reader/index.html">dabapush.Reader</a></code></li>
+<li><code><a title="dabapush.Writer" href="Writer/index.html">dabapush.Writer</a></code></li>
+<li><code><a title="dabapush.create_subcommand" href="create_subcommand.html">dabapush.create_subcommand</a></code></li>
+<li><code><a title="dabapush.discover_subcommand" href="discover_subcommand.html">dabapush.discover_subcommand</a></code></li>
+<li><code><a title="dabapush.main" href="main.html">dabapush.main</a></code></li>
+<li><code><a title="dabapush.reader_subcommand" href="reader_subcommand.html">dabapush.reader_subcommand</a></code></li>
+<li><code><a title="dabapush.run_subcommand" href="run_subcommand.html">dabapush.run_subcommand</a></code></li>
+<li><code><a title="dabapush.update_subcommand" href="update_subcommand.html">dabapush.update_subcommand</a></code></li>
+<li><code><a title="dabapush.utils" href="utils.html">dabapush.utils</a></code></li>
+<li><code><a title="dabapush.writer_subcommand" href="writer_subcommand.html">dabapush.writer_subcommand</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
