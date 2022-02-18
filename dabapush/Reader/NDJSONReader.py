@@ -2,7 +2,7 @@ from pathlib import Path
 import ujson
 from typing import Generator
 
-from ..Reader.Reader import Reader
+from .Reader import Reader
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..utils import flatten
 
@@ -12,7 +12,7 @@ class NDJSONReader(Reader):
     def __init__(self, config: 'NDJSONReaderConfiguration') -> None:
         super().__init__(config)
     
-    def read(self) -> Generator[any, any, any]:
+    def read(self) -> Generator[dict, None, None]:
         """reads multiple ndjson files and emits them line by line"""
         for file_path in Path(self.config.read_path).rglob(self.config.pattern):
             with file_path.open('r') as file:

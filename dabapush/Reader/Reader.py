@@ -2,7 +2,7 @@ import abc
 from typing import Generator
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 
-class AbstractReader(abc.ABC):
+class Reader(abc.ABC):
     """Abstract base class for all reader plugins.
     
     **BEWARE**: readers and writers are never to be instanced directly by the user but rather will be obtain by calling
