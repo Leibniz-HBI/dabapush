@@ -9,7 +9,11 @@ from ..utils import unpack, safe_access, flatten
 class TwacapicReader(Reader):
     """Reader to read ready to read Twitter json data.
     It matches files in the path-tree against the pattern and reads all files as JSON.
-        
+    
+    Attributes
+    ----------
+    config: NDJSONRreaderConfiguration
+        The configuration file used for reading
     """
     def __init__(
             self,

@@ -7,7 +7,14 @@ from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..utils import flatten
 
 class NDJSONReader(Reader):
-    """ """
+    """Reader to read ready to read NDJSON data.
+    It matches files in the path-tree against the pattern and reads all files and all lines in these file as JSON.
+    
+    Attributes
+    ----------
+    config: NDJSONRreaderConfiguration
+        The configuration file used for reading
+    """
 
     def __init__(self, config: 'NDJSONReaderConfiguration') -> None:
         super().__init__(config)
@@ -25,9 +32,18 @@ class NDJSONReader(Reader):
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):
-    """ """
+    """Read new line delimited JSON files.
+    
+    Attributes
+    ----------
+    flatten_dicts: bool
+        wether to flatten those nested dictioniaries
+    
+    """
 
     yaml_tag = '!dabapush:NDJSONReaderConfiguration'
+    """internal tag for pyYAML
+    """
 
     def __init__(
         self,
@@ -37,6 +53,21 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
         pattern:str = '*.ndjson',
         flatten_dicts = True
     ) -> None:
+        """
+        Parameters
+        ----------
+        name: str
+            target pipeline name
+        id : UUID
+            ID of the instance (default value = None, is set by super class)
+        read_path: str
+            path to directory to read
+        pattern: str
+            filename pattern to match files in `read_path` against
+        flatten_dicts: bool
+            whether nested dictionaries are flattend (for details see `dabapush.utils.flatten`)
+
+        """
         super().__init__(name, id=id, read_path=read_path, pattern=pattern)
         self.flatten_dicts = flatten_dicts
 
@@ -44,5 +75,11 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
         return super().__repr__()
 
     def get_instance(self) -> NDJSONReader:
-        """ """
+        """Get a configured instance of NDJSONReader
+        
+        Returns
+        -------
+        type: NDJSONReader
+            Configured instance of NDJSONReader
+        """
         return NDJSONReader(self)
