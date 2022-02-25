@@ -43,7 +43,10 @@ class Writer(object):
         for item in queue:
             self.buffer.append(item)
             if len(self.buffer) >= self.config.chunk_size:
-                self.persist()
+                last_rows = self.buffer
+                self.buffer = []
+
+                self.persist(last_rows)
 
     @abc.abstractmethod
     def persist(self) -> None:

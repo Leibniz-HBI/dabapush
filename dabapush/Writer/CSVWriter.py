@@ -13,12 +13,8 @@ class CSVWriter(Writer):
         self.config = config
         self.chunk_number = 1
 
-    def persist(self):
+    def persist(self, last_rows):
         """ """
-
-        last_rows = self.buffer
-        self.buffer = []
-
 
         log.info(f'Persisted {len(last_rows)} records')
         _path = Path(self.config.path) / self.config.make_file_name({'chunk_number': self.chunk_number})

@@ -12,11 +12,8 @@ class NDJSONWriter(Writer):
     def __init__(self, config: 'NDJSONWriterConfiguration'):
         super().__init__(config=config)
 
-    def persist(self):
+    def persist(self, last_rows):
         """ """
-
-        last_rows = self.buffer
-        self.buffer = []
         
         _file: Path = Path(self.config.path) / self.config.make_file_name()
         
