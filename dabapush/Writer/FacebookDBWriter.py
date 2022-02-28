@@ -1,6 +1,5 @@
 from .Writer import Writer
 
-
 class FacebookDBWriter(Writer):
     """ """
 
