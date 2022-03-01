@@ -1,5 +1,5 @@
 from .Writer import Writer
-
+from ...smo_database import DB_Manager, Twitter_Data
 
 class TwitterDBWriter(Writer):
     """ """
@@ -7,10 +7,10 @@ class TwitterDBWriter(Writer):
     def __init__(self, config):
         super().__init__()
         
-        self.initialze_db = DBManager(config)
+        self.initialize_db = DB_Manager(config)
         self.engine = self.initialize_db.create_connection()
         self.twitter_initializer = Twitter_Data(self.engine)
-        self.session = self.twitter_initializer.create_local_session()
+        self.twitter_initializer.create_local_session()
 
     def persist(self):
         """
@@ -24,4 +24,8 @@ class TwitterDBWriter(Writer):
         data = self.buffer
         self.buffer = []
 
-        self.twitter_initializer.fb_insert(data)
+        self.twitter_initializer.twitter_insert(data)
+    
+    def close_local_session(self):
+        
+        self.twitter_initializer.close_local_session()
