@@ -1,6 +1,5 @@
 from .Writer import Writer
-from ...smo_database.db_configuration.db_manager import DB_Manager
-from ...smo_database.facebook.facebook_insert import Facebook_Data
+from ...smo_database import DB_Manager
 
 class FacebookDBWriter(Writer):
     """ """
