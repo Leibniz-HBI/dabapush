@@ -1,4 +1,6 @@
 from .Writer import Writer
+from ...smo_database.db_configuration.db_manager import DB_Manager
+from ...smo_database.facebook.facebook_insert import Facebook_Data
 
 class FacebookDBWriter(Writer):
     """ """
@@ -6,10 +8,10 @@ class FacebookDBWriter(Writer):
     def __init__(self, config):
         super().__init__()
         
-        self.initialze_db = DBManager(config)
+        self.initialze_db = DB_Manager(config)
         self.engine = self.initialize_db.create_connection()
         self.facebook_initializer = Facebook_Data(self.engine)
-        self.session = self.facebook_initializer.create_local_session()
+        self.facebook_initializer.create_local_session()
 
     def persist(self):
         """
@@ -24,3 +26,6 @@ class FacebookDBWriter(Writer):
         self.buffer = []
 
         self.facebook_initializer.fb_insert(data)
+
+    def close_local_session(self):
+        self.facebook_initializer.close_local_session()
