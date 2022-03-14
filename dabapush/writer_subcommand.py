@@ -7,9 +7,13 @@ def writer():
     pass
 
 @writer.command()
-def add():
+@click.argument('type')
+@click.argument('name')
+@click.pass_context
+def add(ctx, type: str, name: str):
     """ """
-    pass
+    ctx.obj.wr_add(type, name)
+    ctx.obj.pr_write()
 
 @writer.command()
 def remove():

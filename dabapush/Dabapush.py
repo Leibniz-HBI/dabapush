@@ -131,9 +131,11 @@ class Dabapush(object):
         pass
 
     # WRITER specific methods
-    def wr_add(self):
+    def wr_add(self, reader: str, name :str):
         """add a reader to the current project"""
-        pass
+        self.config.add_writer(
+            reader, name
+        )
     def wr_rm(self):
         """remove a reader from the current configuration"""
         pass
