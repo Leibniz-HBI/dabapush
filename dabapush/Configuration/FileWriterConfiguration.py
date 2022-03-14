@@ -4,7 +4,16 @@ from datetime import datetime
 from .WriterConfiguration import WriterConfiguration
 
 class FileWriterConfiguration(WriterConfiguration):
-    """Abstract class describing configuration items for a file based writer"""
+    """Abstract class describing configuration items for a file based writer.
+    
+    Attributes
+    ----------
+    path : str, default: '.'
+
+    name_template : str : default: '${date}_${time}_${name}.${type}'
+        Template string for file name creation, the above four keys are available by default.
+        Other data can be passed into str.Template by passing the `additional_keys` parameter into `make_file_name`.
+    """
     def __init__(
         self,
         name,
@@ -13,6 +22,15 @@ class FileWriterConfiguration(WriterConfiguration):
         path: str = '.',
         name_template: str = "${date}_${time}_${name}.${type}"
     ) -> None:
+        """
+        Parameters
+        ----------
+        name : str
+            target pipeline name
+        id : UUID
+            instance UUID
+        chunk_size : int, default : 2000
+        """
         super().__init__(name, id=id, chunk_size=chunk_size)
 
         self.path = path
@@ -23,15 +41,13 @@ class FileWriterConfiguration(WriterConfiguration):
 
         Parameters
         ----------
-        additional_keys :
-            dict:  (Default value = {})
-        additional_keys :
-            dict:  (Default value = {})
-        additional_keys: dict :
-             (Default value = {})
+        additional_keys : dict
+            Pass in a dict to allow for other data in the templating string (Default value = {})
 
         Returns
         -------
+        type : str
+            New file name as specified by the templating string
 
         """
         now = datetime.now()
@@ -51,12 +67,9 @@ class FileWriterConfiguration(WriterConfiguration):
 
         Parameters
         ----------
-        template :
-            str:
-        template :
-            str:
-        template: str :
-            
+        template : str
+
+
 
         Returns
         -------
