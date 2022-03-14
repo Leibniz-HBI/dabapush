@@ -135,4 +135,6 @@ poetry.lock
 
 # data
 *.csv
+*.ndjson
+*.json
 .dabapush.touched.yml
