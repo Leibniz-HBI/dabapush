@@ -1,3 +1,6 @@
 [submodule "smo_database"]
 	path = smo_database
 	url = https://github.com/Leibniz-HBI/smo-database.git
+[submodule "smo-database"]
+	path = smo-database
+	url = https://github.com/Leibniz-HBI/smo-database.git
