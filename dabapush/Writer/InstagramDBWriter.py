@@ -26,6 +26,5 @@ class InstagramDBWriter(Writer):
 
         self.instagram_initializer.insta_insert(data)
     
-    def close_local_session(self):
-        
-        self.instagram_initializer.close_local_session()
+    def __del__(self):
+        print("Session and Connection Terminated")

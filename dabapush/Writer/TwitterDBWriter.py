@@ -26,6 +26,5 @@ class TwitterDBWriter(Writer):
 
         self.twitter_initializer.twitter_insert(data)
     
-    def close_local_session(self):
-        
-        self.twitter_initializer.close_local_session()
+        def __del__(self):
+            print("Session and Connection Terminated")

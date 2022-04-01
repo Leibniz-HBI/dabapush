@@ -26,5 +26,5 @@ class FacebookDBWriter(Writer):
 
         self.facebook_initializer.fb_insert(data)
 
-    def close_local_session(self):
-        self.facebook_initializer.close_local_session() ### use __del__
+    def __del__(self):
+        print("Session and Connection Terminated")
