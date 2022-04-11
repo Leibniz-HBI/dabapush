@@ -1,13 +1,11 @@
-from typing import Generator
-import pandas as pd
 import abc
-from loguru import logger as log
+from typing import Generator
 from ..Configuration.WriterConfiguration import WriterConfiguration
+
 
 class Writer(object):
     """ """
 
-    # TODO: get chunksize from config
     def __init__(self, config: WriterConfiguration):
         super().__init__()
 
@@ -18,27 +16,17 @@ class Writer(object):
         # flush buffer before destruction
         self.persist()
 
-    def write(self, queue: Generator[any, any, any]):
+    def write(self, queue: Generator[any, any, any]) -> None:
         """
 
         Parameters
         ----------
-        df :
-            dict
         queue :
-            Generator[any:
-        any :
-            param any]:
-        queue :
-            Generator[any:
-        queue: Generator[any :
-            
-        any] :
-            
+            queue: Generator[any, any, any] : Items to be consumed.
 
         Returns
         -------
-
+        type : None
         """
         for item in queue:
             self.buffer.append(item)
@@ -59,4 +47,3 @@ class Writer(object):
     def id(self):
         """ """
         return self.config.id
-        

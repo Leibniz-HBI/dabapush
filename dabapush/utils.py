@@ -1,7 +1,7 @@
-def flatten(thing: dict, namespace: str = None, sep: str = '.') -> dict:
+def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
     """Flattens a nested dictionary. The flattened keys are joined together with the specified seperator.
     `flatten` only traverses dicts, consequently `list` items are left as is.
-    
+
     Example
     -------
 
@@ -37,11 +37,15 @@ def flatten(thing: dict, namespace: str = None, sep: str = '.') -> dict:
         if type(item) is dict:
             res = {
                 **res,
-                **{sep.join([namespace, k] if namespace is not None else [k]):v for (k,v) in flatten(item, key).items()}
+                **{
+                    sep.join([namespace, k] if namespace is not None else [k]): v
+                    for (k, v) in flatten(item, key).items()
+                },
             }
         else:
             res[sep.join([namespace, key] if namespace is not None else [key])] = item
-    return res 
+    return res
+
 
 def safe_access(thing: dict, path: list[str]):
     """Safely access deep values in a nested dict without risking running into a `KeyException`.
@@ -58,15 +62,18 @@ def safe_access(thing: dict, path: list[str]):
     any or None:
         Returns whichever value is at the leaf of the specified key path or None if no such value exists.
     """
+
     def safety(thing: dict, attr: str) -> any or None:
         if attr in thing:
             return thing[attr]
+
     res = thing
     for attr in path:
         res = safety(res, attr)
         if res is None:
             break
     return res
+
 
 def unpack(id: str, includes: list[any], id_key: str) -> any or None:
     """Looks up an entity in a array of dicts by given key.

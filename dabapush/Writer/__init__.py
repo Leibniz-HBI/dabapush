@@ -1,3 +1,5 @@
 from .NDJSONWriter import NDJSONWriterConfiguration
 from .CSVWriter import CSVWriterConfiguration
 from .FacebookDBWriter import FacebookDBWriterConfiguration
+from .TwitterDBWriter import TwitterDBWriterConfiguration
+from .InstagramDBWriter import InstagramDBWriterConfiguration

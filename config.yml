@@ -15,10 +15,15 @@ writers:
   NDJSON:
     moduleName: ".Writer.NDJSONWriter"
     className: "NDJSONWriterConfiguration"
-  SMODBTwitter:
-    moduleName: ".Writer.SMODBTwitter"
-    className: "SMODBTwitterConfiguration"
-    config:
-      dbuser: "postgres"
-      dbpass: "postgres"
-      dbname: "smo"
+  SMOTW:
+    moduleName: ".Writer.TwitterDBWriter"
+    className: "TwitterDBWriterConfiguration"
+  SMOFB:
+    moduleName: ".Writer.FacebookDBWriter"
+    className: "FacebookDBWriterConfiguration"
+  SMOIG:
+    moduleName: ".Writer.InstagramDBWriter"
+    className: "FacebookDBWriterConfiguration"
+  SMODBOES:
+    moduleName: ".Writer.FacebookDBWriter"
+    className: "FacebookDBWriterConfiguration"

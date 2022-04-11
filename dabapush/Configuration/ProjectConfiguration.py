@@ -5,10 +5,11 @@ from .Registry import Registry
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
+
 class ProjectConfiguration(yaml.YAMLObject):
     """ProjectConfiguration hold necessary configuration informations
-    
-    
+
+
     A ProjectConfiguration is for reading and writing data as well as the project's meta data
     e.g. author name(s) and email addresses.
 
@@ -19,15 +20,15 @@ class ProjectConfiguration(yaml.YAMLObject):
     -------
 
     """
-    
-    yaml_tag = '!dabapush:ProjectConfiguration'
+
+    yaml_tag = "!dabapush:ProjectConfiguration"
 
     def __init__(
         self,
         readers: Dict[str, ReaderConfiguration] = {},
         writers: Dict[str, WriterConfiguration] = {},
-        author: str = '',
-        name: str = ''
+        author: str = "",
+        name: str = "",
     ) -> None:
         """Initialize a ProjectConfiguration with optional reader and/or writer dicts"""
         super().__init__()
@@ -39,7 +40,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         # initialize project metadata
         self.author = author
-        self.name   = name
+        self.name = name
 
     def add_reader(self, type: str, name: str) -> None:
         """add a reader configuration to the project
@@ -51,18 +52,6 @@ class ProjectConfiguration(yaml.YAMLObject):
         name :
             str: name of the configuration to add
             Returns: Nothing.
-        type :
-            str:
-        name :
-            str:
-        type :
-            str:
-        name :
-            str:
-        type: str :
-            
-        name: str :
-            
 
         Returns
         -------
@@ -77,9 +66,11 @@ class ProjectConfiguration(yaml.YAMLObject):
         pinst = Registry.get_reader(type)
         if pinst is not None:
             self.readers[name] = pinst(name)
-            log.debug(f'Currently configured readers: {",".join([a for a in self.readers])}')
+            log.debug(
+                f'Currently configured readers: {",".join([a for a in self.readers])}'
+            )
         else:
-            raise Exception(f'{type} not found')
+            raise Exception(f"{type} not found")
 
     def remove_reader(self, name: str) -> None:
         """remove a reader from the configuration
@@ -94,7 +85,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         name :
             str:
         name: str :
-            
+
 
         Returns
         -------
@@ -105,7 +96,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
     def list_readers(self) -> List[dict]:
         """list all configured readers
-        
+
         Returns: List[Dict]: list of dicts with name- and id-fields
 
         Parameters
@@ -116,9 +107,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # copy stuff
-        return [
-            value for value in self.readers.values()
-        ]
+        return [value for value in self.readers.values()]
 
     def add_writer(self, type: str, name: str) -> None:
         """
@@ -126,33 +115,20 @@ class ProjectConfiguration(yaml.YAMLObject):
         Parameters
         ----------
         type :
-            str:
+            str: type of the writer to add
         name :
-            str:
-            Returns: None: nothing to see, carry on.
-        type :
-            str:
-        name :
-            str:
-        type :
-            str:
-        name :
-            str:
-        type: str :
-            
-        name: str :
-            
+            str: name of the added writer
 
         Returns
         -------
-
+        type: None
         """
         # get constructor from registry
         pinst = Registry.get_writer(type)
         if pinst is not None:
             self.writers[name] = pinst(name)
         else:
-            raise Exception(f'{type} not found')
+            raise Exception(f"{type} not found")
 
     def remove_writer(self, name: str):
         """
@@ -166,7 +142,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         name :
             str:
         name: str :
-            
+
 
         Returns
         -------
@@ -177,7 +153,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
     def list_writers(self):
         """list all configured writers
-        
+
         Returns: List[Dict]: list of dicts with name- and id-fields
 
         Parameters
@@ -188,9 +164,7 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # copy stuff
-        return [
-            value for value in self.writers.values()
-        ]
+        return [value for value in self.writers.values()]
 
     def set_name(self, name):
         """
@@ -198,21 +172,21 @@ class ProjectConfiguration(yaml.YAMLObject):
         Parameters
         ----------
         name :
-            
+
 
         Returns
         -------
 
         """
         self.name = name
-    
+
     def set_author(self, author):
         """
 
         Parameters
         ----------
         author :
-            
+
 
         Returns
         -------

@@ -6,23 +6,24 @@ from .Reader import Reader
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..utils import flatten
 
+
 class NDJSONReader(Reader):
     """Reader to read ready to read NDJSON data.
     It matches files in the path-tree against the pattern and reads all files and all lines in these file as JSON.
-    
+
     Attributes
     ----------
     config: NDJSONRreaderConfiguration
         The configuration file used for reading
     """
 
-    def __init__(self, config: 'NDJSONReaderConfiguration') -> None:
+    def __init__(self, config: "NDJSONReaderConfiguration") -> None:
         super().__init__(config)
-    
+
     def read(self) -> Generator[dict, None, None]:
         """reads multiple ndjson files and emits them line by line"""
-        for file_path in Path(self.config.read_path).rglob(self.config.pattern):
-            with file_path.open('r') as file:
+        for file_path in self.files:
+            with file_path.open("r") as file:
                 lines = file.readlines()
                 for line in lines:
                     if self.config.flatten_dicts != True:
@@ -33,15 +34,15 @@ class NDJSONReader(Reader):
 
 class NDJSONReaderConfiguration(ReaderConfiguration):
     """Read new line delimited JSON files.
-    
+
     Attributes
     ----------
     flatten_dicts: bool
         wether to flatten those nested dictioniaries
-    
+
     """
 
-    yaml_tag = '!dabapush:NDJSONReaderConfiguration'
+    yaml_tag = "!dabapush:NDJSONReaderConfiguration"
     """internal tag for pyYAML
     """
 
@@ -49,9 +50,9 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
         self,
         name,
         id=None,
-        read_path: str = '.',
-        pattern:str = '*.ndjson',
-        flatten_dicts = True
+        read_path: str = ".",
+        pattern: str = "*.ndjson",
+        flatten_dicts=True,
     ) -> None:
         """
         Parameters
@@ -76,7 +77,7 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
 
     def get_instance(self) -> NDJSONReader:
         """Get a configured instance of NDJSONReader
-        
+
         Returns
         -------
         type: NDJSONReader

@@ -10,15 +10,12 @@ from .reader_subcommand import reader
 from .writer_subcommand import writer
 from .Dabapush import Dabapush
 
+
 @click.group()
-@click.option('--logfile', help='file to log in (optional)')
-@click.option('--loglevel', default='INFO', help='the level to log, yk')
+@click.option("--logfile", help="file to log in (optional)")
+@click.option("--loglevel", default="INFO", help="the level to log, yk")
 @click.pass_context
-def cli(
-    ctx: click.Context,
-    logfile,
-    loglevel
-):
+def cli(ctx: click.Context, logfile, loglevel):
     """
 
     Parameters
@@ -30,27 +27,28 @@ def cli(
     ctx :
         click.Context:
     ctx: click.Context :
-        
+
     logfile :
-        
+
 
     Returns
     -------
 
     """
     # prepare log options
-    if (logfile != None):
+    if logfile != None:
         log.remove()
-        if (loglevel == None):
-            loglevel = 'DEBUG'
+        if loglevel == None:
+            loglevel = "DEBUG"
             log.add(sys.stdout, loglevel)
         log.add(logfile, loglevel)
-    
+
     # prepare context
     ctx.ensure_object(Dabapush)
 
     db: Dabapush = ctx.obj
-    log.debug(f'Starting DabaPush in {db.working_dir} from {db.install_dir}')
+    log.debug(f"Starting DabaPush in {db.working_dir} from {db.install_dir}")
+
 
 cli.add_command(reader)
 cli.add_command(writer)
@@ -59,5 +57,5 @@ cli.add_command(create)
 cli.add_command(discover)
 cli.add_command(update)
 
-if __name__ == '__main__':
-    cli(obj = Dabapush())
+if __name__ == "__main__":
+    cli(obj=Dabapush())

@@ -5,9 +5,11 @@ from loguru import logger as log
 from .ReaderConfiguration import ReaderConfiguration
 from .WriterConfiguration import WriterConfiguration
 
+
 class Registry(yaml.YAMLObject):
     """ """
-    yaml_tag = '!dabapush:Registry'
+
+    yaml_tag = "!dabapush:Registry"
 
     _instances = []
 
@@ -18,11 +20,9 @@ class Registry(yaml.YAMLObject):
         Registry._instances.append(t)
 
         return t
-        
+
     def __init__(
-        self,
-        readers: Dict[str, str] = {},
-        writers: Dict[str, str] = {}
+        self, readers: Dict[str, str] = {}, writers: Dict[str, str] = {}
     ) -> None:
         super().__init__()
 
@@ -34,7 +34,7 @@ class Registry(yaml.YAMLObject):
 
     def __repr__(self) -> str:
         return super().__repr__()
-    
+
     # --- static methods --- #
 
     @staticmethod
@@ -52,7 +52,7 @@ class Registry(yaml.YAMLObject):
         type :
             str:
         type: str :
-            
+
 
         Returns
         -------
@@ -63,12 +63,13 @@ class Registry(yaml.YAMLObject):
 
         if type in readers:
             instance_info = readers[type]
-            log.debug(f'Creating Configuration instance from {", ".join(instance_info)}.')
+            log.debug(
+                f'Creating Configuration instance from {", ".join(instance_info)}.'
+            )
             reader_configuration = import_module(
-                instance_info['moduleName'],
-                package='dabapush'
-            ).__getattribute__(instance_info['className'])
-            
+                instance_info["moduleName"], package="dabapush"
+            ).__getattribute__(instance_info["className"])
+
             return reader_configuration
 
     @staticmethod
@@ -84,7 +85,7 @@ class Registry(yaml.YAMLObject):
         type :
             str:
         type: str :
-            
+
 
         Returns
         -------
@@ -95,11 +96,12 @@ class Registry(yaml.YAMLObject):
 
         if type in writers:
             instance_info = writers[type]
-            log.debug(f'Creating Configuration instance from {", ".join(instance_info)}.')
+            log.debug(
+                f'Creating Configuration instance from {", ".join(instance_info)}.'
+            )
             writer_configuration = import_module(
-                instance_info['moduleName'],
-                package='dabapush'
-            ).__getattribute__(instance_info['className'])
+                instance_info["moduleName"], package="dabapush"
+            ).__getattribute__(instance_info["className"])
 
             return writer_configuration
 
@@ -109,14 +111,14 @@ class Registry(yaml.YAMLObject):
         # things passed in here are actually ReaderConfigurations _OR_
         # classes that inherit from that.
         return issubclass(arg, ReaderConfiguration)
-    
+
     @staticmethod
     def __ensure_writer__(arg: any) -> bool:
         # TODO: this is a stub function, which _should_ ensure that
         # things passed in here are actually WriterConfigurations _OR_
         # classes that inherit from that.
         return issubclass(arg, WriterConfiguration)
-    
+
     @staticmethod
     def list_all_readers() -> List[str]:
         """ """
@@ -131,8 +133,6 @@ class Registry(yaml.YAMLObject):
         writers = ChainMap(*a)
         return [i for i in writers]
 
-
-
     # --- instance methods --- #
     def register_reader(self, name: str, plugin_configuration) -> None:
         """
@@ -146,7 +146,7 @@ class Registry(yaml.YAMLObject):
         plugin_configuration :
             param name: str:
         name: str :
-            
+
 
         Returns
         -------
@@ -167,7 +167,7 @@ class Registry(yaml.YAMLObject):
         name :
             str:
         name: str :
-            
+
 
         Returns
         -------
@@ -187,7 +187,7 @@ class Registry(yaml.YAMLObject):
         name :
             str:
         name: str :
-            
+
 
         Returns
         -------
@@ -207,7 +207,7 @@ class Registry(yaml.YAMLObject):
         name :
             str:
         name: str :
-            
+
 
         Returns
         -------
@@ -222,4 +222,3 @@ class Registry(yaml.YAMLObject):
     def list_writers(self) -> List[str]:
         """ """
         pass
-    

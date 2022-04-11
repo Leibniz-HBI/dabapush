@@ -193,9 +193,12 @@ Contact: smo (ät) leibniz-hbi.de
 
 """
 
-__version__ = '0.1.0'
+__version__ = "0.2.0"
 
 from .Reader import TwacapicReaderConfiguration
+from .Reader import NDJSONReaderConfiguration
 from .Writer import NDJSONWriterConfiguration
 from .Writer import CSVWriterConfiguration
 from .Writer import FacebookDBWriterConfiguration
+from .Writer import TwitterDBWriterConfiguration
+from .Writer import InstagramDBWriterConfiguration
