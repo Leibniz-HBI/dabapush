@@ -23,7 +23,7 @@ writers:
     className: "FacebookDBWriterConfiguration"
   SMOIG:
     moduleName: ".Writer.InstagramDBWriter"
-    className: "FacebookDBWriterConfiguration"
+    className: "InstagramDBWriterConfiguration"
   SMODBOES:
     moduleName: ".Writer.FacebookDBWriter"
     className: "FacebookDBWriterConfiguration"
