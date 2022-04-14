@@ -40,23 +40,10 @@ class TwitterDBWriter(Writer):
 
     def __del__(self):
         print("Session and Connection Terminated")
-
+        super().__del__()
 
 class TwitterDBWriterConfiguration(DBWriterConfiguration):
     yaml_tag = "!dabapush:TwitterDBWriterConfiguration"
-
-    def __init__(
-        self,
-        name,
-        id=None,
-        chunk_size: int = 2000,
-        user: str = "postgres",
-        password: str = "password",
-        dbname: str = "public",
-        host: str = "localhost",
-        port: int = 5432,
-    ) -> None:
-        super().__init__(name, id, chunk_size, user, password, dbname, host, port)
 
     def get_instance(self):
         """ """
