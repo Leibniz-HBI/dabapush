@@ -37,26 +37,39 @@ class TwacapicReader(Reader):
 
         for i in self.files:
             with i.open() as file:
-                res = load(file)
+                if self.config.lines:
+                    _res = [loads(line) for line in file.readlines()]
+                else:
+                    _res = [load(file)]
+            for res in _res:
 
-            data = safe_access(res, ["data"])
-            includes = safe_access(res, ["includes"])
+                data = safe_access(res, ["data"])
+                includes = safe_access(res, ["includes"])
 
-            if data is not None:
-                for post in data:
-                    user = unpack(
-                        post["author_id"], safe_access(res, ["includes", "users"]), "id"
-                    )
-                    if user is not None:
-                        post["user"] = user
-                        yield flatten(post)
-            if includes is not None:
-                if "tweets" in res["includes"]:
-                    for post in res["includes"]["tweets"]:
-                        user = unpack(post["author_id"], res["includes"]["users"], "id")
+                if data is not None:
+                    for post in data:
+                        user = unpack(
+                            post["author_id"], safe_access(res, ["includes", "users"]), "id"
+                        )
                         if user is not None:
                             post["user"] = user
+                        media_keys = safe_access(post, ["attachments", "media_keys"])
+                        if media_keys is not None:
+                            media_objects = [unpack(mediakey, safe_access(res, ["includes", "media"]), "media_key") for mediakey in media_keys]
+                            if len(media_objects) != 0:
+                                post["media"] = media_objects
                         yield flatten(post)
+                if includes is not None:
+                    if "tweets" in res["includes"]:
+                        for post in res["includes"]["tweets"]:
+                            user = unpack(post["author_id"], res["includes"]["users"], "id")
+                            if user is not None:
+                                post["user"] = user
+                            if media_keys is not None:
+                                media_objects = [unpack(mediakey, safe_access(res, ["includes", "media"]), "media_key") for mediakey in media_keys]
+                                if len(media_objects) != 0:
+                                    post["media"] = media_objects
+                            yield flatten(post)
 
 
 class TwacapicReaderConfiguration(ReaderConfiguration):
