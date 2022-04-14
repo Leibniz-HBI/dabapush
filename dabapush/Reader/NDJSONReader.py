@@ -1,6 +1,5 @@
-from pathlib import Path
-import ujson
 from typing import Generator
+import ujson
 
 from .Reader import Reader
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
@@ -71,9 +70,6 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
         """
         super().__init__(name, id=id, read_path=read_path, pattern=pattern)
         self.flatten_dicts = flatten_dicts
-
-    def __repr__(self) -> str:
-        return super().__repr__()
 
     def get_instance(self) -> NDJSONReader:
         """Get a configured instance of NDJSONReader

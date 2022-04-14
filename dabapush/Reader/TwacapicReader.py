@@ -1,6 +1,5 @@
-from pathlib import Path
-from ujson import load
 from typing import Generator
+from ujson import load, loads
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from .Reader import Reader
@@ -17,7 +16,7 @@ class TwacapicReader(Reader):
         The configuration file used for reading
     """
 
-    def __init__(self, config: "TwacapicReaderConfiguration"):
+    def __init__(self, config: 'TwacapicReaderConfiguration'):
         """
         Parameters
         ----------
@@ -68,7 +67,7 @@ class TwacapicReaderConfiguration(ReaderConfiguration):
     """
 
     def __init__(
-        self, name, id=None, read_path: str = None, pattern: str = "*.json"
+        self, name, id=None, read_path: str = None, pattern: str = "*.json", lines = False
     ) -> None:
         """
         Parameters
@@ -85,8 +84,7 @@ class TwacapicReaderConfiguration(ReaderConfiguration):
         """
         super().__init__(name, id=id, read_path=read_path, pattern=pattern)
 
-    def __repr__(self) -> str:
-        return super().__repr__()
+        self.lines = lines
 
     def get_instance(self) -> TwacapicReader:
         """From this method `dabapush.Dabapush` will create the reader instance.

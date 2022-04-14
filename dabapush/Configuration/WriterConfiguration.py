@@ -10,6 +10,3 @@ class WriterConfiguration(PlugInConfiguration):
         super().__init__(name, id=id)
 
         self.chunk_size = chunk_size
-
-    def __repr__(self) -> str:
-        return super().__repr__()

@@ -1,6 +1,5 @@
 import click
 from loguru import logger as log
-import yaml
 from .Configuration.ProjectConfiguration import ProjectConfiguration
 from .Configuration.Registry import Registry
 from .Dabapush import Dabapush

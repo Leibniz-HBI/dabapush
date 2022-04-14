@@ -1,7 +1,6 @@
+import abc
+from uuid import  uuid4
 import yaml
-from uuid import UUID, uuid4
-from abc import abstractclassmethod
-
 
 class PlugInConfiguration(yaml.YAMLObject):
     """ """
@@ -14,10 +13,10 @@ class PlugInConfiguration(yaml.YAMLObject):
         self.name = name
         self.id = id if id is not None else str(uuid4())
 
-    def __repr__(self) -> str:
-        return super().__repr__()
-
-    @abstractclassmethod
-    def get_instance(self) -> "Reader" or "Writer":
-        """ """
-        pass
+    @classmethod
+    @abc.abstractclassmethod
+    def get_instance(self) -> object or None:
+        """Get a configured instance of the appropriate reader or writer plugin.
+        
+        """
+     

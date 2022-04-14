@@ -1,10 +1,12 @@
+"""Dabapush is the main application class of this project.
+
+
+"""
+from pathlib import Path
 import yaml
 from loguru import logger as log
-from pathlib import Path
 
 from .Configuration.ProjectConfiguration import ProjectConfiguration
-from .Configuration.ProjectConfiguration import ProjectConfiguration
-
 
 class Dabapush(object):
     """This is the main class for this application.
