@@ -1,16 +1,13 @@
 from pytest import fixture, skip
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
-from Configuration.Registry import Registry
+from dabapush.Configuration.Registry import Registry
 import pytest
 import yaml
 
 
 @pytest.fixture
 def conf() -> ProjectConfiguration:
-    Registry(
-        {"Twacapic": "dabapush.Reader.TwacapicReader"},
-        {"CSV": "dabapush.Writer.CSVWriter"},
-    )
+    Registry()
 
     return ProjectConfiguration()
 

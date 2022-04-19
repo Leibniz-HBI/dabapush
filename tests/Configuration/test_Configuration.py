@@ -1,14 +1,11 @@
 from pytest import fixture, skip, mark
-from Configuration.Registry import Registry
+from dabapush.Configuration.Registry import Registry
 from dabapush.Configuration.ReaderConfiguration import ReaderConfiguration
 
 
 @fixture
 def conf():
-    return Registry(
-        {"twacapic": "some.garbage", "factli": "some.other.garbage"},
-        {"twacapic": "some.garbage", "factli": "some.other.garbage"},
-    )
+    return Registry()
 
 
 # should serialize
@@ -29,8 +26,7 @@ def test_get_reader(conf: Registry):
 # should register a reader plugin and assign it a name
 def test_register_reader(conf: Registry):
     class Blub(ReaderConfiguration):
-        def __init__(self, name, id) -> None:
-            super().__init__(name, id=id)
+        pass
 
     conf.register_reader("doopy", Blub)
 
