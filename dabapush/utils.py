@@ -1,3 +1,5 @@
+from functools import reduce
+
 def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
     """Flattens a nested dictionary. The flattened keys are joined together with the specified seperator.
     `flatten` only traverses dicts, consequently `list` items are left as is.
@@ -74,6 +76,29 @@ def safe_access(thing: dict, path: list[str]):
             break
     return res
 
+def safe_write(thing: dict, path: list[str], key: str, value: any) -> dict:
+    """Safely access deep values in a nested dict without risking running into a `KeyException`.
+    If the specified key path is not present in the dict `safe_access` returns `None`.
+
+    Parameters
+    ----------
+    thing : dict
+        A (possibly deeply nested) dictionary to retrieve values from.
+    path : list[str]
+        List of keys
+    Returns
+    -------
+    any or None:
+        Returns whichever value is at the leaf of the specified key path or None if no such value exists.
+    """
+    def packer(acc: dict, item: str):
+        if item not in acc:
+            acc[item] = {}
+        return acc[item]
+
+    d = reduce(packer, path, thing)
+    d[key] = value
+    return thing
 
 def unpack(id: str, includes: list[any], id_key: str) -> any or None:
     """Looks up an entity in a array of dicts by given key.
