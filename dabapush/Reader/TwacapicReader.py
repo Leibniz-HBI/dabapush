@@ -1,10 +1,10 @@
-from typing import Generator
+from typing import Dict, Generator, List
 from ujson import load, loads
+from loguru import logger as log
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from .Reader import Reader
-from ..utils import unpack, safe_access, flatten
-
+from ..utils import safe_write, unpack, safe_access, flatten
 
 class TwacapicReader(Reader):
     """Reader to read ready to read Twitter json data.
@@ -25,6 +25,81 @@ class TwacapicReader(Reader):
         """
         super().__init__(config)
 
+    def unpack_tweet(
+            self,
+            tweet: Dict,
+            includes: Dict,
+            keys: List[str] = ["media", "user", "entities.mentions"]
+        ):
+
+        possible_keys = ["media","user","entities.mentions"]
+        targets = {
+            "user" : {
+                "tweet_id_field" : "author_id",
+                "tweet_path": [],
+                "includes_id_field" : "id",
+                "includes_field": "users",
+                "target_path": ["user"],
+                "multiple": False
+            },
+            "media" : {
+                "tweet_id_field" : None,
+                "tweet_path" : ["attachments", "media_keys"],
+                "includes_id_field" : "media_key",
+                "includes_field": "media",
+                "target_path" : ["media"],
+                "multiple": True
+            },
+            "entities.mentions" : {
+                "tweet_id_field" : "username",
+                "tweet_path" : ["entities", "mentions"],
+                "includes_id_field" : "username",
+                "includes_field": "users",
+                "target_path" : ["entities", "mentions"],
+                "multiple": True
+            }
+        }
+
+        def handle_item(job_item, job):
+            tweet_id_field: str or None = job["tweet_id_field"]
+            id = job_item[tweet_id_field] if tweet_id_field is not None\
+                else job_item
+            if id is None:
+                raise f"id cannot be None in {job} and {job_item}"
+            includes_key = safe_access(job, ["includes_field"])
+            if includes_key not in includes:
+                log.warning(f'key not present in additional information dict in: {job}')
+                return
+            return unpack(id, includes[includes_key], job["includes_id_field"])
+
+        for key in keys:
+            if key in possible_keys:
+                job = targets[key]
+                multiple = job["multiple"]
+                
+                path = job["tweet_path"]
+                if path is None:
+                    raise Exception(f"Accessor path cannot be empty in {job}")
+                # see if we'd expect a list
+                if multiple is True:
+                    job_list: List[any] or None = safe_access(tweet, path)
+                    if job_list is None or len(job_list) == 0:
+                        continue
+                    value = [handle_item(_, job) for _ in job_list]
+                else:
+                    job_item = safe_access(tweet, path)
+                    if job_item is None:
+                        continue
+                    value = handle_item(job_item, job)
+                if type(value) == list:
+                    value = [_ for _ in value if _ is not None]
+                if value is None or len(value) == 0:
+                    log.warning(f'Tweet rejoining failed for {tweet} in job: {job}')
+                    continue 
+                safe_write(tweet, job["target_path"], key=None, value=value)
+        log.debug(f'Parsed tweet: {tweet}')
+        return tweet
+
     def read(self) -> Generator[dict, None, None]:
         """reads the configured path a returns a generator of single posts.
         Under normal circumstances you don't need to call this function as everything is handle by `dabapush.Dabapush`.
@@ -35,9 +110,11 @@ class TwacapicReader(Reader):
         type: Generator[dict, None, None]
         """
 
+        config: TwacapicReaderConfiguration = self.config
+
         for i in self.files:
             with i.open() as file:
-                if self.config.lines:
+                if config.lines:
                     _res = [loads(line) for line in file.readlines()]
                 else:
                     _res = [load(file)]
@@ -48,29 +125,13 @@ class TwacapicReader(Reader):
 
                 if data is not None:
                     for post in data:
-                        user = unpack(
-                            post["author_id"], safe_access(res, ["includes", "users"]), "id"
-                        )
-                        if user is not None:
-                            post["user"] = user
-                        media_keys = safe_access(post, ["attachments", "media_keys"])
-                        if media_keys is not None:
-                            media_objects = [unpack(mediakey, safe_access(res, ["includes", "media"]), "media_key") for mediakey in media_keys]
-                            if len(media_objects) != 0:
-                                post["media"] = media_objects
+                        post = self.unpack_tweet(post, includes)
                         yield flatten(post)
-                if includes is not None:
+                if includes is not None and config.emit_references is True:
                     if "tweets" in res["includes"]:
                         for post in res["includes"]["tweets"]:
-                            user = unpack(post["author_id"], res["includes"]["users"], "id")
-                            if user is not None:
-                                post["user"] = user
-                            if media_keys is not None:
-                                media_objects = [unpack(mediakey, safe_access(res, ["includes", "media"]), "media_key") for mediakey in media_keys]
-                                if len(media_objects) != 0:
-                                    post["media"] = media_objects
+                            post = self.unpack_tweet(post, includes)
                             yield flatten(post)
-
 
 class TwacapicReaderConfiguration(ReaderConfiguration):
     """Reader configuration for reading Twacapic's Twitter JSON files."""
@@ -80,7 +141,7 @@ class TwacapicReaderConfiguration(ReaderConfiguration):
     """
 
     def __init__(
-        self, name, id=None, read_path: str = None, pattern: str = "*.json", lines = False
+        self, name, id=None, read_path: str = None, pattern: str = "*.json", lines = False, emit_references = False
     ) -> None:
         """
         Parameters
@@ -98,6 +159,7 @@ class TwacapicReaderConfiguration(ReaderConfiguration):
         super().__init__(name, id=id, read_path=read_path, pattern=pattern)
 
         self.lines = lines
+        self.emit_references = emit_references
 
     def get_instance(self) -> TwacapicReader:
         """From this method `dabapush.Dabapush` will create the reader instance.
