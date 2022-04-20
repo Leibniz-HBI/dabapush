@@ -35,7 +35,9 @@ class TwitterDBWriter(Writer):
         data = self.buffer
         self.buffer = []
 
-        [self.twitter_initializer.twitter_insert(_) for _ in data]
+        for _ in data:
+            self.twitter_initializer.twitter_insert(_)
+            
         self.twitter_initializer.local_session.commit()
 
     def __del__(self):
