@@ -76,7 +76,7 @@ def safe_access(thing: dict, path: list[str]):
             break
     return res
 
-def safe_write(thing: dict, path: list[str], key: str, value: any) -> dict:
+def safe_write(thing: dict, path: list[str], key: str or None, value: any) -> dict:
     """Safely access deep values in a nested dict without risking running into a `KeyException`.
     If the specified key path is not present in the dict `safe_access` returns `None`.
 
@@ -95,6 +95,8 @@ def safe_write(thing: dict, path: list[str], key: str, value: any) -> dict:
         if item not in acc:
             acc[item] = {}
         return acc[item]
+    if key is None:
+        key = path.pop()
 
     d = reduce(packer, path, thing)
     d[key] = value
