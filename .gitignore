@@ -136,3 +136,5 @@ poetry.lock
 # data
 *.csv
 .dabapush.touched.yml
+*.ipynb
+dabapush.yml
