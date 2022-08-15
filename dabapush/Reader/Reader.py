@@ -59,6 +59,7 @@ class Reader(abc.ABC):
             for a in (_ for _ in fresh if str(_) not in [f["file"] for f in oldstock])
         )
 
+    # TODO: Move this functionality to Dabapush, it should manage waht has been done and what has not
     def _log(self, file: Path) -> Path:
         with self.log_path.open("a") as f:
             ujson.dump({"file": str(file), "status": "read"}, f)
