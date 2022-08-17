@@ -2,11 +2,13 @@
 
 Data Base pusher for social media data (Twitter for the beginning) – pre-alpha version
 
-## Developer Install
+## Developer Installation
 
-1. Install [poetry](https://python-poetry.org/docs/#installation)
-2. Clone repository
-3. In the cloned repository's root directory run `poetry install`
-4. Run `poetry shell` to start development virtualenv
-5. Run `twacapic` to enter API keys. Ignore the IndexError.
-6. Run `pytest` to run all tests
+1. Install `poetry` if you don't have it: `pipx install poetry`.
+2. Clone this repo, go into the repo's folder.
+3. Install the dependencies with `poetry install` and spawn a shell in your new virtual environment with `poetry shell`.
+3. To run tests type `pytest`, to try dabapush run `dabapush --help`.   
+
+---
+
+[Philipp Kessling](mailto:p.kessling@leibniz-hbi.de) under MIT.
