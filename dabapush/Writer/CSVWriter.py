@@ -1,12 +1,18 @@
+"""CSVWriter, Philipp Kessling, 2022
+Leibniz-Institute for Media Research Hamburg
+"""
+
+from pathlib import Path
+
 import pandas as pd
 from loguru import logger as log
-from pathlib import Path
-from .Writer import Writer
+
 from ..Configuration.FileWriterConfiguration import FileWriterConfiguration
+from .Writer import Writer
 
 
 class CSVWriter(Writer):
-    """ """
+    """Writes CSVs from buffered stream"""
 
     def __init__(self, config: "CSVWriterConfiguration"):
         super().__init__(config)
@@ -14,7 +20,7 @@ class CSVWriter(Writer):
         self.chunk_number = 1
 
     def persist(self):
-        """ """
+        """persist buffer to disk"""
 
         last_rows = self.buffer
         self.buffer = []
@@ -23,7 +29,7 @@ class CSVWriter(Writer):
         _path = Path(self.config.path) / self.config.make_file_name(
             {"chunk_number": self.chunk_number}
         )
-        pd.DataFrame.from_dict(last_rows).replace(r"\n|\r", r"\\n", regex=True).to_csv(
+        pd.DataFrame(last_rows).replace(r"\n|\r", r"\\n", regex=True).to_csv(
             _path, index=False
         )
         self.chunk_number += 1
@@ -32,14 +38,14 @@ class CSVWriter(Writer):
 
 
 class CSVWriterConfiguration(FileWriterConfiguration):
-    """ """
+    """Configuration for the CSVWriter"""
 
     yaml_tag = "!dabapush:CSVWriterConfiguration"
 
-    def __init__(
+    def __init__(  # pylint: disable=R0913
         self,
         name,
-        id=None,
+        id=None,  # pylint: disable=W0622
         chunk_size: int = 2000,
         path: str = ".",
         name_template: str = "${date}_${time}_${name}_${chunk_number}.${type}",
@@ -51,12 +57,12 @@ class CSVWriterConfiguration(FileWriterConfiguration):
 
     @property
     def file_path(self) -> Path:
-        """ """
+        """get the path to a file to write in"""
         # evalutate self.name_template
         file_name = self.make_file_name()
         # append to self.path and return
-        return self.path / file_name
+        return Path(self.path) / file_name
 
-    def get_instance(self):
-        """ """
+    def get_instance(self):  # pylint: disable=W0221
+        """get configured instance of CSVWriter"""
         return CSVWriter(self)
