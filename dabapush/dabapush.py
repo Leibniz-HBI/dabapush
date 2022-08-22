@@ -1,13 +1,12 @@
 from pathlib import Path
 import pathlib
-import importlib
-from typing import Dict, Literal
+from importlib_metadata import entry_points, EntryPoint
+from typing import Dict
 import click
 import sys
 import yaml
 from multiprocessing import cpu_count
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from threading import get_ident
+from concurrent.futures import ThreadPoolExecutor
 from loguru import logger as log
 from .read import read
 
@@ -71,48 +70,44 @@ def run(
 
     log.info(f'{input}**/*.{pattern} will be written to {host}:{port}/{dbname} with {n_workers} parallel threads')
 
-    ReaderClass = None
     # Load the reader/writer:
-    ReaderClass = load_from_config(reader, 'reader', config)
-    WriterClass = load_from_config(writer, 'writer', config)
+    reader_class = load_from_config(reader, 'reader', config)
+    writer_class = load_from_config(writer, 'writer', config)
+
+    if reader_class is None or writer_class is None:
+        log.error("Error in loading plugins. Aborting.")
+        sys.exit(127)
 
     # Fire up the engines and find in all matching files
     files = read(input, pattern, recursive=recursive)
 
     # Get a Writer
-    writerInstance = WriterClass()
+    writer_instance = writer_class()
 
     def proop(thing: Path) -> any:
         if str(thing) not in touched:
-            readerInstance = ReaderClass(thing)
+            reader_instance = reader_class(thing)
             log.debug(f'Reading {thing}')
             touched.append(str(thing))
-            return writerInstance.write(readerInstance.read())
-        
-    with ThreadPoolExecutor() as executor:
-        # log.debug(f'Starting {active_count()} threads.')
-        lines = executor.map(proop, files)
-        # log.info(f'Read a total of {sum(lines)} records')
 
+            return writer_instance.write(reader_instance.read())
+    lines = [proop(_) for _ in files]
+    # with ThreadPoolExecutor() as executor:
+    #     # log.debug(f'Starting {active_count()} threads.')
+    #     lines = executor.map(proop, files)
+    #     # log.info(f'Read a total of {sum(lines)} records')
+    log.info(f"Processed {len(lines)} files.")
     with touched_path.open('w') as file:
         yaml.dump(touched,file)
 
 def load_from_config(name: str, key: str, config: Dict):
-    if (name is not None and name in config['plugins'][key].keys()):
-        log.debug(f'Using this {key}: {name}')
-        ReaderClass = None
-        try:
-            moduleName = config['plugins'][key][name]['moduleName']
-            className = config['plugins'][key][name]['className']
-            ReaderClass = importlib.import_module(moduleName, package='dabapush').__getattribute__(className)
-        except Exception as e:
-            log.error(e)
-        return ReaderClass
+    plugins = entry_points(group='dabapush077')
+    
+    res: list[EntryPoint] = [x for  x in plugins if x.name == name]
+    print('plugins:', res)
+    if len(res) == 1:
+        log.debug(f"Loading {name}.")
+        return res[0].load()
     else:
         log.warning(f'{key.upper()} {name} cannot be found')
-    # start $n_workers workers to read the data
-    # if JSON accecssor is given, apply it to each loaded file
-    # writer(host, port, dbname)
-
-if __name__ == '__main__':
-    run()
+        return

@@ -39,7 +39,7 @@ class Writer(object):
         # create output file
         with self.path.open('w') as file:
             file.writelines(f'{",".join(self.schema)}\n')
-        self.chunkSize = 100
+        self.chunkSize = 2000
 
     def __del__(self):
         # flush buffer before destruction
