@@ -24,6 +24,9 @@ writers:
   SMOIG:
     moduleName: ".Writer.InstagramDBWriter"
     className: "InstagramDBWriterConfiguration"
+  SMOTG:
+    moduleName: ".Writer.TelegramDBWriter"
+    className: "TelegramDBWriterConfiguration"
   SMODBOES:
     moduleName: ".Writer.FacebookDBWriter"
     className: "FacebookDBWriterConfiguration"
