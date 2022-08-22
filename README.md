@@ -181,7 +181,3 @@ Options:
 4. Run `poetry shell` to start development virtualenv
 5. Run `dabapush create` to create your first project.
 6. Run `pytest` to run all tests
-
-----
-
-Contact: smo (ät) leibniz-hbi.de
