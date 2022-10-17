@@ -5,35 +5,44 @@ Version: 0.1.0, date: 2022/02/18
 
 ## Using dabapush
 
-`dabapush` is a tool to read longer running data collections and write them to another file format or persist them into a database. It is designed to run periodically, e.g. controlled by chron, thus, for convenience ot use project-based configurations which contain all required information on what to read where and what to do with it.
-A **project** may have one or more **jobs**, each job consists of a reader and a writer configuration, e.g. read JSON-files from the Twitter API that we stored in folder `/home/user/fancy-project/twitter/` and write the flattened and compiled data set in to `/some/where/else` as CSV files.
+`dabapush` is a tool to read longer running data collections and write them to
+another file format or persist them into a database. It is designed to run
+periodically, e.g. controlled by chron, thus, for convenience ot use project-based
+configurations which contain all required information on what to read
+where and what to do with it.
+A **project** may have one or more **jobs**, each job consists of a reader and a
+writer configuration, e.g. read JSON-files from the Twitter API that we stored
+in folder `/home/user/fancy-project/twitter/` and write the flattened and
+compiled data set in to `/some/where/else` as CSV files.
 
 ### First steps
 
-In order to run a first `dabapush`-job we'll need to create a project configuration. This is done by calling:
+In order to run a first `dabapush`-job we'll need to create a project configuration.
+This is done by calling:
 
 ```
 dabapush create
 ```
 
-By default this walks you through the configuration process in a step-by-step manner. Alternatively, you could call:
+By default this walks you through the configuration process in a step-by-step
+manner. Alternatively, you could call:
 
 ```
 dabapush create --non-interactive
 ```
 
-This will create an empty configuration, you'll have to fill out the required information by e.g. calling:
+This will create an empty configuration, you'll have to fill out the required
+information by e.g. calling:
 
 ```
 dabapush reader add NDJSON default
 dabapush writer add CSV default
 ```
-Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin to add and `default` is the pipeline name. 
+Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin
+to add and `default` is the pipeline name.
 
-Of course you can edit the configration after creation in your favorite editor, but **BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!**.
-
-Although, 
-
+Of course you can edit the configration after creation in your favorite editor,
+but **BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!**.
 
 To run the newly configured job, please call:
 
@@ -85,9 +94,12 @@ Options:
 
 `reader` -- interact with readers
 
-`reader configure <name>` -- configure the reader for one or more subproject(s); Reader configuration is inherited from global to local level; throws if configuration is incomplete and defaults are missing
+`reader configure <name>` -- configure the reader for one or more subproject(s);
+Reader configuration is inherited from global to local level; throws if
+configuration is incomplete and defaults are missing
 
-`reader list`: returns a table of all configured readers, with <path> <target> <class> <id>
+`reader list`: returns a table of all configured readers, with <path>
+<target> <class> <id>
 
 `reader list_all`: returns a table of all registered reader plugins
 
@@ -105,13 +117,14 @@ Options:
 
 ----
 
-`discover` -- discover (possible) targtets in project directory and configure them automagically -- yeah, you dream of that, don't you?
+`discover` -- discover (possible) targtets in project directory and configure
+them automagically -- yeah, you dream of that, don't you?
 
 ----
 
 `writer` -- interact with writers
 
-`writer add <type> <name>`: 
+`writer add <type> <name>`:
 
 `writer remove <name>`: removes the writer for the given name
 
@@ -125,13 +138,15 @@ Options:
 
 `--output-dir, -o <path>`: default for all targets: `<project-dir>/output/<target-name>`
 
-`--output-pattern, -p <pattern>`: pattern used for file name creation e.g. 'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten
+`--output-pattern, -p <pattern>`: pattern used for file name creation e.g.
+'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten
 
 `--roll-over, -r `<file-size>:
 
-`--roll-over, -r` <lines>: 
+`--roll-over, -r` <lines>:
 
-`--roll-over -r <None>`: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking
+`--roll-over -r <None>`: should be the output chunked? Give either a
+file-size or a number of lines for roll-over or None to disable chunking
 
 `writer register <path> <class-name>`: something for the roadmap.
 
@@ -142,7 +157,8 @@ Options:
 
 ## Extending dabapush and developers guide
 
-Dabapush is easily extenable by creating new classes which inherit from either the Reader- or the Writer-class (for specifics see `dabapush.Reader.Reader` and `dabapush.Writer`).
+Dabapush is easily extenable by creating new classes which inherit from either
+the Reader- or the Writer-class (for specifics see `dabapush.Reader.Reader` and `dabapush.Writer`).
 
 
 ### dabapush's Approach to Projects and Configuration
@@ -195,10 +211,11 @@ Contact: smo (ät) leibniz-hbi.de
 
 __version__ = "0.2.0"
 
-from .Reader import TwacapicReaderConfiguration
-from .Reader import NDJSONReaderConfiguration
-from .Writer import NDJSONWriterConfiguration
-from .Writer import CSVWriterConfiguration
-from .Writer import FacebookDBWriterConfiguration
-from .Writer import TwitterDBWriterConfiguration
-from .Writer import InstagramDBWriterConfiguration
+from .Reader import NDJSONReaderConfiguration, TwacapicReaderConfiguration
+from .Writer import (
+    CSVWriterConfiguration,
+    FacebookDBWriterConfiguration,
+    InstagramDBWriterConfiguration,
+    NDJSONWriterConfiguration,
+    TwitterDBWriterConfiguration,
+)
