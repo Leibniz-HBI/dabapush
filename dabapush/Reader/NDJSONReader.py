@@ -1,14 +1,18 @@
+"""NDJSON Writer plug-in for dabapush"""
+# pylint: disable=R
 from typing import Generator
+
 import ujson
 
-from .Reader import Reader
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..utils import flatten
+from .Reader import Reader
 
 
 class NDJSONReader(Reader):
     """Reader to read ready to read NDJSON data.
-    It matches files in the path-tree against the pattern and reads all files and all lines in these file as JSON.
+    It matches files in the path-tree against the pattern and reads all
+    files and all lines in these file as JSON.
 
     Attributes
     ----------
@@ -23,9 +27,8 @@ class NDJSONReader(Reader):
         """reads multiple ndjson files and emits them line by line"""
         for file_path in self.files:
             with file_path.open("r") as file:
-                lines = file.readlines()
-                for line in lines:
-                    if self.config.flatten_dicts != True:
+                for line in file:
+                    if self.config.flatten_dicts is not True:
                         yield ujson.loads(line)
                     else:
                         yield flatten(ujson.loads(line))
@@ -48,7 +51,7 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
     def __init__(
         self,
         name,
-        id=None,
+        id=None,  # pylint: disable=W0622
         read_path: str = ".",
         pattern: str = "*.ndjson",
         flatten_dicts=True,
@@ -71,7 +74,7 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
         super().__init__(name, id=id, read_path=read_path, pattern=pattern)
         self.flatten_dicts = flatten_dicts
 
-    def get_instance(self) -> NDJSONReader:
+    def get_instance(self) -> NDJSONReader:  # pylint: disable=W0221
         """Get a configured instance of NDJSONReader
 
         Returns
