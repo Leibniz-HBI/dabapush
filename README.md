@@ -11,44 +11,42 @@ A **project** may have one or more **jobs**, each job consists of a reader and a
 
 In order to run a first `dabapush`-job we'll need to create a project configuration. This is done by calling:
 
-```
+```bash
 dabapush create
 ```
 
 By default this walks you through the configuration process in a step-by-step manner. Alternatively, you could call:
 
-```
+```bash
 dabapush create --non-interactive
 ```
 
 This will create an empty configuration, you'll have to fill out the required information by e.g. calling:
 
-```
+```bash
 dabapush reader add NDJSON default
 dabapush writer add CSV default
 ```
-Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin to add and `default` is the pipeline name. 
+
+Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin to add and `default` is the pipeline name.
 
 Of course you can edit the configration after creation in your favorite editor, but **BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!**.
 
-Although, 
-
-
 To run the newly configured job, please call:
 
-```
+```bash
 dabapush run default
 ```
 
 ## Command Reference
 
-### Invocation Pattern:
+### Invocation Pattern
 
-```
+```bash
 dabapush <command> <subcommand?> <options>
 ```
 
-### Commands:
+### Commands
 
 `create` -- creates a dabapush project (invokes interactive prompt)
 
@@ -79,14 +77,13 @@ Options:
 
 `update <target>` or `update all` -- update the target's files-to-be-read list
 
-
 ----
 
 `reader` -- interact with readers
 
 `reader configure <name>` -- configure the reader for one or more subproject(s); Reader configuration is inherited from global to local level; throws if configuration is incomplete and defaults are missing
 
-`reader list`: returns a table of all configured readers, with <path> <target> <class> <id>
+`reader list`: returns a table of all configured readers, with `<path> <target> <class> <id>`
 
 `reader list_all`: returns a table of all registered reader plugins
 
@@ -104,17 +101,17 @@ Options:
 
 ----
 
-`discover` -- discover (possible) targtets in project directory and configure them automagically -- yeah, you dream of that, don't you?
+`discover` -- discover (possible) targets in project directory and configure them automagically -- yeah, you dream of that, don't you?
 
 ----
 
 `writer` -- interact with writers
 
-`writer add <type> <name>`: 
+`writer add <type> <name>`:
 
 `writer remove <name>`: removes the writer for the given name
 
-`writer list` -- returns table of all writers, with <path> <subproject-name> <class> <id>
+`writer list` -- returns table of all writers, with `<path> <subproject-name> <class> <id>`
 
 `writer list_all`: returns a table of all registered writer plugins
 
@@ -126,9 +123,9 @@ Options:
 
 `--output-pattern, -p <pattern>`: pattern used for file name creation e.g. 'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten
 
-`--roll-over, -r `<file-size>:
+`--roll-over, -r ``<file-size>`:
 
-`--roll-over, -r` <lines>: 
+`--roll-over, -r` `<lines>`:
 
 `--roll-over -r <None>`: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking
 
@@ -137,7 +134,6 @@ Options:
 `deregister <name> <registry-name>`: something for the roadmap.
 
 ## Programmatic documention
-
 
 ## Extending dabapush and developers guide
 
@@ -173,6 +169,7 @@ Options:
 |                   |     |
 |                   |     |
 |                   |     |
+
 ### Developer Installation
 
 1. Install [poetry](https://python-poetry.org/docs/#installation)

@@ -2,7 +2,11 @@
 name = "dabapush"
 version = "0.2.1"
 description = ""
-authors = ["Philipp Kessling <p.kessling@leibniz-hbi.de>", "Aditya Kumar <a.kumar@leibniz-hbi.de>", "Felix Victor Münch <f.muench@leibniz-hbi.de>"]
+authors = [
+	"Philipp Kessling <p.kessling@leibniz-hbi.de>",
+	"Aditya Kumar <a.kumar@leibniz-hbi.de>",
+	"Felix Victor Münch <f.muench@leibniz-hbi.de>"
+]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/Leibniz-HBI/dabapush"
@@ -18,28 +22,28 @@ packages = [
 include = ["config.yml"]
 
 [tool.poetry.dependencies]
-python = ">3.8,<4.0"
-click = "^8.1.3"
-SQLAlchemy = "^1.4.22"
-loguru = "^0.5.3"
-pandas = "^1.3.1"
-PyYAML = "^5.4.1"
-importlib-metadata = "^4.12.0"
-ujson = "^5.4.0"
-psycopg2-binary = "^2.9.3"
+python = ">=3.8,<4.0*"
+click = "*"
+SQLAlchemy = "*"
+loguru = "*"
+pandas = "*"
+PyYAML = "*"
+importlib-metadata = "*"
+ujson = "*"
+psycopg2-binary = "*"
 
 [tool.poetry.scripts]
 dabapush = 'dabapush.main:cli'
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.1.2"
-pytest-cov = "^3.0.0"
-black = "^22.6.0"
-coverage = "^6.4.2"
-pdoc3 = "^0.10.0"
-pre-commit = "^2.20.0"
-isort = "^5.10.1"
-pylint = "^2.14.5"
+pytest = "*"
+pytest-cov = "*"
+black = "*"
+coverage = "*"
+pdoc3 = "*"
+pre-commit = "*"
+isort = "*"
+pylint = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
