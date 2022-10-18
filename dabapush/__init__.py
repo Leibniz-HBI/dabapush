@@ -1,17 +1,19 @@
 """
+# dabapush
+
 Database pusher for social media data (Twitter for the beginning) – pre-alpha version
 
-Version: 0.1.0, date: 2022/02/18
+Version: 0.3.0, date: 2022/10/18
 
 ## Using dabapush
 
 `dabapush` is a tool to read longer running data collections and write them to
 another file format or persist them into a database. It is designed to run
-periodically, e.g. controlled by chron, thus, for convenience ot use project-based
-configurations which contain all required information on what to read
-where and what to do with it.
-A **project** may have one or more **jobs**, each job consists of a reader and a
-writer configuration, e.g. read JSON-files from the Twitter API that we stored
+periodically, e.g. controlled by chron, thus, for convenience ot use
+project-based configurations which contain all required information on what to
+read where and what to do with it.
+A **project** may have one or more **jobs**, each job consists of a reader and
+a writer configuration, e.g. read JSON-files from the Twitter API that we stored
 in folder `/home/user/fancy-project/twitter/` and write the flattened and
 compiled data set in to `/some/where/else` as CSV files.
 
@@ -20,24 +22,25 @@ compiled data set in to `/some/where/else` as CSV files.
 In order to run a first `dabapush`-job we'll need to create a project configuration.
 This is done by calling:
 
-```
+```bash
 dabapush create
 ```
 
 By default this walks you through the configuration process in a step-by-step
 manner. Alternatively, you could call:
 
-```
+```bash
 dabapush create --non-interactive
 ```
 
 This will create an empty configuration, you'll have to fill out the required
 information by e.g. calling:
 
-```
+```bash
 dabapush reader add NDJSON default
 dabapush writer add CSV default
 ```
+
 Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin
 to add and `default` is the pipeline name.
 
@@ -46,19 +49,19 @@ but **BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!**.
 
 To run the newly configured job, please call:
 
-```
+```bash
 dabapush run default
 ```
 
 ## Command Reference
 
-### Invocation Pattern:
+### Invocation Pattern
 
-```
+```bash
 dabapush <command> <subcommand?> <options>
 ```
 
-### Commands:
+### Commands
 
 `create` -- creates a dabapush project (invokes interactive prompt)
 
@@ -85,21 +88,13 @@ Options:
 
 ----
 
-`update` -- update items for target(s)
-
-`update <target>` or `update all` -- update the target's files-to-be-read list
-
-
-----
-
 `reader` -- interact with readers
 
 `reader configure <name>` -- configure the reader for one or more subproject(s);
-Reader configuration is inherited from global to local level; throws if
-configuration is incomplete and defaults are missing
+Reader configuration is inherited from global to local level;
+throws if configuration is incomplete and defaults are missing
 
-`reader list`: returns a table of all configured readers, with <path>
-<target> <class> <id>
+`reader list`: returns a table of all configured readers, with `<path> <target> <class> <id>`
 
 `reader list_all`: returns a table of all registered reader plugins
 
@@ -117,7 +112,7 @@ Options:
 
 ----
 
-`discover` -- discover (possible) targtets in project directory and configure
+`discover` -- discover (possible) targets in project directory and configure
 them automagically -- yeah, you dream of that, don't you?
 
 ----
@@ -128,7 +123,7 @@ them automagically -- yeah, you dream of that, don't you?
 
 `writer remove <name>`: removes the writer for the given name
 
-`writer list` -- returns table of all writers, with <path> <subproject-name> <class> <id>
+`writer list` -- returns table of all writers, with `<path> <subproject-name> <class> <id>`
 
 `writer list_all`: returns a table of all registered writer plugins
 
@@ -138,74 +133,29 @@ Options:
 
 `--output-dir, -o <path>`: default for all targets: `<project-dir>/output/<target-name>`
 
-`--output-pattern, -p <pattern>`: pattern used for file name creation e.g.
-'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten
+`--output-pattern, -p <pattern>`: pattern used for file name creation e.g. 'YYYY-MM-dd',
+file extension is added by the writer and cannot be overwritten
 
-`--roll-over, -r `<file-size>:
+`--roll-over, -r ``<file-size>`:
 
-`--roll-over, -r` <lines>:
+`--roll-over, -r` `<lines>`:
 
-`--roll-over -r <None>`: should be the output chunked? Give either a
-file-size or a number of lines for roll-over or None to disable chunking
-
-`writer register <path> <class-name>`: something for the roadmap.
-
-`deregister <name> <registry-name>`: something for the roadmap.
-
-## Programmatic documention
-
+`--roll-over -r <None>`: should be the output chunked? Give either a file-size
+or a number of lines for roll-over or None to disable chunking
 
 ## Extending dabapush and developers guide
 
-Dabapush is easily extenable by creating new classes which inherit from either
-the Reader- or the Writer-class (for specifics see `dabapush.Reader.Reader` and `dabapush.Writer`).
-
-
-### dabapush's Approach to Projects and Configuration
-
-### Class References
-
-| **Dabapush** |     |
-| ------------ | --- |
-|              |     |
-|              |     |
-|              |     |
-|              |     |
-
-| **Reader** |     |
-| ---------- | --- |
-|            |     |
-|            |     |
-|            |     |
-|            |     |
-
-| **Writer** |     |
-| ---------- | --- |
-|            |     |
-|            |     |
-|            |     |
-|            |     |
-
-| **Configuration** |     |
-|                   |     |
-| ----------------- | --- |
-|                   |     |
-|                   |     |
-|                   |     |
-|                   |     |
+Dabapush's reader and writer plug-ins are registered via entry point: `dabapush_readers`
+for readers and `dabapush_writers` for writers. Both expect `Configuration`-subclass.
 
 ### Developer Installation
 
-1. Install [poetry](https://python-poetry.org/docs/#installation).
-2. Clone repository.
-3. In the cloned repository's root directory run `poetry install`.
-4. Run `poetry shell` to start development virtualenv.
+1. Install [poetry](https://python-poetry.org/docs/#installation)
+2. Clone repository
+3. In the cloned repository's root directory run `poetry install`
+4. Run `poetry shell` to start development virtualenv
 5. Run `dabapush create` to create your first project.
-6. Run `pytest` to run all tests.
-7. Run `pdoc --http localhost:8080 dabapush` to locally serve this documentation.
-----
-
-Contact: smo (ät) leibniz-hbi.de
+6. Run `pytest` to run all tests
 
 """
 
