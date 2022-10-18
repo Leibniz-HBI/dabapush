@@ -69,7 +69,7 @@ def list(ctx):
     """
     writers = ctx.obj.wr_list()
     for key in writers:
-        click.echo(f"- {key}:\t")
+        click.echo(f"- {key}")
 
 
 @writer.command(help="Configure the writer with given name")

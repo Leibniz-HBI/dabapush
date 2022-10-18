@@ -92,7 +92,7 @@ def list(ctx):
     """
     readers = ctx.obj.rd_list()
     for key in readers:
-        click.echo(f"- {key}:\t")
+        click.echo(f"- {key}")
 
 
 @reader.command(help="Configure the reader with given name")
@@ -130,33 +130,3 @@ def configure(ctx: click.Context, parameter: List[str], name: str):
     db: Dabapush = ctx.obj
     db.rd_update(name, params)
     db.pr_write()
-
-
-# @reader.command(help='register a reader class plugin')
-# @click.argument('name')
-# @click.argument('path', type=click.Path(dir_okay=False, exists=True))
-# @click.option('--global', '-g', help='register globally, files are copied into plugin folder', default=False)
-# def register():
-#     """ """
-#     # branch if global
-#         # check wether class is valid, i.e. is a descendant of Reader
-#         # copy to source file pluginfolder (is that a good idea?)
-#         # rewrite global conf with updated plugin registry
-#     # branch if local
-#         # check wether class is valid
-#         # rewrite local configuration with a plugin registry
-#     pass
-
-# @reader.command(help='unregister a reader class plugin')
-# @click.argument('name')
-# @click.option('--global', '-g', help='register globally, files are copied into plugin folder', default=False)
-# def unregister():
-#     """ """
-#     # branch if global
-#         # check wether name exists in registry
-#         # delete source file from pluginfolder (is that a good idea?)
-#         # rewrite global conf with updated plugin registry
-#     # branch if local
-#         # check wether name exists in registry
-#         # rewrite local configuration with a plugin registry
-#     pass

@@ -3,12 +3,15 @@
 
 """
 from pathlib import Path
+
 import yaml
 from loguru import logger as log
 
-from .Configuration.ProjectConfiguration import ProjectConfiguration
+from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
+from dabapush.Configuration.Registry import Registry
 
-class Dabapush(object):
+
+class Dabapush:
     """This is the main class for this application.
 
     It is a Singleton pattern class and follows the interface pattern as well.
@@ -34,9 +37,10 @@ class Dabapush(object):
             cls.__instance__.working_dir = working_dir
             cls.__instance__.install_dir = install_dir
             # load global config
-            cls.__instance__.gc_load()
             if not cls.__instance__.pr_read():
                 cls.__instance__.pr_init()
+
+            cls.global_config = Registry()
             log.debug(
                 f"Staring DabaPush instance with gc: {cls.__instance__.global_config} and cf: {cls.__instance__.config}"
             )
@@ -205,9 +209,3 @@ class Dabapush(object):
     def jb_update(self):
         """update the current job's targets"""
         pass
-
-    def gc_load(self):
-        """load the global registry and configuration"""
-        conf_path = self.install_dir / "config.yml"
-        with conf_path.open("r") as file:
-            self.global_config = yaml.full_load(file)
