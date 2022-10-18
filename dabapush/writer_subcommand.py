@@ -1,13 +1,16 @@
+"""CLI subcommands for writer manipulation"""
+# pylint: disable=W0622
 from typing import List
+
 import click
 
 from .Dabapush import Dabapush
 
+
 # Writer
 @click.group()
 def writer():
-    """ """
-    pass
+    """writer command"""
 
 
 @writer.command()
@@ -15,28 +18,13 @@ def writer():
     "--parameter",
     "-p",
     multiple=True,
-    help="supply additional configuration detail for the writer in a key value format, e.g. port=1234. Can occur multiple times.",
+    help="supply additional configuration detail in a key value format, e.g. port=1234.",
 )
 @click.argument("type")
 @click.argument("name")
 @click.pass_context
 def add(ctx: click.Context, parameter: list[str], type: str, name: str):
-    """
-
-    Parameters
-    ----------
-    ctx :
-        param name:
-    type :
-
-    name :
-
-
-    Returns
-    -------
-    type None:
-
-    """
+    """add a writer to a project"""
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj
     db.wr_add(type, name)
@@ -48,7 +36,7 @@ def add(ctx: click.Context, parameter: list[str], type: str, name: str):
 @click.argument("name")
 @click.pass_context
 def remove(ctx: click.Context, name: str):
-    """ """
+    """remove a writer from a project"""
     db: Dabapush = ctx.obj
     db.rd_rm(name)
 
@@ -56,17 +44,7 @@ def remove(ctx: click.Context, name: str):
 @writer.command()
 @click.pass_context
 def list(ctx):
-    """
-
-    Parameters
-    ----------
-    ctx :
-
-
-    Returns
-    -------
-
-    """
+    """list all writers"""
     writers = ctx.obj.wr_list()
     for key in writers:
         click.echo(f"- {key}")
@@ -78,30 +56,12 @@ def list(ctx):
     "-p",
     multiple=True,
     type=click.STRING,
-    help="supply additional configuration detail for the reader in a key value format, e.g. pattern='*.ndjson'. Can occur multiple times",
+    help="add onfiguration in a key value format, e.g. pattern='*.ndjson'.",
 )
 @click.argument("name")
 @click.pass_context
 def configure(ctx: click.Context, parameter: List[str], name: str):
-    """
-
-    Parameters
-    ----------
-    ctx :
-        param name:
-    path :
-        param recursive:
-    pattern :
-
-    name :
-
-    recursive :
-
-
-    Returns
-    -------
-
-    """
+    """add configuration to a writer"""
 
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj
