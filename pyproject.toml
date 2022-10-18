@@ -22,7 +22,7 @@ packages = [
 include = ["config.yml"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0*"
+python = ">=3.8,<4.0"
 click = "*"
 SQLAlchemy = "*"
 loguru = "*"
