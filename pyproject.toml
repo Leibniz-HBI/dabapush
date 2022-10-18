@@ -15,11 +15,6 @@ classifiers = [
 		"Environment :: Console",
 		"Intended Audience :: Science/Research",
 ]
-packages = [
-	{include = "smo-database"},
-	{include = "dabapush"}
-]
-include = ["config.yml"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
@@ -49,6 +44,15 @@ pylint = "*"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.plugins.dabapush077]
-"Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReader"
-"CSV" = "dabapush.Writer.CSVWriter:CSVWriter"
+[tool.pylint.messages_control]
+disable = [
+	"invalid-name"
+]
+
+[tool.poetry.plugins.dabapush_readers]
+"Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReaderConfiguration"
+"NDJSON" = "dabapush.Reader.NDJSONReader:NDJSONReaderConfiguration"
+
+[tool.poetry.plugins.dabapush_writers]
+"CSV" = "dabapush.Writer.CSVWriter:CSVWriterConfiguration"
+"NDJSON" = "dabapush.Writer.NDJSONWriter:NDJSONWriterConfiguration"
