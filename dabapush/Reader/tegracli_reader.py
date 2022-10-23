@@ -32,7 +32,7 @@ class TegracliReader(Reader):
         with (read_path / "profiles.jsonl").open("r", encoding="utf8") as profiles:
             for profile in profiles:
                 user = ujson.loads(profile)
-                log.debug(f"Processing user {user['title']}")
+                log.debug(f"Processing user {user.get('username') or ''}")
                 with (read_path / f"{user['id']}.jsonl").open(
                     "r", encoding="utf8"
                 ) as messages:
