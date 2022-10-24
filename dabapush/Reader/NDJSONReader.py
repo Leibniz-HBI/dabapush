@@ -12,7 +12,7 @@ from .Reader import Reader
 class NDJSONReader(Reader):
     """Reader to read ready to read NDJSON data.
     It matches files in the path-tree against the pattern and reads all
-    files and all lines in these file as JSON.
+    files and all lines in these files as JSON.
 
     Attributes
     ----------
