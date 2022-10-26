@@ -33,17 +33,22 @@ class TegracliReader(Reader):
             for profile in profiles:
                 user = ujson.loads(profile)
                 log.debug(f"Processing user {user.get('username') or ''}")
-                with (read_path / f"{user['id']}.jsonl").open(
-                    "r", encoding="utf8"
-                ) as messages:
-                    for line in messages:
-                        data = ujson.loads(line)
-                        data["user"] = user
-                        log.trace(f"Persisting message: {data}")
-                        if self.config.flatten_dicts is True:
-                            yield flatten(data)
-                        else:
-                            yield data
+                try:
+                    with (read_path / f"{user['id']}.jsonl").open(
+                        "r", encoding="utf8"
+                    ) as messages:
+                        for line in messages:
+                            data = ujson.loads(line)
+                            data["user"] = user
+                            log.trace(f"Persisting message: {data}")
+                            if self.config.flatten_dicts is True:
+                                yield flatten(data)
+                            else:
+                                yield data
+
+                except FileNotFoundError as error:
+                    log.error(f"No such file {error.filename}. Skipping.")
+                    continue
 
 
 class TegracliReaderConfiguration(ReaderConfiguration):
