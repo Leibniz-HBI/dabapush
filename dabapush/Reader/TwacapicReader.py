@@ -121,7 +121,7 @@ class TwacapicReader(Reader):
         for i in self.files:
             with i.open() as file:
                 if config.lines:
-                    _res = [loads(line) for line in file]
+                    _res = (loads(line) for line in file)
                 else:
                     _res = [load(file)]
             for res in _res:
