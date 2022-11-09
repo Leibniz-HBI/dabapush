@@ -159,7 +159,7 @@ for readers and `dabapush_writers` for writers. Both expect `Configuration`-subc
 
 """
 
-__version__ = "0.3.0"
+__version__ = "0.2.1"
 
 from .Reader import NDJSONReaderConfiguration, TwacapicReaderConfiguration
 from .Writer import (

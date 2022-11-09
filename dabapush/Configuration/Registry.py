@@ -1,5 +1,5 @@
 """fetching plug-ins from entrypoints and helper methods"""
-
+# pylint: disable=W0622
 from importlib.metadata import entry_points
 from typing import Any, List, Optional
 
@@ -25,7 +25,7 @@ class Registry:
             ReaderConfiguration or None: the requested ReaderConfiguration or None if
             no matching configuration is found.
         """
-        candidates = Registry.readers.select(name=name)
+        candidates = [_ for _ in Registry.readers if _.name == name]
         try:
             return candidates[0].load()
         except IndexError:
@@ -40,7 +40,7 @@ class Registry:
         returns:
             WriterConfiguration or None: the requested WriterConfiguration or None if
             no matching configuration is found."""
-        candidates = Registry.writers.select(name=name)
+        candidates = [_ for _ in Registry.writers if _.name == name]
         try:
             return candidates[0].load()
         except IndexError:
@@ -62,4 +62,5 @@ class Registry:
     @staticmethod
     def list_all_writers() -> List[str]:
         """return a list of all writers"""
+
         return [_.name for _ in Registry.writers]
