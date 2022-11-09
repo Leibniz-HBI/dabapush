@@ -1,14 +1,17 @@
+"""ProjectConfiguration hold all information regarding jobs for a single project."""
+# pylint: disable=W0622
+from typing import Dict, List, Optional
+
 import yaml
 from loguru import logger as log
-from typing import List, Dict
-from .Registry import Registry
+
 from .ReaderConfiguration import ReaderConfiguration
+from .Registry import Registry
 from .WriterConfiguration import WriterConfiguration
 
 
 class ProjectConfiguration(yaml.YAMLObject):
-    """ProjectConfiguration hold necessary configuration informations
-
+    """ProjectConfiguration hold necessary configuration information
 
     A ProjectConfiguration is for reading and writing data as well as the project's meta data
     e.g. author name(s) and email addresses.
@@ -25,18 +28,20 @@ class ProjectConfiguration(yaml.YAMLObject):
 
     def __init__(
         self,
-        readers: Dict[str, ReaderConfiguration] = {},
-        writers: Dict[str, WriterConfiguration] = {},
+        readers: Optional[Dict[str, ReaderConfiguration]] = None,
+        writers: Optional[Dict[str, WriterConfiguration]] = None,
         author: str = "",
         name: str = "",
     ) -> None:
         """Initialize a ProjectConfiguration with optional reader and/or writer dicts"""
         super().__init__()
 
-        # store readers if they are passed into the constructor or else intialize new list via default arg
-        self.readers: Dict[str, ReaderConfiguration] = readers
-        # store writers if they are passed into the constructor or else intialize new list via default arg
-        self.writers: Dict[str, WriterConfiguration] = writers
+        # store readers if they are passed into the constructor or else intialize
+        # new list via default arg
+        self.readers: Dict[str, ReaderConfiguration] = readers or {}
+        # store writers if they are passed into the constructor or else intialize
+        # new list via default arg
+        self.writers: Dict[str, WriterConfiguration] = writers or {}
 
         # initialize project metadata
         self.author = author
@@ -66,36 +71,23 @@ class ProjectConfiguration(yaml.YAMLObject):
         pinst = Registry.get_reader(type)
         if pinst is not None:
             self.readers[name] = pinst(name)
-            log.debug(
-                f'Currently configured readers: {",".join([a for a in self.readers])}'
-            )
+            log.debug(f'Currently configured readers: {",".join(list(self.readers))}')
         else:
             raise Exception(f"{type} not found")
 
     def remove_reader(self, name: str) -> None:
-        """remove a reader from the configuration
+        """Remove a reader from the configuration.
 
         Parameters
         ----------
         name :
             str: name of the reader to be removed
-            Returns: Nada.
-        name :
-            str:
-        name :
-            str:
-        name: str :
-
-
-        Returns
-        -------
-
         """
         if name in self.readers:
             self.readers.pop(name)
 
-    def list_readers(self) -> List[dict]:
-        """list all configured readers
+    def list_readers(self) -> List[ReaderConfiguration]:
+        """List all configured readers
 
         Returns: List[Dict]: list of dicts with name- and id-fields
 
@@ -107,10 +99,10 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # copy stuff
-        return [value for value in self.readers.values()]
+        return list(self.readers.values())
 
     def add_writer(self, type: str, name: str) -> None:
-        """
+        """Adds a writer to the configuration.
 
         Parameters
         ----------
@@ -118,10 +110,6 @@ class ProjectConfiguration(yaml.YAMLObject):
             str: type of the writer to add
         name :
             str: name of the added writer
-
-        Returns
-        -------
-        type: None
         """
         # get constructor from registry
         pinst = Registry.get_writer(type)
@@ -131,71 +119,30 @@ class ProjectConfiguration(yaml.YAMLObject):
             raise Exception(f"{type} not found")
 
     def remove_writer(self, name: str):
-        """
+        """Removes the specified writer from the configuration.
 
         Parameters
         ----------
         name :
             str:
-        name :
-            str:
-        name :
-            str:
-        name: str :
-
-
-        Returns
-        -------
-
         """
         if name in self.writers:
             self.writers.pop(name)
 
     def list_writers(self):
-        """list all configured writers
-
-        Returns: List[Dict]: list of dicts with name- and id-fields
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-
-        """
+        """list all configured writers."""
         # copy stuff
-        return [value for value in self.writers.values()]
+        return list(self.writers.values())
 
     def set_name(self, name):
-        """
-
-        Parameters
-        ----------
-        name :
-
-
-        Returns
-        -------
-
-        """
+        """Sets the project's name."""
         self.name = name
 
     def set_author(self, author):
-        """
-
-        Parameters
-        ----------
-        author :
-
-
-        Returns
-        -------
-
-        """
+        """Sets the project's authors."""
         self.author = author
 
     @property
     def __configuration__(self):
-        a = Registry()
-        print(Registry._instances)
-        return a
+        registry = Registry()
+        return registry
