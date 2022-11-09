@@ -1,6 +1,8 @@
-from pathlib import Path
-from string import Template
+"""FileWriterConfiguration provides a base class for file-based Writers."""
 from datetime import datetime
+from string import Template
+from typing import Dict, Optional
+
 from .WriterConfiguration import WriterConfiguration
 
 
@@ -20,21 +22,15 @@ class FileWriterConfiguration(WriterConfiguration):
         self.path = path
         self.name_template = name_template
 
-    def make_file_name(self, additional_keys: dict = {}) -> str:
-        """
+    def make_file_name(self, additional_keys: Optional[Dict] = None) -> str:
+        """Interpolate a fitting file name.
 
-        Parameters
-        ----------
-        additional_keys :
+        params:
+          additional_keys :
             dict:  (Default value = {})
-        additional_keys :
-            dict:  (Default value = {})
-        additional_keys: dict :
-             (Default value = {})
 
-        Returns
-        -------
-
+        returns:
+          Interpolated file name as str.
         """
         now = datetime.now()
         return Template(self.name_template).substitute(
@@ -43,25 +39,15 @@ class FileWriterConfiguration(WriterConfiguration):
                 "time": datetime.strftime(now, "%H%M"),
                 "name": self.name,
                 "id": self.id,
-                "type": self.type,
-                **additional_keys,
+                **(additional_keys or {}),
             }
         )
 
     def set_name_template(self, template: str):
-        """
+        """Sets the template string.
 
-        Parameters
-        ----------
-        template :
-            str:
-        template :
-            str:
-        template: str :
-
-
-        Returns
-        -------
-
+        params:
+          template: str
+            Template string to use.
         """
         self.name_template = template
