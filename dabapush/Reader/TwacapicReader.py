@@ -120,7 +120,7 @@ class TwacapicReader(Reader):
 
         for i in self.files:
             with i.open() as file:
-                if config.lines:
+                if config.lines and config.lines is True:
                     _res = (loads(line) for line in file)
                 else:
                     _res = [load(file)]
@@ -134,8 +134,8 @@ class TwacapicReader(Reader):
                         post = self.unpack_tweet(post, includes)
                         yield flatten(post)
                 if includes is not None and config.emit_references is True:
-                    if "tweets" in res["includes"]:
-                        for post in res["includes"]["tweets"]:
+                    if "tweets" in includes:
+                        for post in includes["tweets"]:
                             post = self.unpack_tweet(post, includes)
                             yield flatten(post)
 
