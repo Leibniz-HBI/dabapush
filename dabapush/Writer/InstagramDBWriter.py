@@ -36,12 +36,12 @@ class InstagramDBWriter(Writer):
 
         """
         data = self.buffer
-
-        log.info(f"Persisted {len(data)} records")
-        for entry in data:
-            self.instagram_initializer.insta_insert(entry)
         self.buffer = []
-        # self.instagram_initializer.local_session.commit()
+
+        for _ in data:
+            self.instagram_initializer.insta_insert(_)
+            
+        self.instagram_initializer.local_session.commit()
 
     def __del__(self):
         print("Session and Connection Terminated")
