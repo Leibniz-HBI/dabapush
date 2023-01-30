@@ -32,9 +32,6 @@ importlib-metadata = "*"
 ujson = "*"
 psycopg2-binary = "*"
 
-[tool.poetry.scripts]
-dabapush = 'dabapush.main:cli'
-
 [tool.poetry.dev-dependencies]
 pytest = "*"
 pytest-cov = "*"
@@ -51,6 +48,15 @@ pydocstyle = "^6.1.1"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry.scripts]
+dabapush = 'dabapush.main:cli'
+
 [tool.poetry.plugins.dabapush077]
 "Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReader"
 "CSV" = "dabapush.Writer.CSVWriter:CSVWriter"
+
+[tool.pytest.ini_options]
+addopts = "--cov-report html:tests/coverage --cov=dabapush --capture=sys"
+
+[tool.pylint.messages_control]
+disable=["invalid-name"]
