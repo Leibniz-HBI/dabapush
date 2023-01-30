@@ -211,7 +211,11 @@ Contact: smo (ät) leibniz-hbi.de
 
 __version__ = "0.2.1"
 
-from .Reader import NDJSONReaderConfiguration, TwacapicReaderConfiguration
+from .Reader import (
+    NDJSONReaderConfiguration,
+    TegracliReaderConfiguration,
+    TwacapicReaderConfiguration,
+)
 from .Writer import (
     CSVWriterConfiguration,
     FacebookDBWriterConfiguration,

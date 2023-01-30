@@ -8,6 +8,10 @@ readers:
     description: "Read NDJSON"
     moduleName: ".Reader.NDJSONReader"
     className: "NDJSONReaderConfiguration"
+  Tegracli:
+    description: "Read a tegracli group collection"
+    moduleName: ".Reader.tegracli_reader"
+    className: "TegracliReaderConfiguration"
 writers:
   CSV:
     moduleName: ".Writer.CSVWriter"
