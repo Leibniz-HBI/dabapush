@@ -1,3 +1,4 @@
+"""The Facebook-DBWriter."""
 from ..Configuration.DBWriterConfiguration import DBWriterConfiguration
 from .Writer import Writer
 
@@ -6,9 +7,10 @@ smo_database = __import__("smo-database")
 
 
 class FacebookDBWriter(Writer):
-    """ """
+    """Persists Facebook data."""
 
-    def __init__(self, config):
+    def __init__(self, config: DBWriterConfiguration):
+        super().__init__(config)
 
         self.initialize_db = smo_database.DB_Manager(
             config_dict={
@@ -37,18 +39,18 @@ class FacebookDBWriter(Writer):
 
         for _ in data:
             self.facebook_initializer.fb_insert(_)
-            
+
         self.facebook_initializer.local_session.commit()
 
     def __del__(self):
         print("Session and Connection Terminated")
-        super().__del__() # this triggers self.persits and must be called
+        super().__del__()  # this triggers self.persits and must be called
+
 
 class FacebookDBWriterConfiguration(DBWriterConfiguration):
-    """Configuration for the FacebookDBWriter
-    """
-    yaml_tag = "!dabapush:FacebookDBWriterConfiguration"
-    class_instance = FacebookDBWriter
+    """Configuration for the FacebookDBWriter"""
 
-    def get_instance(self) -> FacebookDBWriter:
+    yaml_tag = "!dabapush:FacebookDBWriterConfiguration"
+
+    def get_instance(self) -> FacebookDBWriter:  # pylint: disable=W0221
         return FacebookDBWriter(self)
