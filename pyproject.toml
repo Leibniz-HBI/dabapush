@@ -15,11 +15,6 @@ classifiers = [
 		"Environment :: Console",
 		"Intended Audience :: Science/Research",
 ]
-packages = [
-	{include = "smo-database"},
-	{include = "dabapush"}
-]
-include = ["config.yml"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -48,12 +43,21 @@ pydocstyle = "^6.1.1"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry.plugins.dabapush_readers]
+"Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReaderConfiguration"
+"NDJSON" = "dabapush.Reader.NDJSONReader:NDJSONReaderConfiguration"
+"Tegracli" = "dabapush.Reader.tegracli_reader:TegracliReaderConfiguration"
+
+[tool.poetry.plugins.dabapush_writers]
+"CSV" = "dabapush.Writer.CSVWriter:CSVWriterConfiguration"
+"NDJSON" = "dabapush.Writer.NDJSONWriter:NDJSONWriterConfiguration"
+"SMOTW" = "dabapush.Writer.TwitterDBWriter:TwitterDBWriterConfiguration"
+"SMOFB" = "dabapush.Writer.FacebookDBWriter:FacebookDBWriterConfiguration"
+"SMOIG" = "dabapush.Writer.InstagramDBWriter:InstagramDBWriterConfiguration"
+"SMOTG" = "dabapush.Writer.TelegramDBWriter:TelegramDBWriterConfiguration"
+
 [tool.poetry.scripts]
 dabapush = 'dabapush.main:cli'
-
-[tool.poetry.plugins.dabapush077]
-"Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReader"
-"CSV" = "dabapush.Writer.CSVWriter:CSVWriter"
 
 [tool.pytest.ini_options]
 addopts = "--cov-report html:tests/coverage --cov=dabapush --capture=sys"

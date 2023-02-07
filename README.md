@@ -73,12 +73,6 @@ Options:
 
 ----
 
-`update` -- update items for target(s)
-
-`update <target>` or `update all` -- update the target's files-to-be-read list
-
-----
-
 `reader` -- interact with readers
 
 `reader configure <name>` -- configure the reader for one or more subproject(s); Reader configuration is inherited from global to local level; throws if configuration is incomplete and defaults are missing
@@ -129,46 +123,9 @@ Options:
 
 `--roll-over -r <None>`: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking
 
-`writer register <path> <class-name>`: something for the roadmap.
-
-`deregister <name> <registry-name>`: something for the roadmap.
-
-## Programmatic documention
-
 ## Extending dabapush and developers guide
 
-### dabapush's Approach to Projects and Configuration
-
-### Class References
-
-| **Dabapush** |     |
-| ------------ | --- |
-|              |     |
-|              |     |
-|              |     |
-|              |     |
-
-| **Reader** |     |
-| ---------- | --- |
-|            |     |
-|            |     |
-|            |     |
-|            |     |
-
-| **Writer** |     |
-| ---------- | --- |
-|            |     |
-|            |     |
-|            |     |
-|            |     |
-
-| **Configuration** |     |
-|                   |     |
-| ----------------- | --- |
-|                   |     |
-|                   |     |
-|                   |     |
-|                   |     |
+Dabapush's reader and writer plug-ins are registered via entry point: `dabapush_readers` for readers and `dabapush_writers` for writers. Both expect `Configuration`-subclass.
 
 ### Developer Installation
 

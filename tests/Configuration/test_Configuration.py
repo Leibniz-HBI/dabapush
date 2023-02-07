@@ -2,7 +2,6 @@
 # pylint: disable=W0621
 from pytest import fixture, skip
 
-from dabapush.Configuration.ReaderConfiguration import ReaderConfiguration
 from dabapush.Configuration.Registry import Registry
 
 
@@ -28,18 +27,6 @@ def test_deserialize():
 def test_get_reader(conf: Registry):
     """Should successfully get a ReaderConfiguration from the registry."""
     assert conf.get_reader("Twacapic") is not None
-
-
-# should register a reader plugin and assign it a name
-def test_register_reader(conf: Registry):
-    """Should sucessfully register a new Class."""
-
-    class Blub(ReaderConfiguration):
-        """Yeah, some test class."""
-
-    conf.register_reader("doopy", Blub)
-
-    assert "doopy" in conf.readers
 
 
 # should remove reader plugin by name

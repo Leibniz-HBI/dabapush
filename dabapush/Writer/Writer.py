@@ -1,5 +1,5 @@
 import abc
-from typing import Generator
+from typing import Any, Generator
 from ..Configuration.WriterConfiguration import WriterConfiguration
 
 
@@ -16,7 +16,7 @@ class Writer(object):
         # flush buffer before destruction
         self.persist()
 
-    def write(self, queue: Generator[any, any, any]) -> None:
+    def write(self, queue: Generator[Any, Any, Any]) -> None:
         """
 
         Parameters
@@ -36,7 +36,6 @@ class Writer(object):
     @abc.abstractmethod
     def persist(self) -> None:
         """ """
-        pass
 
     @property
     def name(self):
