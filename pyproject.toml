@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dabapush"
-version = "0.3.0"
+version = "0.3.1"
 description = ""
 authors = [
 	"Philipp Kessling <p.kessling@leibniz-hbi.de>",
@@ -27,9 +27,6 @@ importlib-metadata = "*"
 ujson = "*"
 psycopg2-binary = "*"
 
-[tool.poetry.scripts]
-dabapush = 'dabapush.main:cli'
-
 [tool.poetry.dev-dependencies]
 pytest = "*"
 pytest-cov = "*"
@@ -39,15 +36,12 @@ pdoc3 = "*"
 pre-commit = "*"
 isort = "*"
 pylint = "*"
+pytest-html = "*"
+pydocstyle = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.pylint.messages_control]
-disable = [
-	"invalid-name"
-]
 
 [tool.poetry.plugins.dabapush_readers]
 "Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReaderConfiguration"
@@ -56,3 +50,12 @@ disable = [
 [tool.poetry.plugins.dabapush_writers]
 "CSV" = "dabapush.Writer.CSVWriter:CSVWriterConfiguration"
 "NDJSON" = "dabapush.Writer.NDJSONWriter:NDJSONWriterConfiguration"
+
+[tool.poetry.scripts]
+dabapush = 'dabapush.main:cli'
+
+[tool.pytest.ini_options]
+addopts = "--cov-report html:tests/coverage --cov=dabapush --capture=sys"
+
+[tool.pylint.messages_control]
+disable=["invalid-name"]

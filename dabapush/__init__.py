@@ -159,9 +159,13 @@ for readers and `dabapush_writers` for writers. Both expect `Configuration`-subc
 
 """
 
-__version__ = "0.2.1"
+__version__ = "0.3.1"
 
-from .Reader import NDJSONReaderConfiguration, TwacapicReaderConfiguration
+from .Reader import (
+    NDJSONReaderConfiguration,
+    TegracliReaderConfiguration,
+    TwacapicReaderConfiguration,
+)
 from .Writer import (
     CSVWriterConfiguration,
     FacebookDBWriterConfiguration,

@@ -11,7 +11,7 @@ from .WriterConfiguration import WriterConfiguration
 
 
 class ProjectConfiguration(yaml.YAMLObject):
-    """ProjectConfiguration hold necessary configuration information
+    """ProjectConfiguration holds necessary configuration information
 
     A ProjectConfiguration is for reading and writing data as well as the project's meta data
     e.g. author name(s) and email addresses.
