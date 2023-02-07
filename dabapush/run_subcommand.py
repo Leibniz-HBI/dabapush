@@ -1,24 +1,27 @@
 """Some module documentation
 """
 
+from typing import List
+
 import click
 from loguru import logger as log
+
 from .Dabapush import Dabapush
 
 
 @click.command(help="Run dabapush job in the current working directory.")
 @click.argument("targets", nargs=-1)
 @click.pass_context
-def run(ctx, targets: list[str]) -> None:
+def run(ctx, targets: List[str]) -> None:
     """run verb
 
     Parameters
     ----------
     ctx :
-        param targets: list[str]:
+        param targets: List[str]:
     targets :
-        list[str]:
-    targets: list[str] :
+        List[str]:
+    targets: List[str] :
 
 
     Returns

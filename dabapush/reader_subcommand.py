@@ -23,7 +23,7 @@ def reader():
 @click.argument("type")
 @click.argument("name")
 @click.pass_context
-def add(ctx: click.Context, parameter: list[str], type: str, name: str) -> None:
+def add(ctx: click.Context, parameter: List[str], type: str, name: str) -> None:
     """add a reader to the project"""
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj

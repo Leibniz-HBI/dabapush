@@ -3,6 +3,7 @@
 
 """
 from pathlib import Path
+from typing import Dict, List
 
 import yaml
 from loguru import logger as log
@@ -126,7 +127,7 @@ class Dabapush:
         else:
             log.warning(f"Cannot delete {name} as it does not exist.")
 
-    def rd_update(self, name: str, config: dict[str, str]):
+    def rd_update(self, name: str, config: Dict[str, str]):
         """update a reader's configuration"""
         obj = self.config.readers[name] if name in self.config.readers else None
 
@@ -149,7 +150,7 @@ class Dabapush:
         else:
             log.warning(f"Cannot delete {name} as it does not exist.")
 
-    def wr_update(self, name: str, config: dict[str, str]):
+    def wr_update(self, name: str, config: Dict[str, str]):
         """update a reader's configuration"""
         obj = self.config.writers[name] if name in self.config.readers else None
 
@@ -165,13 +166,13 @@ class Dabapush:
         return self.global_config.list_all_writers()
 
     # JOB specific methods
-    def jb_run(self, targets: list[str]):
+    def jb_run(self, targets: List[str]):
         """runs the job(s) configured in the current directory
 
         Parameters
         ----------
         targets :
-            list[str]:
+            List[str]:
 
         Returns
         -------
