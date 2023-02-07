@@ -46,10 +46,15 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.plugins.dabapush_readers]
 "Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReaderConfiguration"
 "NDJSON" = "dabapush.Reader.NDJSONReader:NDJSONReaderConfiguration"
+"Tegracli" = "dabapush.Reader.tegracli_reader:TegracliReaderConfiguration"
 
 [tool.poetry.plugins.dabapush_writers]
 "CSV" = "dabapush.Writer.CSVWriter:CSVWriterConfiguration"
 "NDJSON" = "dabapush.Writer.NDJSONWriter:NDJSONWriterConfiguration"
+"SMOTW" = "dabapush.Writer.TwitterDBWriter:TwitterDBWriterConfiguration"
+"SMOFB" = "dabapush.Writer.FacebookDBWriter:FacebookDBWriterConfiguration"
+"SMOIG" = "dabapush.Writer.InstagramDBWriter:InstagramDBWriterConfiguration"
+"SMOTG" = "dabapush.Writer.TelegramDBWriter:TelegramDBWriterConfiguration"
 
 [tool.poetry.scripts]
 dabapush = 'dabapush.main:cli'
