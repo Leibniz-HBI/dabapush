@@ -23,7 +23,7 @@ def writer():
 @click.argument("type")
 @click.argument("name")
 @click.pass_context
-def add(ctx: click.Context, parameter: list[str], type: str, name: str):
+def add(ctx: click.Context, parameter: List[str], type: str, name: str):
     """add a writer to a project"""
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj

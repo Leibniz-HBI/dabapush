@@ -1,4 +1,6 @@
 from functools import reduce
+from typing import Any, List
+
 
 def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
     """Flattens a nested dictionary. The flattened keys are joined together with the specified seperator.
@@ -49,7 +51,7 @@ def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
     return res
 
 
-def safe_access(thing: dict, path: list[str]):
+def safe_access(thing: dict, path: List[str]):
     """Safely access deep values in a nested dict without risking running into a `KeyException`.
     If the specified key path is not present in the dict `safe_access` returns `None`.
 
@@ -57,7 +59,7 @@ def safe_access(thing: dict, path: list[str]):
     ----------
     thing : dict
         A (possibly deeply nested) dictionary to retrieve values from.
-    path : list[str]
+    path : List[str]
         List of keys
     Returns
     -------
@@ -65,7 +67,7 @@ def safe_access(thing: dict, path: list[str]):
         Returns whichever value is at the leaf of the specified key path or None if no such value exists.
     """
 
-    def safety(thing: dict, attr: str) -> any or None:
+    def safety(thing: dict, attr: str) -> Any or None:
         if attr in thing:
             return thing[attr]
 
@@ -76,7 +78,8 @@ def safe_access(thing: dict, path: list[str]):
             break
     return res
 
-def safe_write(thing: dict, path: list[str], key: str or None, value: any) -> dict:
+
+def safe_write(thing: dict, path: List[str], key: str or None, value: any) -> dict:
     """Safely access deep values in a nested dict without risking running into a `KeyException`.
     If the specified key path is not present in the dict `safe_access` returns `None`.
 
@@ -84,17 +87,19 @@ def safe_write(thing: dict, path: list[str], key: str or None, value: any) -> di
     ----------
     thing : dict
         A (possibly deeply nested) dictionary to retrieve values from.
-    path : list[str]
+    path : List[str]
         List of keys
     Returns
     -------
     any or None:
         Returns whichever value is at the leaf of the specified key path or None if no such value exists.
     """
+
     def packer(acc: dict, item: str):
         if item not in acc:
             acc[item] = {}
         return acc[item]
+
     if key is None:
         key = path.pop()
 
@@ -102,14 +107,15 @@ def safe_write(thing: dict, path: list[str], key: str or None, value: any) -> di
     d[key] = value
     return thing
 
-def unpack(id: str, includes: list[any], id_key: str) -> any or None:
+
+def unpack(id: str, includes: List[Any], id_key: str) -> Any or None:
     """Looks up an entity in a array of dicts by given key.
 
     Parameters
     ----------
     id : str
         Value to look for.
-    includes : list[any]
+    includes : List[Any]
         List of dicts to look in.
     id_key : str
         Key of those dicts to look in.
