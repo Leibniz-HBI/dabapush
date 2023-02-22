@@ -1,15 +1,14 @@
-from loguru import logger as log
-from .Writer import Writer
+"""The Instagram-DBWriter."""
 from ..Configuration.DBWriterConfiguration import DBWriterConfiguration
+from .Writer import Writer
 
 smo_database = __import__("smo-database")
 
-class InstagramDBWriter(Writer):
-    """
-    
-    """
 
-    def __init__(self, config):
+class InstagramDBWriter(Writer):
+    """Persists data from Instagram."""
+
+    def __init__(self, config: DBWriterConfiguration):
         super().__init__(config)
 
         self.initialize_db = smo_database.DB_Manager(
@@ -36,22 +35,22 @@ class InstagramDBWriter(Writer):
 
         """
         data = self.buffer
-
-        log.info(f"Persisted {len(data)} records")
-        for entry in data:
-            self.instagram_initializer.insta_insert(entry)
         self.buffer = []
-        # self.instagram_initializer.local_session.commit()
+
+        for _ in data:
+            self.instagram_initializer.insta_insert(_)
+
+        self.instagram_initializer.local_session.commit()
 
     def __del__(self):
         print("Session and Connection Terminated")
-        super().__del__() # this triggers self.persits and must be called
+        super().__del__()  # this triggers self.persits and must be called
+
 
 class InstagramDBWriterConfiguration(DBWriterConfiguration):
-    """Configuration for the InstagramDBWriter
-    """
-    yaml_tag = "!dabapush:InstagramDBWriterConfiguration"
-    class_instance = InstagramDBWriter
+    """Configuration for the InstagramDBWriter"""
 
-    def get_instance(self) -> InstagramDBWriter:
+    yaml_tag = "!dabapush:InstagramDBWriterConfiguration"
+
+    def get_instance(self) -> InstagramDBWriter:  # pylint: disable=W0221
         return InstagramDBWriter(self)

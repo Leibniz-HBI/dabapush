@@ -1,3 +1,4 @@
+"""The Facebook-DBWriter."""
 from ..Configuration.DBWriterConfiguration import DBWriterConfiguration
 from .Writer import Writer
 
@@ -6,11 +7,20 @@ smo_database = __import__("smo-database")
 
 
 class FacebookDBWriter(Writer):
-    """ """
+    """Persists Facebook data."""
 
-    def __init__(self, config):
+    def __init__(self, config: DBWriterConfiguration):
+        super().__init__(config)
 
-        self.initialize_db = smo_database.DB_Manager(config)
+        self.initialize_db = smo_database.DB_Manager(
+            config_dict={
+                "user": config.dbuser,
+                "password": config.dbpass,
+                "localhost": config.hostname,
+                "port": config.port,
+                "dbname": config.dbname,
+            }
+        )
         self.engine = self.initialize_db.create_connection()
         self.facebook_initializer = smo_database.Facebook_Data(self.engine)
         self.facebook_initializer.create_local_session()
@@ -27,28 +37,20 @@ class FacebookDBWriter(Writer):
         data = self.buffer
         self.buffer = []
 
-        self.facebook_initializer.fb_insert(data)
+        for _ in data:
+            self.facebook_initializer.fb_insert(_)
+
+        self.facebook_initializer.local_session.commit()
 
     def __del__(self):
         print("Session and Connection Terminated")
+        super().__del__()  # this triggers self.persits and must be called
 
 
 class FacebookDBWriterConfiguration(DBWriterConfiguration):
+    """Configuration for the FacebookDBWriter"""
+
     yaml_tag = "!dabapush:FacebookDBWriterConfiguration"
 
-    def __init__(
-        self,
-        name,
-        id=None,
-        chunk_size: int = 2000,
-        user: str = "postgres",
-        password: str = "password",
-        dbname: str = "public",
-        host: str = "localhost",
-        port: int = 5432,
-    ) -> None:
-        super().__init__(name, id, chunk_size, user, password, dbname, host, port)
-
-    def get_instance(self):
-        """ """
+    def get_instance(self) -> FacebookDBWriter:  # pylint: disable=W0221
         return FacebookDBWriter(self)
