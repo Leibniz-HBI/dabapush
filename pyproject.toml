@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dabapush"
-version = "0.3.1"
+version = "0.3.2"
 description = ""
 authors = [
 	"Philipp Kessling <p.kessling@leibniz-hbi.de>",
@@ -38,6 +38,7 @@ isort = "*"
 pylint = "*"
 pytest-html = "*"
 pydocstyle = "^6.1.1"
+mypy = "^1.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
