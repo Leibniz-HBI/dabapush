@@ -57,6 +57,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.plugins.dabapush_writers]
 "CSV" = "dabapush.Writer.CSVWriter:CSVWriterConfiguration"
 "NDJSON" = "dabapush.Writer.NDJSONWriter:NDJSONWriterConfiguration"
+"STDOUT" = "dabapush.Writer.stdout_writer:STDOUTWriterConfiguration"
 "SMOTW" = "dabapush.Writer.TwitterDBWriter:TwitterDBWriterConfiguration"
 "SMOFB" = "dabapush.Writer.FacebookDBWriter:FacebookDBWriterConfiguration"
 "SMOIG" = "dabapush.Writer.InstagramDBWriter:InstagramDBWriterConfiguration"
