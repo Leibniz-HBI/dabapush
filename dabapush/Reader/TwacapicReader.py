@@ -124,20 +124,20 @@ class TwacapicReader(Reader):
                     _res = (loads(line) for line in file)
                 else:
                     _res = [load(file)]
-            for res in _res:
+                for res in _res:
 
-                data = safe_access(res, ["data"])
-                includes = safe_access(res, ["includes"])
+                    data = safe_access(res, ["data"])
+                    includes = safe_access(res, ["includes"])
 
-                if data is not None:
-                    for post in data:
-                        post = self.unpack_tweet(post, includes)
-                        yield flatten(post)
-                if includes is not None and config.emit_references is True:
-                    if "tweets" in includes:
-                        for post in includes["tweets"]:
+                    if data is not None:
+                        for post in data:
                             post = self.unpack_tweet(post, includes)
                             yield flatten(post)
+                    if includes is not None and config.emit_references is True:
+                        if "tweets" in includes:
+                            for post in includes["tweets"]:
+                                post = self.unpack_tweet(post, includes)
+                                yield flatten(post)
 
 
 class TwacapicReaderConfiguration(ReaderConfiguration):
