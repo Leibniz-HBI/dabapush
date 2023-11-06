@@ -171,5 +171,6 @@ from .Writer import (
     FacebookDBWriterConfiguration,
     InstagramDBWriterConfiguration,
     NDJSONWriterConfiguration,
+    STDOUTWriterConfiguration,
     TwitterDBWriterConfiguration,
 )
