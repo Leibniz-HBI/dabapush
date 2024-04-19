@@ -1,20 +1,22 @@
+"""A writer that persists records in NDJSON format."""
+# pylint: disable=R0913
 from pathlib import Path
-from string import Template
+
+import ujson
 from loguru import logger as log
 
 from ..Configuration.FileWriterConfiguration import FileWriterConfiguration
 from .Writer import Writer
-import ujson
 
 
 class NDJSONWriter(Writer):
-    """ """
+    """A writer that persists records in NDJSON format."""
 
     def __init__(self, config: "NDJSONWriterConfiguration"):
         super().__init__(config=config)
 
     def persist(self):
-        """ """
+        """Persist the buffer to the file and flush."""
 
         last_rows = self.buffer
         self.buffer = []
@@ -23,7 +25,9 @@ class NDJSONWriter(Writer):
 
         with _file.open("a", encoding="utf8") as file:
             for row in last_rows:
-                ujson.dump(row, file, ensure_ascii=False)
+                ujson.dump(  # pylint: disable=I1101
+                    row.payload, file, ensure_ascii=False
+                )
                 file.write("\n")
         log.info(f"Persisted {len(last_rows)} records")
 
@@ -31,14 +35,14 @@ class NDJSONWriter(Writer):
 
 
 class NDJSONWriterConfiguration(FileWriterConfiguration):
-    """ """
+    """Configuration for the NDJSONWriter."""
 
     yaml_tag = "!dabapush:NDJSONWriterConfiguration"
 
     def __init__(
         self,
         name,
-        id=None,
+        id=None,  # pylint: disable=W0622
         chunk_size: int = 2000,
         path: str = ".",
         name_template: str = "${date}_${time}_${name}.${type}",
@@ -46,9 +50,6 @@ class NDJSONWriterConfiguration(FileWriterConfiguration):
         super().__init__(name, id, chunk_size, path, name_template)
         self.type = "ndjson"
 
-    def get_instance(self):
-        """ """
+    def get_instance(self):  # pylint: disable=W0221
+        """Get a configured instance of NDJSONWriter"""
         return NDJSONWriter(self)
-
-    def __repr__(self) -> str:
-        return super().__repr__()

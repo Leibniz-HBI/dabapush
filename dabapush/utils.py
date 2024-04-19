@@ -1,9 +1,11 @@
+"""Utility functions for working with dictionaries and lists of dictionaries."""
 from functools import reduce
-from typing import Any, List
+from typing import Any, Dict, List
 
 
 def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
-    """Flattens a nested dictionary. The flattened keys are joined together with the specified seperator.
+    """Flattens a nested dictionary. The flattened keys are joined together with the
+    specified seperator.
     `flatten` only traverses dicts, consequently `list` items are left as is.
 
     Example
@@ -38,7 +40,7 @@ def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
     """
     res = {}
     for key, item in thing.items():
-        if type(item) is dict:
+        if isinstance(item, dict):
             res = {
                 **res,
                 **{
@@ -51,29 +53,27 @@ def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
     return res
 
 
-def safe_access(thing: dict, path: List[str]):
+def safe_access(thing: Dict, path: List[str]):
     """Safely access deep values in a nested dict without risking running into a `KeyException`.
     If the specified key path is not present in the dict `safe_access` returns `None`.
 
     Parameters
     ----------
-    thing : dict
+    thing : Dict
         A (possibly deeply nested) dictionary to retrieve values from.
     path : List[str]
         List of keys
     Returns
     -------
     any or None:
-        Returns whichever value is at the leaf of the specified key path or None if no such value exists.
+        Returns whichever value is at the leaf of the specified key path or None
+        if no such value exists.
     """
-
-    def safety(thing: dict, attr: str) -> Any or None:
-        if attr in thing:
-            return thing[attr]
 
     res = thing
     for attr in path:
-        res = safety(res, attr)
+        if isinstance(res, dict):
+            res = res.get(attr, None)
         if res is None:
             break
     return res
@@ -89,10 +89,16 @@ def safe_write(thing: dict, path: List[str], key: str or None, value: any) -> di
         A (possibly deeply nested) dictionary to retrieve values from.
     path : List[str]
         List of keys
+    key : str or None
+        key to write to
+    value : any
+        value to write
+
     Returns
     -------
     any or None:
-        Returns whichever value is at the leaf of the specified key path or None if no such value exists.
+        Returns whichever value is at the leaf of the specified key path or None
+        if no such value exists.
     """
 
     def packer(acc: dict, item: str):
@@ -108,7 +114,9 @@ def safe_write(thing: dict, path: List[str], key: str or None, value: any) -> di
     return thing
 
 
-def unpack(id: str, includes: List[Any], id_key: str) -> Any or None:
+def unpack(
+    id: str, includes: List[Any], id_key: str  # pylint: disable=W0622
+) -> Any or None:  # pylint: disable=W0622
     """Looks up an entity in a array of dicts by given key.
 
     Parameters
@@ -127,3 +135,4 @@ def unpack(id: str, includes: List[Any], id_key: str) -> Any or None:
     for included in includes:
         if id == included[id_key]:
             return included
+    return None

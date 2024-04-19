@@ -1,22 +1,24 @@
+"""This module contains the abstract base class for all reader plugins."""
+
 import abc
-import ujson
 from pathlib import Path
-from typing import Generator
+from typing import Iterator
+
+import ujson
 from loguru import logger as log
+
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
+from ..Record import Record
 
 
 class Reader(abc.ABC):
     """Abstract base class for all reader plugins.
 
-    **BEWARE**: readers and writers are never to be instanced directly by the user but rather will be obtain by calling
-    `get_instance()` on their specific Configuration-counterparts.
+    **BEWARE**: readers and writers are never to be instanced directly by the user but rather will
+    be obtained by calling `get_instance()` on their specific Configuration-counterparts.
 
-    Attributes
-    ----------
-    config : ReaderConfiguration
-
-
+    Args:
+        config (ReaderConfiguration): The configuration for the reader.
     """
 
     def __init__(self, config: ReaderConfiguration):
@@ -24,7 +26,8 @@ class Reader(abc.ABC):
         Parameters
         ----------
         config : ReaderConfiguration
-            Configuration file for the reader. In concrete classes it will be sub-class of ReaderConfiguration.
+            Configuration file for the reader. In concrete classes it will
+            be a subclass of ReaderConfiguration.
         """
         self.config = config
         # initialize file log
@@ -34,35 +37,40 @@ class Reader(abc.ABC):
         self.log_path = Path(".dabapush/log.jsonl")
 
     @abc.abstractmethod
-    def read(self) -> Generator[dict, None, None]:
-        """Subclasses **must** implement this abstract method and implement their reading logic here.
+    def read(self) -> Iterator[Record]:
+        """Subclasses **must** implement this abstract method and implement
+        their reading logic here.
 
         Returns
         -------
-        type: Generator[dict, None, None]
+        type: Iterator[Record]
             Generator which _should_ be one item per element.
         """
         return
 
     @property
-    def files(self) -> Generator[Path, None, None]:
+    def files(self) -> Iterator[Path]:
+        """Generator for all files matching the pattern in the read_path."""
         fresh = Path(self.config.read_path).rglob(self.config.pattern)
-        oldstock_dir = Path("./.dabapush")
-        oldstock = []
+        old_stock_dir = Path("./.dabapush")
+        old_stock = []
 
-        if oldstock_dir.exists() and (oldstock_dir / "log.jsonl").exists():
-            with (oldstock_dir / "log.jsonl").open("r") as ff:
-                oldstock = [ujson.loads(_) for _ in ff.readlines()]
+        if old_stock_dir.exists() and (old_stock_dir / "log.jsonl").exists():
+            with (old_stock_dir / "log.jsonl").open("r") as ff:
+                old_stock = [
+                    ujson.loads(_) for _ in ff.readlines()  # pylint: disable=I1101
+                ]  # pylint: disable=I1101
 
         return (
             self._log(a)
-            for a in (_ for _ in fresh if str(_) not in [f["file"] for f in oldstock])
+            for a in (_ for _ in fresh if str(_) not in [f["file"] for f in old_stock])
         )
 
-    # TODO: Move this functionality to Dabapush, it should manage waht has been done and what has not
     def _log(self, file: Path) -> Path:
-        with self.log_path.open("a") as f:
-            ujson.dump({"file": str(file), "status": "read"}, f)
+        with self.log_path.open("a", encoding="utf8") as f:
+            ujson.dump(  # pylint: disable=I1101
+                {"file": str(file), "status": "read"}, f
+            )
             f.write("\n")
             log.debug(f"Done with {str(file)}")
         return file

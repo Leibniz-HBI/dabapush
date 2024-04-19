@@ -1,4 +1,8 @@
-# pylint: disable=W0621
+"""This is DabaPush's test suite.
+
+It is used to test the DabaPush class and its methods.
+"""
+# pylint: disable=W0621)
 from pathlib import Path
 
 import yaml
@@ -106,3 +110,19 @@ def test_run_job():
 def test_update_job():
     """Should update the jobs targets."""
     skip()
+
+
+def test_create_job(dabapush: Dabapush, tmpdir: Path):
+    """Should create a job and add it to the configuration."""
+    dabapush.working_dir = tmpdir
+    dabapush.pr_init()
+    dabapush.rd_add("Twacapic", "reader1")
+    dabapush.wr_add("CSV", "writer1")
+    # dabapush.job_add("job1", "reader1", "writer1")
+    dabapush.pr_write()
+    test_path = Path(tmpdir) / "dabapush.yml"
+    with test_path.open("r") as file:
+        conf = yaml.full_load(file)
+
+    assert dabapush.config.readers["reader1"].name == conf.readers["reader1"].name
+    assert dabapush.config.writers["writer1"].name == conf.writers["writer1"].name
