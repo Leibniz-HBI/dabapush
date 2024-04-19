@@ -15,10 +15,6 @@ classifiers = [
 		"Environment :: Console",
 		"Intended Audience :: Science/Research",
 ]
-packages = [
-	{include = "smo-database"},
-	{include = "dabapush"}
-]
 
 [tool.poetry.dependencies]
 python = "^3.8"
