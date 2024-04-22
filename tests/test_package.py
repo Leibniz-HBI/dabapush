@@ -6,3 +6,5 @@ from dabapush import __version__
 def test_version():
     """Should be the current version number."""
     assert __version__ == "0.3.3"
+    for n in __version__.split("."):
+        assert n.isnumeric()
