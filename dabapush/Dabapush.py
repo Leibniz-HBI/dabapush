@@ -9,7 +9,6 @@ import yaml
 from loguru import logger as log
 
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
-from dabapush.Configuration.Registry import Registry
 
 
 class Dabapush:
@@ -41,29 +40,7 @@ class Dabapush:
             if not cls.__instance__.pr_read():
                 cls.__instance__.pr_init()
 
-            cls.global_config = Registry()
-            log.debug(
-                f"Staring DabaPush instance with gc: {cls.__instance__.global_config} and cf: {cls.__instance__.config}"
-            )
         return cls.__instance__
-
-    def update_reader_targets(self, name: str) -> None:
-        """
-
-        Parameters
-        ----------
-        name :
-            str:
-        name :
-            str:
-        name: str :
-
-
-        Returns
-        -------
-
-        """
-        pass
 
     # PROJECT specific methods
     def pr_init(self):
@@ -72,7 +49,9 @@ class Dabapush:
         # self.pr_write()
 
     def pr_write(self):
-        """Write the current configuration to the project configuration file in the current directory"""
+        """Write the current configuration to the project
+        configuration file in the current directory
+        """
         if self.config is not None:
             conf_path = self.working_dir / "dabapush.yml"
             log.debug(f"writing the following project configuration: {self.config}")
@@ -209,4 +188,3 @@ class Dabapush:
 
     def jb_update(self):
         """update the current job's targets"""
-        pass

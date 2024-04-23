@@ -2,13 +2,7 @@
 # pylint: disable=W0621
 from pytest import fixture, skip
 
-from dabapush.Configuration.Registry import Registry
-
-
-@fixture
-def conf():
-    """Provide a Registry."""
-    return Registry()
+import dabapush.Configuration.Registry as Registry
 
 
 # should serialize
@@ -24,9 +18,9 @@ def test_deserialize():
 
 
 # should get a reader plugin and return it
-def test_get_reader(conf: Registry):
+def test_get_reader():
     """Should successfully get a ReaderConfiguration from the registry."""
-    assert conf.get_reader("Twacapic") is not None
+    assert Registry.get_reader("Twacapic") is not None
 
 
 # should remove reader plugin by name
@@ -60,6 +54,6 @@ def test_list_writers():
 
 
 # should get a writer plugin and return it
-def test_get_writer(conf: Registry):
+def test_get_writer():
     """Should successfully get a WriterConfiguration from the registry."""
-    assert conf.get_writer("CSV") is not None
+    assert Registry.get_writer("CSV") is not None
