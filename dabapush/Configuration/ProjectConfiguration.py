@@ -5,9 +5,9 @@ from typing import Dict, List, Optional
 import yaml
 from loguru import logger as log
 
-from .ReaderConfiguration import ReaderConfiguration
-from .Registry import get_reader, get_writer
-from .WriterConfiguration import WriterConfiguration
+from dabapush.Configuration.ReaderConfiguration import ReaderConfiguration
+from dabapush.Configuration.Registry import get_reader, get_writer
+from dabapush.Configuration.WriterConfiguration import WriterConfiguration
 
 
 class ProjectConfiguration(yaml.YAMLObject):
@@ -73,7 +73,7 @@ class ProjectConfiguration(yaml.YAMLObject):
             self.readers[name] = configuration_constructor(name)
             log.debug(f'Currently configured readers: {",".join(list(self.readers))}')
         else:
-            raise Exception(f"{type} not found")
+            raise ValueError(f"{type} not found")
 
     def remove_reader(self, name: str) -> None:
         """Remove a reader from the configuration.
@@ -116,7 +116,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         if configuration_constructor is not None:
             self.writers[name] = configuration_constructor(name)
         else:
-            raise Exception(f"{type} not found")
+            raise ValueError(f"{type} not found")
 
     def remove_writer(self, name: str):
         """Removes the specified writer from the configuration.

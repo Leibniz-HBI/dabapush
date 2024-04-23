@@ -1,8 +1,8 @@
 """Test suite for dabapush.Configuration.Configuration."""
 # pylint: disable=W0621
-from pytest import fixture, skip
+from pytest import skip
 
-import dabapush.Configuration.Registry as Registry
+from dabapush.Configuration import Registry
 
 
 # should serialize

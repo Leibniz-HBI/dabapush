@@ -9,6 +9,7 @@ import yaml
 from loguru import logger as log
 
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
+from dabapush.Configuration.Registry import list_all_readers
 
 
 class Dabapush:
@@ -16,31 +17,22 @@ class Dabapush:
 
     It is a Singleton pattern class and follows the interface pattern as well.
 
-    Parameters
-    ----------
-
-    Returns
-    -------
+    Params
+    ------
+    install_dir : Path
+        The installation directory of the application.
+    working_dir : Path
+        The working directory of the application.
 
     """
 
-    __instance__ = None
-
-    def __new__(
-        cls,
+    def __init__(
+        self,
         install_dir: Path = Path(__file__).parent.parent,
         working_dir: Path = Path().resolve(),  # automagically defaults to cwd
     ):
-        if cls.__instance__ is None:
-            cls.__instance__ = super(Dabapush, cls).__new__(cls)
-            # init code here: ...
-            cls.__instance__.working_dir = working_dir
-            cls.__instance__.install_dir = install_dir
-            # load global config
-            if not cls.__instance__.pr_read():
-                cls.__instance__.pr_init()
-
-        return cls.__instance__
+        self.working_dir = working_dir
+        self.install_dir = install_dir
 
     # PROJECT specific methods
     def pr_init(self):
@@ -66,8 +58,7 @@ class Dabapush:
 
         Returns
         -------
-        type
-            bool Indicates wether loading load successful
+        (bool) Indicates whether loads successfully or not.
 
         """
         conf_path = self.working_dir / "dabapush.yml"
@@ -75,8 +66,7 @@ class Dabapush:
             with conf_path.open("r") as file:
                 self.config = yaml.full_load(file)
             return True
-        else:
-            return False
+        return False
 
     # READER specific methods
     def rd_add(self, reader: str, name: str):
@@ -97,7 +87,7 @@ class Dabapush:
 
     def rd_list(self):
         """Lists all available readers"""
-        return self.global_config.list_all_readers()
+        return list_all_readers()
 
     def rd_rm(self, name: str):
         """remove a reader from the current configuration"""
@@ -125,7 +115,7 @@ class Dabapush:
     def wr_rm(self, name: str):
         """remove a reader from the current configuration"""
         if name in self.config.readers:
-            self.config.readers.__delitem__(name)
+            del self.config.readers[name]
         else:
             log.warning(f"Cannot delete {name} as it does not exist.")
 
@@ -157,19 +147,19 @@ class Dabapush:
         -------
 
         """
-        conf_targets = [reader for reader in self.config.readers]
-
-        if len(conf_targets) == 0:
+        if len(self.config.readers) == 0:
             log.error("No jobs are configured. Nothing to run.")
             return
         # single dispatch all jobs
         if len(targets) == 1 and targets[0] == "all":
-            log.debug(f'Running all jobs: {", ".join(conf_targets)}.')
-            [self.__dispatch_job__(target) for target in conf_targets]
+            log.debug(f'Running all jobs: {", ".join(self.config.readers)}.')
+            for target in self.config.readers:
+                self.__dispatch_job__(target)
+
         # run multiple jobs
         else:
             for target in targets:
-                if target in conf_targets:
+                if target in self.config.readers:
                     self.__dispatch_job__(target)
                 else:
                     # run specific jop
