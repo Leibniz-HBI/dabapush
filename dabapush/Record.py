@@ -62,7 +62,15 @@ class Record:
             the child records. Defaults to None.
 
         Returns:
-            List[Record]: A list of records.
+            List[Record]: A list of records, if the key is not found or the
+                          addressed field is not a list, it will return an empty list.
+
+        Examples:
+            >>> record = Record({"key": [{"name": "Elsbeth"}, {"name": "Eliza"}]}, Path())
+            >>> record.split("key")
+            [Record(payload={"name": "Elsbeth"}), Record(payload={"name": "Eliza"})]
+            >>> record.split("key", id_key="name")
+            [Record(id="Elsbeth", payload={"name": "Elsbeth"}), Record(id="Eliza", payload={"name": "Eliza"})]
         """
         if key not in self.payload:
             return []
