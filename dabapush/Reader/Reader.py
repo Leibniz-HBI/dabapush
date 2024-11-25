@@ -1,22 +1,27 @@
+"""This module contains the abstract base class for all reader plugins."""
+
 import abc
-import ujson
+from itertools import tee
 from pathlib import Path
-from typing import Generator
+from typing import Iterator
+
+import ujson
 from loguru import logger as log
+
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
+from ..Record import Record
+
+# pylint: disable=I1101
 
 
 class Reader(abc.ABC):
     """Abstract base class for all reader plugins.
 
-    **BEWARE**: readers and writers are never to be instanced directly by the user but rather will be obtain by calling
-    `get_instance()` on their specific Configuration-counterparts.
+    **BEWARE**: readers and writers are never to be instanced directly by the user but rather will
+    be obtained by calling `get_instance()` on their specific Configuration-counterparts.
 
-    Attributes
-    ----------
-    config : ReaderConfiguration
-
-
+    Args:
+        config (ReaderConfiguration): The configuration for the reader.
     """
 
     def __init__(self, config: ReaderConfiguration):
@@ -24,45 +29,74 @@ class Reader(abc.ABC):
         Parameters
         ----------
         config : ReaderConfiguration
-            Configuration file for the reader. In concrete classes it will be sub-class of ReaderConfiguration.
+            Configuration file for the reader. In concrete classes it will
+            be a subclass of ReaderConfiguration.
         """
         self.config = config
+        self.back_log = []
         # initialize file log
         if not Path(".dabapush/").exists():
             Path(".dabapush/").mkdir()
 
-        self.log_path = Path(".dabapush/log.jsonl")
+        self.log_path = Path(f".dabapush/{config.name}.jsonl")
 
     @abc.abstractmethod
-    def read(self) -> Generator[dict, None, None]:
-        """Subclasses **must** implement this abstract method and implement their reading logic here.
+    def read(self) -> Iterator[Record]:
+        """Subclasses **must** implement this abstract method and implement
+        their reading logic here.
 
         Returns
         -------
-        type: Generator[dict, None, None]
+        type: Iterator[Record]
             Generator which _should_ be one item per element.
         """
-        return
 
     @property
-    def files(self) -> Generator[Path, None, None]:
-        fresh = Path(self.config.read_path).rglob(self.config.pattern)
-        oldstock_dir = Path("./.dabapush")
-        oldstock = []
+    @abc.abstractmethod
+    def records(self) -> Iterator[Record]:
+        """Subclasses **must** implement this abstract method and implement
+        their reading logic here.
 
-        if oldstock_dir.exists() and (oldstock_dir / "log.jsonl").exists():
-            with (oldstock_dir / "log.jsonl").open("r") as ff:
-                oldstock = [ujson.loads(_) for _ in ff.readlines()]
+        Returns
+        -------
+        type: Iterator[Record]
+            Generator which _should_ be one item per element.
+        """
 
-        return (
-            self._log(a)
-            for a in (_ for _ in fresh if str(_) not in [f["file"] for f in oldstock])
+
+class FileReader(Reader):
+    """Reader to read files from a path.
+
+    It matches files in the path-tree against the pattern.
+    """
+
+    @abc.abstractmethod
+    def read(self) -> Iterator[Record]:
+        """Reads all files matching the pattern in the read_path."""
+
+    @property
+    def records(self) -> Iterator[Record]:
+        """Generator for all files matching the pattern in the read_path."""
+        if self.log_path.exists():
+            with self.log_path.open("rt", encoding="utf8") as f:
+                self.back_log = (ujson.loads(_) for _ in f.readlines())
+        else:
+            self.log_path.touch()
+
+        fresh = (
+            Record(uuid=str(a), payload=a)
+            for a in Path(self.config.read_path).rglob(self.config.pattern)
         )
+        fresh, back = tee(fresh)
+        yield from fresh
 
-    # TODO: Move this functionality to Dabapush, it should manage waht has been done and what has not
-    def _log(self, file: Path) -> Path:
-        with self.log_path.open("a") as f:
-            ujson.dump({"file": str(file), "status": "read"}, f)
+        for record in back:
+            for sub_record in record.walk_tree(only_leafs=True):
+                self._log_(sub_record)
+
+    def _log_(self, record: Record) -> Record:
+        with self.log_path.open("a", encoding="utf8") as f:
+            ujson.dump(record.to_log(), f)
             f.write("\n")
-            log.debug(f"Done with {str(file)}")
-        return file
+            log.debug(f"Done with {record.uuid}")
+        return record
