@@ -35,7 +35,7 @@ def cli(ctx: click.Context, logfile, loglevel):
     ctx.ensure_object(Dabapush)
 
     db: Dabapush = ctx.obj
-    log.debug(f"Starting DabaPush in {db.working_dir} from {db.install_dir}")
+    log.debug(f"Starting DabaPush in {db.working_dir}.")
 
 
 cli.add_command(reader)

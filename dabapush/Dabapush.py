@@ -24,18 +24,15 @@ class Dabapush:
     def __init__(
         self,
         working_dir: Path = Path(),
-        install_dir: Path = Path(__file__).parent.parent,
     ):
         self.working_dir = working_dir
-        self.install_dir = install_dir
+        self.config = None
+        self.global_config = Registry()
         if not self.project_read():
             self.project_init()
-
-        self.global_config = Registry()
-        self.config = None
         log.debug(
             f"Staring DabaPush instance with gc: {self.global_config} and"
-            "cf: {cls.__instance__.config}"
+            f"cf: {self.config}"
         )
 
     def update_reader_targets(self, name: str) -> None:
@@ -80,7 +77,7 @@ class Dabapush:
         Returns
         -------
         type
-            bool Indicates wether loading load successful
+            bool: Indicates whether loading was successful
 
         """
         conf_path = self.working_dir / "dabapush.yml"
