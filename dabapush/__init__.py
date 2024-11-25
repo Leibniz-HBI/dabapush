@@ -166,10 +166,4 @@ from .Reader import (
     TegracliReaderConfiguration,
     TwacapicReaderConfiguration,
 )
-from .Writer import (
-    CSVWriterConfiguration,
-    FacebookDBWriterConfiguration,
-    InstagramDBWriterConfiguration,
-    NDJSONWriterConfiguration,
-    TwitterDBWriterConfiguration,
-)
+from .Writer import CSVWriterConfiguration, NDJSONWriterConfiguration

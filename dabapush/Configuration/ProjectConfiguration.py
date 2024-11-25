@@ -6,9 +6,9 @@ from typing import Dict, List, Optional
 import yaml
 from loguru import logger as log
 
-from .ReaderConfiguration import ReaderConfiguration
-from .Registry import Registry
-from .WriterConfiguration import WriterConfiguration
+from dabapush.Configuration.ReaderConfiguration import ReaderConfiguration
+from dabapush.Configuration.Registry import get_reader, get_writer
+from dabapush.Configuration.WriterConfiguration import WriterConfiguration
 
 
 class ProjectConfiguration(yaml.YAMLObject):
@@ -37,10 +37,10 @@ class ProjectConfiguration(yaml.YAMLObject):
         """Initialize a ProjectConfiguration with optional reader and/or writer dicts"""
         super().__init__()
 
-        # store readers if they are passed into the constructor or else intialize
+        # store readers if they are passed into the constructor or else initialize
         # new list via default arg
         self.readers: Dict[str, ReaderConfiguration] = readers or {}
-        # store writers if they are passed into the constructor or else intialize
+        # store writers if they are passed into the constructor or else initialize
         # new list via default arg
         self.writers: Dict[str, WriterConfiguration] = writers or {}
 
@@ -69,9 +69,9 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # get constructor from registry
-        pinst = Registry.get_reader(kind)
-        if pinst is not None:
-            self.readers[name] = pinst(name)
+        configuration_constructor = get_reader(kind)
+        if configuration_constructor is not None:
+            self.readers[name] = configuration_constructor(name)
             log.debug(f'Currently configured readers: {",".join(list(self.readers))}')
         else:
             raise ValueError(f"{kind} not found")
@@ -102,7 +102,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         # copy stuff
         return list(self.readers.values())
 
-    def add_writer(self, type: str, name: str) -> None:
+    def add_writer(self, kind: str, name: str) -> None:
         """Adds a writer to the configuration.
 
         Parameters
@@ -113,11 +113,11 @@ class ProjectConfiguration(yaml.YAMLObject):
             str: name of the added writer
         """
         # get constructor from registry
-        pinst = Registry.get_writer(type)
-        if pinst is not None:
-            self.writers[name] = pinst(name)
+        configuration_constructor = get_writer(kind)
+        if configuration_constructor is not None:
+            self.writers[name] = configuration_constructor(name)
         else:
-            raise ValueError(f"{type} not found")
+            raise ValueError(f"{kind} not found")
 
     def remove_writer(self, name: str):
         """Removes the specified writer from the configuration.
@@ -142,8 +142,3 @@ class ProjectConfiguration(yaml.YAMLObject):
     def set_author(self, author):
         """Sets the project's authors."""
         self.author = author
-
-    @property
-    def __configuration__(self):
-        registry = Registry()
-        return registry

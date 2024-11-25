@@ -7,7 +7,7 @@ import yaml
 from loguru import logger as log
 
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
-from dabapush.Configuration.Registry import Registry
+from dabapush.Configuration.Registry import list_all_readers, list_all_writers
 
 
 class Dabapush:
@@ -25,13 +25,9 @@ class Dabapush:
     ):
         self.working_dir = working_dir.resolve()
         self.config = None
-        self.global_config = Registry()
         if not self.project_read():
             self.project_init()
-        log.debug(
-            f"Staring DabaPush instance with gc: {self.global_config} and"
-            f"cf: {self.config}"
-        )
+        log.debug(f"Staring DabaPush instance with {self.config}")
 
     def update_reader_targets(self, name: str) -> None:
         """
@@ -103,7 +99,7 @@ class Dabapush:
 
     def reader_list(self):
         """Lists all available readers"""
-        return self.global_config.list_all_readers()
+        return list_all_readers()
 
     def reader_rm(self, name: str):
         """remove a reader from the current configuration"""
@@ -148,7 +144,7 @@ class Dabapush:
 
     def writer_list(self):
         """Lists all available readers"""
-        return self.global_config.list_all_writers()
+        return list_all_writers()
 
     # JOB specific methods
     def job_run(self, targets: List[str]):
@@ -163,20 +159,19 @@ class Dabapush:
         -------
 
         """
-        conf_targets = list(self.config.readers)
-
-        if len(conf_targets) == 0:
+        if len(self.config.readers) == 0:
             log.error("No jobs are configured. Nothing to run.")
             return
         # single dispatch all jobs
         if len(targets) == 1 and targets[0] == "all":
-            log.debug(f'Running all jobs: {", ".join(conf_targets)}.')
-            for target in conf_targets:
+            log.debug(f'Running all jobs: {", ".join(self.config.readers)}.')
+            for target in self.config.readers:
                 self.__dispatch_job__(target)
+
         # run multiple jobs
         else:
             for target in targets:
-                if target in conf_targets:
+                if target in self.config.readers:
                     self.__dispatch_job__(target)
                 else:
                     # run specific jop
