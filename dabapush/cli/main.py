@@ -5,8 +5,9 @@ import sys
 import click
 from loguru import logger as log
 
+from dabapush.Dabapush import Dabapush
+
 from .create_subcommand import create
-from .Dabapush import Dabapush
 from .reader_subcommand import reader
 from .run_subcommand import run
 from .update_subcommand import update
@@ -34,7 +35,7 @@ def cli(ctx: click.Context, logfile, loglevel):
     ctx.ensure_object(Dabapush)
 
     db: Dabapush = ctx.obj
-    log.debug(f"Starting DabaPush in {db.working_dir} from {db.install_dir}")
+    log.debug(f"Starting DabaPush in {db.working_dir}.")
 
 
 cli.add_command(reader)

@@ -3,7 +3,7 @@
 
 Database pusher for social media data (Twitter for the beginning) – pre-alpha version
 
-Version: 0.3.3, date: 2023/03/19
+Version: 0.4.0-alpha, date: 2023/03/19
 
 ## Using dabapush
 
@@ -159,18 +159,12 @@ for readers and `dabapush_writers` for writers. Both expect `Configuration`-subc
 
 """
 
-__version__ = "0.3.3"
+__version__ = "0.4.0-alpha1"
 
 from .Reader import (
     NDJSONReaderConfiguration,
     TegracliReaderConfiguration,
     TwacapicReaderConfiguration,
 )
-from .Writer import (
-    CSVWriterConfiguration,
-    FacebookDBWriterConfiguration,
-    InstagramDBWriterConfiguration,
-    NDJSONWriterConfiguration,
-    STDOUTWriterConfiguration,
-    TwitterDBWriterConfiguration,
-)
+from .Writer import CSVWriterConfiguration, NDJSONWriterConfiguration, STDOUTWriterConfiguration
+

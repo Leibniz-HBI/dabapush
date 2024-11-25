@@ -6,7 +6,7 @@ from typing import List
 import click
 from loguru import logger as log
 
-from .Dabapush import Dabapush
+from dabapush.Dabapush import Dabapush
 
 
 @click.command(help="Run dabapush job in the current working directory.")
@@ -33,4 +33,4 @@ def run(ctx, targets: List[str]) -> None:
     # log.debug(f'Using this global configuration {db.global_config}')
     # log.debug(f'Using this local configuration {db.config}')
 
-    db.jb_run(targets)
+    db.job_run(targets)

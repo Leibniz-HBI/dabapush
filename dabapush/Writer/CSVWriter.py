@@ -29,9 +29,11 @@ class CSVWriter(Writer):
         _path = Path(self.config.path) / self.config.make_file_name(
             {"chunk_number": self.chunk_number}
         )
-        pd.DataFrame(last_rows, dtype=str).replace(r"\n|\r", r"\\n", regex=True).to_csv(
-            _path, index=False
-        )
+        pd.DataFrame(
+            (a.payload for a in last_rows),
+        ).replace(
+            r"\n|\r", r"\\n", regex=True
+        ).to_csv(_path, index=False)
         self.chunk_number += 1
 
         return len(last_rows)

@@ -1,15 +1,40 @@
 """NDJSON Writer plug-in for dabapush"""
-# pylint: disable=R
-from typing import Generator
+
+# pylint: disable=R,I1101
+from typing import Iterator, List
 
 import ujson
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
+from ..Record import Record
 from ..utils import flatten
-from .Reader import Reader
+from .Reader import FileReader
 
 
-class NDJSONReader(Reader):
+def read_and_split(
+    record: Record,
+    flatten_records: bool = False,
+) -> List[Record]:
+    """Reads a file and splits it into records by line."""
+    with record.payload.open("rt", encoding="utf8") as file:
+        children = [
+            Record(
+                uuid=f"{str(record.uuid)}:{str(line_number)}",
+                payload=(
+                    ujson.loads(line)
+                    if not flatten_records
+                    else flatten(ujson.loads(line))
+                ),
+                source=record,
+            )
+            for line_number, line in enumerate(file)
+        ]
+        record.children.extend(children)
+
+    return children
+
+
+class NDJSONReader(FileReader):
     """Reader to read ready to read NDJSON data.
     It matches files in the path-tree against the pattern and reads all
     files and all lines in these files as JSON.
@@ -22,16 +47,14 @@ class NDJSONReader(Reader):
 
     def __init__(self, config: "NDJSONReaderConfiguration") -> None:
         super().__init__(config)
+        self.config = config
 
-    def read(self) -> Generator[dict, None, None]:
-        """reads multiple ndjson files and emits them line by line"""
-        for file_path in self.files:
-            with file_path.open("r") as file:
-                for line in file:
-                    if self.config.flatten_dicts is not True:
-                        yield ujson.loads(line)
-                    else:
-                        yield flatten(ujson.loads(line))
+    def read(self) -> Iterator[Record]:
+        """reads multiple NDJSON files and emits them line by line"""
+        for file_record in self.records:
+            yield from file_record.split(
+                func=read_and_split, flatten_records=self.config.flatten_dicts
+            )
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):

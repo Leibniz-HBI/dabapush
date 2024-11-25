@@ -1,51 +1,34 @@
-"""Dabapush is the main application class of this project.
+"""Dabapush is the main application class of this project."""
 
-
-"""
 from pathlib import Path
 from typing import Dict, List
 
 import yaml
 from loguru import logger as log
 
+from dabapush.Configuration import Registry
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
-from dabapush.Configuration.Registry import Registry
+from dabapush.Configuration.Registry import list_all_readers, list_all_writers
 
 
 class Dabapush:
     """This is the main class for this application.
 
-    It is a Singleton pattern class and follows the interface pattern as well.
-
     Parameters
     ----------
-
-    Returns
-    -------
-
+    working_dir : Path
+        The working directory of the application
     """
 
-    __instance__ = None
-
-    def __new__(
-        cls,
-        install_dir: Path = Path(__file__).parent.parent,
-        working_dir: Path = Path().resolve(),  # automagically defaults to cwd
+    def __init__(
+        self,
+        working_dir: Path = Path(),
     ):
-        if cls.__instance__ is None:
-            cls.__instance__ = super(Dabapush, cls).__new__(cls)
-            # init code here: ...
-            cls.__instance__.working_dir = working_dir
-            cls.__instance__.install_dir = install_dir
-            # load global config
-            if not cls.__instance__.pr_read():
-                cls.__instance__.pr_init()
-
-            cls.global_config = Registry()
-            log.debug(
-                f"Staring DabaPush instance with gc: {cls.__instance__.global_config} and cf: {cls.__instance__.config}"
-            )
-        return cls.__instance__
+        self.working_dir = working_dir.resolve()
+        self.config = None
+        if not self.project_read():
+            self.project_init()
+        log.debug(f"Staring DabaPush instance with {self.config}")
 
     def update_reader_targets(self, name: str) -> None:
         """
@@ -63,23 +46,23 @@ class Dabapush:
         -------
 
         """
-        pass
 
     # PROJECT specific methods
-    def pr_init(self):
+    def project_init(self):
         """Initialize a new project in the current directory"""
         self.config = ProjectConfiguration()
-        # self.pr_write()
 
-    def pr_write(self):
-        """Write the current configuration to the project configuration file in the current directory"""
+    def project_write(self):
+        """Write the current configuration to the project
+        configuration file in the current directory.
+        """
         if self.config is not None:
             conf_path = self.working_dir / "dabapush.yml"
             log.debug(f"writing the following project configuration: {self.config}")
             with conf_path.open("w") as file:
                 yaml.dump(self.config, file)
 
-    def pr_read(self) -> bool:
+    def project_read(self) -> bool:
         """Read the project configuration file in the current directory
 
         Parameters
@@ -88,19 +71,24 @@ class Dabapush:
         Returns
         -------
         type
-            bool Indicates wether loading load successful
+            bool: Indicates whether loading was successful
 
         """
+        # attach all plugins once, so they can be used inside the configuration.
+        for reader in Registry.list_all_readers():
+            Registry.get_reader(reader)
+        for writer in Registry.list_all_writers():
+            Registry.get_writer(writer)
+        # read the configuration file
         conf_path = self.working_dir / "dabapush.yml"
         if conf_path.exists():
             with conf_path.open("r") as file:
                 self.config = yaml.full_load(file)
             return True
-        else:
-            return False
+        return False
 
     # READER specific methods
-    def rd_add(self, reader: str, name: str):
+    def reader_add(self, reader: str, name: str):
         """add a reader to the current project
 
         Parameters
@@ -116,18 +104,18 @@ class Dabapush:
         """
         self.config.add_reader(reader, name)
 
-    def rd_list(self):
+    def reader_list(self):
         """Lists all available readers"""
-        return self.global_config.list_all_readers()
+        return list_all_readers()
 
-    def rd_rm(self, name: str):
+    def reader_rm(self, name: str):
         """remove a reader from the current configuration"""
         if name in self.config.readers:
-            self.config.readers.__delitem__(name)
+            del self.config.readers[name]
         else:
             log.warning(f"Cannot delete {name} as it does not exist.")
 
-    def rd_update(self, name: str, config: Dict[str, str]):
+    def reader_update(self, name: str, config: Dict[str, str]):
         """update a reader's configuration"""
         obj = self.config.readers[name] if name in self.config.readers else None
 
@@ -139,18 +127,18 @@ class Dabapush:
                     log.warning(f"key {k} not valid in type: {obj.__class__.__name__}")
 
     # WRITER specific methods
-    def wr_add(self, type: str, name: str):
+    def writer_add(self, kind: str, name: str):
         """add a reader to the current project"""
-        self.config.add_writer(type, name)
+        self.config.add_writer(kind, name)
 
-    def wr_rm(self, name: str):
+    def writer_rm(self, name: str):
         """remove a reader from the current configuration"""
         if name in self.config.readers:
-            self.config.readers.__delitem__(name)
+            del self.config.readers[name]
         else:
             log.warning(f"Cannot delete {name} as it does not exist.")
 
-    def wr_update(self, name: str, config: Dict[str, str]):
+    def writer_update(self, name: str, config: Dict[str, str]):
         """update a reader's configuration"""
         obj = self.config.writers[name] if name in self.config.readers else None
 
@@ -161,12 +149,12 @@ class Dabapush:
                 else:
                     log.warning(f"key {k} not valid in type: {obj.__class__.__name__}")
 
-    def wr_list(self):
+    def writer_list(self):
         """Lists all available readers"""
-        return self.global_config.list_all_writers()
+        return list_all_writers()
 
     # JOB specific methods
-    def jb_run(self, targets: List[str]):
+    def job_run(self, targets: List[str]):
         """runs the job(s) configured in the current directory
 
         Parameters
@@ -178,19 +166,19 @@ class Dabapush:
         -------
 
         """
-        conf_targets = [reader for reader in self.config.readers]
-
-        if len(conf_targets) == 0:
+        if len(self.config.readers) == 0:
             log.error("No jobs are configured. Nothing to run.")
             return
         # single dispatch all jobs
         if len(targets) == 1 and targets[0] == "all":
-            log.debug(f'Running all jobs: {", ".join(conf_targets)}.')
-            [self.__dispatch_job__(target) for target in conf_targets]
+            log.debug(f'Running all jobs: {", ".join(self.config.readers)}.')
+            for target in self.config.readers:
+                self.__dispatch_job__(target)
+
         # run multiple jobs
         else:
             for target in targets:
-                if target in conf_targets:
+                if target in self.config.readers:
                     self.__dispatch_job__(target)
                 else:
                     # run specific jop
@@ -207,6 +195,5 @@ class Dabapush:
         writer = self.config.writers[target].get_instance()
         writer.write(reader.read())
 
-    def jb_update(self):
+    def job_update(self):
         """update the current job's targets"""
-        pass

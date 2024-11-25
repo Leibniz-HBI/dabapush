@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dabapush"
-version = "0.3.3"
+version = "0.4.0-alpha1"
 description = ""
 authors = [
 	"Philipp Kessling <p.kessling@leibniz-hbi.de>",
@@ -15,21 +15,15 @@ classifiers = [
 		"Environment :: Console",
 		"Intended Audience :: Science/Research",
 ]
-packages = [
-	{include = "smo-database"},
-	{include = "dabapush"}
-]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.12"
 click = "*"
-SQLAlchemy = "*"
 loguru = "*"
 pandas = "*"
 PyYAML = "*"
 importlib-metadata = "*"
 ujson = "*"
-psycopg2-binary = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
@@ -58,13 +52,9 @@ build-backend = "poetry.core.masonry.api"
 "CSV" = "dabapush.Writer.CSVWriter:CSVWriterConfiguration"
 "NDJSON" = "dabapush.Writer.NDJSONWriter:NDJSONWriterConfiguration"
 "STDOUT" = "dabapush.Writer.stdout_writer:STDOUTWriterConfiguration"
-"SMOTW" = "dabapush.Writer.TwitterDBWriter:TwitterDBWriterConfiguration"
-"SMOFB" = "dabapush.Writer.FacebookDBWriter:FacebookDBWriterConfiguration"
-"SMOIG" = "dabapush.Writer.InstagramDBWriter:InstagramDBWriterConfiguration"
-"SMOTG" = "dabapush.Writer.TelegramDBWriter:TelegramDBWriterConfiguration"
 
 [tool.poetry.scripts]
-dabapush = 'dabapush.main:cli'
+dabapush = 'dabapush.cli.main:cli'
 
 [tool.pytest.ini_options]
 addopts = "--cov-report html:tests/coverage --cov=dabapush --capture=sys"
