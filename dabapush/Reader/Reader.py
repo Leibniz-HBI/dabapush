@@ -51,8 +51,8 @@ class Reader(abc.ABC):
             Generator which _should_ be one item per element.
         """
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def records(self) -> Iterator[Record]:
         """Subclasses **must** implement this abstract method and implement
         their reading logic here.
