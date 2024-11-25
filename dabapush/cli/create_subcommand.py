@@ -4,8 +4,8 @@
 import click
 from loguru import logger as log
 
+from dabapush.Configuration import Registry
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
-from dabapush.Configuration.Registry import Registry
 from dabapush.Dabapush import Dabapush
 
 
