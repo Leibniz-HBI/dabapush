@@ -1,9 +1,15 @@
-from pathlib import Path
+"""Reader Interface.
+"""
+
+from abc import ABC
+
 from .PlugInConfiguration import PlugInConfiguration
 
+# pylint: disable=W0622
 
-class ReaderConfiguration(PlugInConfiguration):
-    """ """
+
+class ReaderConfiguration(PlugInConfiguration, ABC):
+    """Abstract Base class for all ReaderConfigurations."""
 
     yaml_tag = "!dabapush:ReaderConfiguration"
 
@@ -11,6 +17,3 @@ class ReaderConfiguration(PlugInConfiguration):
         super().__init__(name, id=id)
         self.read_path = read_path if read_path is not None else "."
         self.pattern = pattern if pattern is not None else "*.json"
-
-    def __repr__(self) -> str:
-        return super().__repr__()

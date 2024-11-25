@@ -1,9 +1,10 @@
 """
 This module contains the Record dataclass, which is used to store the data and additional
 """
+
 import dataclasses
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 from uuid import uuid4
 
 
@@ -47,19 +48,30 @@ class Record:
 
     """
 
-    payload: Dict[str, Any]
+    payload: Optional[Dict[str, Any]] = None
     source: Optional[Any] = None
     uuid: Optional[str] = uuid4().hex
     processed_at: datetime = datetime.now()
     children: List["Record"] = dataclasses.field(default_factory=list)
 
-    def split(self, key: str, id_key: Optional[str] = None) -> List["Record"]:
-        """Split the record based on a key in the payload.
+    def split(
+        self,
+        key: Optional[str] = None,
+        id_key: Optional[str] = None,
+        func: Optional[Callable[["Record", ...], List["Record"]]] = None,
+        **kwargs
+    ) -> List["Record"]:
+        """Splits the record bases on either a keyword or a function. If a function is provided,
+        it will be used to split the payload, even if you provide a key. If a key is provided, it
+        will split the payload.
+        All further kwargs will be passed to the function.
 
-        Args:
-            key (str): The key to split the record on.
+
+        Parameters:
+            key (Optional[str], optional): The key to split the record on.
             id_key (Optional[str], optional): The key to use as the unique identifier for
-            the child records. Defaults to None.
+                the child records. Defaults to None.
+            func (Optional[Callable], optional): A function to split to the payload before.
 
         Returns:
             List[Record]: A list of records, if the key is not found or the
@@ -70,8 +82,22 @@ class Record:
             >>> record.split("key")
             [Record(payload={"name": "Elsbeth"}), Record(payload={"name": "Eliza"})]
             >>> record.split("key", id_key="name")
-            [Record(id="Elsbeth", payload={"name": "Elsbeth"}), Record(id="Eliza", payload={"name": "Eliza"})]
+            [
+                Record(
+                    id="Elsbeth",
+                    payload={"name": "Elsbeth"}
+                ),
+                Record(
+                    id="Eliza",
+                    payload={"name": "Eliza"}
+                )
+            ]
         """
+        if func is not None:
+            return func(self, **kwargs)
+        return self._handle_key_split_(id_key, key)
+
+    def _handle_key_split_(self, id_key, key):
         if key not in self.payload:
             return []
         if not isinstance(self.payload[key], list):
@@ -86,7 +112,6 @@ class Record:
             for value in self.payload[key]
         ]
         self.children.extend(split_payload)
-
         return split_payload
 
     def to_log(self):

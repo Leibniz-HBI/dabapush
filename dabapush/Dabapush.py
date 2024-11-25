@@ -17,8 +17,6 @@ class Dabapush:
     ----------
     working_dir : Path
         The working directory of the application
-    install_dir : Path
-        The installation directory of the application
     """
 
     def __init__(
@@ -56,7 +54,6 @@ class Dabapush:
     def project_init(self):
         """Initialize a new project in the current directory"""
         self.config = ProjectConfiguration()
-        # self.pr_write()
 
     def project_write(self):
         """Write the current configuration to the project

@@ -1,6 +1,7 @@
 """NDJSON Writer plug-in for dabapush"""
-# pylint: disable=R
-from typing import Iterator
+
+# pylint: disable=R,I1101
+from typing import Iterator, List
 
 import ujson
 
@@ -8,6 +9,26 @@ from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
 from ..utils import flatten
 from .Reader import Reader
+
+
+def read_and_split(
+    record: Record,
+    flatten_records: bool = False,
+) -> List[Record]:
+    """Reads a file and splits it into records by line."""
+    with record.source.open("rt", encoding="utf8") as file:
+        return [
+            Record(
+                uuid=f"{str(record.source)}:{str(line_number)}",
+                payload=(
+                    ujson.loads(line)
+                    if not flatten_records
+                    else flatten(ujson.loads(line))
+                ),
+                source=record,
+            )
+            for line_number, line in enumerate(file)
+        ]
 
 
 class NDJSONReader(Reader):
@@ -23,17 +44,15 @@ class NDJSONReader(Reader):
 
     def __init__(self, config: "NDJSONReaderConfiguration") -> None:
         super().__init__(config)
+        self.config = config
 
     def read(self) -> Iterator[Record]:
         """reads multiple NDJSON files and emits them line by line"""
         for file_path in self.files:
-            with file_path.open("rt", encoding="utf8") as file:
-                for line_number, line in enumerate(file):
-                    payload = ujson.loads(line)  # pylint: disable=I1101
-                    if self.config.flatten_dicts is True:
-                        payload = flatten(payload)
-
-                    yield Record(uuid=line_number, payload=payload, source=file_path)
+            file_record = Record(uuid=str(file_path), source=file_path)
+            yield from file_record.split(
+                func=read_and_split, flatten_records=self.config.flatten_dicts
+            )
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):

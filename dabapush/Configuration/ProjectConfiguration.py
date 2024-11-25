@@ -1,4 +1,5 @@
 """ProjectConfiguration hold all information regarding jobs for a single project."""
+
 # pylint: disable=W0622
 from typing import Dict, List, Optional
 
@@ -47,12 +48,12 @@ class ProjectConfiguration(yaml.YAMLObject):
         self.author = author
         self.name = name
 
-    def add_reader(self, type: str, name: str) -> None:
+    def add_reader(self, kind: str, name: str) -> None:
         """add a reader configuration to the project
 
         Parameters
         ----------
-        type :
+        kind :
             str: registry of the configuration to add
         name :
             str: name of the configuration to add
@@ -68,12 +69,12 @@ class ProjectConfiguration(yaml.YAMLObject):
 
         """
         # get constructor from registry
-        pinst = Registry.get_reader(type)
+        pinst = Registry.get_reader(kind)
         if pinst is not None:
             self.readers[name] = pinst(name)
             log.debug(f'Currently configured readers: {",".join(list(self.readers))}')
         else:
-            raise Exception(f"{type} not found")
+            raise ValueError(f"{kind} not found")
 
     def remove_reader(self, name: str) -> None:
         """Remove a reader from the configuration.
@@ -116,7 +117,7 @@ class ProjectConfiguration(yaml.YAMLObject):
         if pinst is not None:
             self.writers[name] = pinst(name)
         else:
-            raise Exception(f"{type} not found")
+            raise ValueError(f"{type} not found")
 
     def remove_writer(self, name: str):
         """Removes the specified writer from the configuration.
