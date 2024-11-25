@@ -33,4 +33,4 @@ def run(ctx, targets: List[str]) -> None:
     # log.debug(f'Using this global configuration {db.global_config}')
     # log.debug(f'Using this local configuration {db.config}')
 
-    db.jb_run(targets)
+    db.job_run(targets)

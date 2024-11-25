@@ -28,9 +28,9 @@ def add(ctx: click.Context, parameter: List[str], type: str, name: str):
     """add a writer to a project"""
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj
-    db.wr_add(type, name)
-    db.wr_update(name, params)
-    db.pr_write()
+    db.writer_add(type, name)
+    db.writer_update(name, params)
+    db.project_write()
 
 
 @writer.command()
@@ -39,14 +39,14 @@ def add(ctx: click.Context, parameter: List[str], type: str, name: str):
 def remove(ctx: click.Context, name: str):
     """remove a writer from a project"""
     db: Dabapush = ctx.obj
-    db.rd_rm(name)
+    db.reader_rm(name)
 
 
 @writer.command()
 @click.pass_context
 def list(ctx):
     """list all writers"""
-    writers = ctx.obj.wr_list()
+    writers = ctx.obj.writer_list()
     for key in writers:
         click.echo(f"- {key}")
 
@@ -66,5 +66,5 @@ def configure(ctx: click.Context, parameter: List[str], name: str):
 
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj
-    db.wr_update(name, params)
-    db.pr_write()
+    db.writer_update(name, params)
+    db.project_write()

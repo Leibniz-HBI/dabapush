@@ -28,9 +28,9 @@ def add(ctx: click.Context, parameter: List[str], type: str, name: str) -> None:
     """add a reader to the project"""
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj
-    db.rd_add(type, name)
-    db.rd_update(name, params)
-    db.pr_write()
+    db.reader_add(type, name)
+    db.reader_update(name, params)
+    db.project_write()
 
 
 @reader.command()
@@ -39,14 +39,14 @@ def add(ctx: click.Context, parameter: List[str], type: str, name: str) -> None:
 def remove(ctx, name):
     """remove a reader from a project"""
     db: Dabapush = ctx.obj
-    db.rd_rm(name)
+    db.reader_rm(name)
 
 
 @reader.command(help="lists all available reader plugins")
 @click.pass_context
 def list(ctx):
     """list all readers"""
-    readers = ctx.obj.rd_list()
+    readers = ctx.obj.reader_list()
     for key in readers:
         click.echo(f"- {key}")
 
@@ -66,5 +66,5 @@ def configure(ctx: click.Context, parameter: List[str], name: str):
 
     params = dict(arg.split("=") for arg in parameter)
     db: Dabapush = ctx.obj
-    db.rd_update(name, params)
-    db.pr_write()
+    db.reader_update(name, params)
+    db.project_write()

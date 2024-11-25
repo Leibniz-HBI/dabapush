@@ -74,4 +74,4 @@ def create(ctx, interactive):
                         log.debug("Success! Found the writer you're looking for!")
                 man_config = click.confirm("Do another?")
 
-    db.pr_write()
+    db.project_write()
