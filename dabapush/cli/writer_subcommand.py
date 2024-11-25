@@ -1,10 +1,11 @@
 """CLI subcommands for writer manipulation"""
+
 # pylint: disable=W0622
 from typing import List
 
 import click
 
-from .Dabapush import Dabapush
+from dabapush.Dabapush import Dabapush
 
 
 # Writer

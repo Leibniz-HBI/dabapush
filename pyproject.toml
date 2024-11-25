@@ -63,7 +63,7 @@ build-backend = "poetry.core.masonry.api"
 "SMOTG" = "dabapush.Writer.TelegramDBWriter:TelegramDBWriterConfiguration"
 
 [tool.poetry.scripts]
-dabapush = 'dabapush.main:cli'
+dabapush = 'dabapush.cli.main:cli'
 
 [tool.pytest.ini_options]
 addopts = "--cov-report html:tests/coverage --cov=dabapush --capture=sys"

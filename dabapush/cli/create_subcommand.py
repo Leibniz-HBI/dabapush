@@ -1,8 +1,13 @@
+"""Create a new project configuration.
+"""
+
 import click
 from loguru import logger as log
-from .Configuration.ProjectConfiguration import ProjectConfiguration
-from .Configuration.Registry import Registry
-from .Dabapush import Dabapush
+
+from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
+from dabapush.Configuration.Registry import Registry
+from dabapush.Dabapush import Dabapush
+
 
 # CREATE
 @click.command()
@@ -28,7 +33,8 @@ def create(ctx, interactive):
 
     """
     log.debug(f"Creating project in {ctx.obj.working_dir}")
-    # Initialize configuration dict, setup work is already done by db.pr_init, has it has not found a configuration
+    # Initialize configuration dict, setup work is already done by
+    # db.pr_init, has it has not found a configuration
     db: Dabapush = ctx.obj
     conf: ProjectConfiguration = db.config
 
@@ -40,24 +46,24 @@ def create(ctx, interactive):
 
         man_config = click.confirm("Should we configure readers and writers?")
 
-        while man_config == True:
+        while man_config is True:
             thing_to_configure = click.prompt(
                 "What do you want to configure?",
                 default="Writer",
                 type=click.Choice(["Reader", "Writer"]),
             )
-            if thing_to_configure != "Reader" and thing_to_configure != "Writer":
-                log.debug(f"Try again")
+            if thing_to_configure not in ["Reader", "Writer"]:
+                log.debug("Try again.")
             else:
                 if thing_to_configure == "Reader":
-                    log.debug(f"Configuring a Reader")
+                    log.debug("Configuring a Reader")
                     reader_name = click.prompt(
                         "Which Reader should we configure?",
                         type=click.Choice(Registry.list_all_readers()),
                     )
                     if reader_name in Registry.list_all_readers():
                         conf.add_reader(reader_name, "default")
-                        log.debug(f"Success! Found the reader you're looking for!")
+                        log.debug("Success! Found the reader you're looking for!")
                 if thing_to_configure == "Writer":
                     writer_name = click.prompt(
                         "Which Writer should we configure?",
@@ -65,7 +71,7 @@ def create(ctx, interactive):
                     )
                     if writer_name in Registry.list_all_writers():
                         conf.add_writer(writer_name, "default")
-                        log.debug(f"Success! Found the writer you're looking for!")
+                        log.debug("Success! Found the writer you're looking for!")
                 man_config = click.confirm("Do another?")
 
     db.pr_write()

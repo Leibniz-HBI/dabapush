@@ -6,7 +6,7 @@ from typing import List
 import click
 from loguru import logger as log
 
-from .Dabapush import Dabapush
+from dabapush.Dabapush import Dabapush
 
 
 @click.command(help="Run dabapush job in the current working directory.")
