@@ -4,6 +4,7 @@ Philipp Kessling, April 2022,    Leibniz-Institute for Media Research
 Test suite for the Twitter V2 API data reader class, aka. TwacapicReader, named after
 the tool Twacapic (which conincidentally reads the Twitter V2 API).
 """
+
 # pylint: disable=W0621, C0114, C0115, C0116
 import json
 
@@ -76,7 +77,7 @@ def test_read(tmp_path, tweet_data):
 
     records = list(reader.read())
     assert len(records) == 1
-    assert records[0].source == tmp_path / "test.json"
+    assert records[0].payload.get("id") == "1212092628029698048"
 
 
 def test_unpack(reader: TwacapicReader, tweet_data):
@@ -84,7 +85,7 @@ def test_unpack(reader: TwacapicReader, tweet_data):
     Tweets returned by the API are scattered between a few different places, our
     Reader should join the tweet back together.
     """
-    result = reader.unpack_tweet(tweet_data["data"], tweet_data["includes"])
+    result = reader.unpack_tweet(tweet_data["data"][0], tweet_data["includes"])
 
     assert result is not None
 

@@ -23,7 +23,7 @@ class Dabapush:
         self,
         working_dir: Path = Path(),
     ):
-        self.working_dir = working_dir
+        self.working_dir = working_dir.resolve()
         self.config = None
         self.global_config = Registry()
         if not self.project_read():

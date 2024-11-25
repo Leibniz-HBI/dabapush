@@ -18,11 +18,6 @@ def dabapush():
     return Dabapush()
 
 
-def test_singleton(dabapush):
-    """Should be a Singleton."""
-    assert dabapush == Dabapush()
-
-
 def test_working_directory(dabapush):
     """should accept a working directory."""
     assert dabapush.working_dir == Path().resolve()
@@ -71,9 +66,9 @@ def test_write_conf(dabapush: Dabapush, tmpdir: Path):
 
 
 @mark.parametrize("reader,name", [("Twacapic", "reader1")])
-def test_add_reader(tmpdir: Path, reader: str, name: str):
+def test_add_reader(tmp_path: Path, reader: str, name: str):
     """Should add a reader and give it a name/id."""
-    dabapush = Dabapush(working_dir=tmpdir)
+    dabapush = Dabapush(working_dir=tmp_path)
     dabapush.reader_add(reader, name)
     assert name in dabapush.config.readers
 

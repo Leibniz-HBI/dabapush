@@ -8,7 +8,7 @@ import ujson
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
 from ..utils import flatten
-from .Reader import Reader
+from .Reader import FileReader
 
 
 def read_and_split(
@@ -16,10 +16,10 @@ def read_and_split(
     flatten_records: bool = False,
 ) -> List[Record]:
     """Reads a file and splits it into records by line."""
-    with record.source.open("rt", encoding="utf8") as file:
+    with record.payload.open("rt", encoding="utf8") as file:
         return [
             Record(
-                uuid=f"{str(record.source)}:{str(line_number)}",
+                uuid=f"{str(record.uuid)}:{str(line_number)}",
                 payload=(
                     ujson.loads(line)
                     if not flatten_records
@@ -31,7 +31,7 @@ def read_and_split(
         ]
 
 
-class NDJSONReader(Reader):
+class NDJSONReader(FileReader):
     """Reader to read ready to read NDJSON data.
     It matches files in the path-tree against the pattern and reads all
     files and all lines in these files as JSON.
@@ -48,8 +48,7 @@ class NDJSONReader(Reader):
 
     def read(self) -> Iterator[Record]:
         """reads multiple NDJSON files and emits them line by line"""
-        for file_path in self.files:
-            file_record = Record(uuid=str(file_path), source=file_path)
+        for file_record in self.records:
             yield from file_record.split(
                 func=read_and_split, flatten_records=self.config.flatten_dicts
             )

@@ -10,10 +10,10 @@ from ujson import load, loads
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
 from ..utils import flatten, safe_access, safe_write, unpack
-from .Reader import Reader
+from .Reader import FileReader
 
 
-class TwacapicReader(Reader):
+class TwacapicReader(FileReader):
     """Reader to read ready to read Twitter json data.
     It matches files in the path-tree against the pattern and reads all files as JSON.
 
@@ -31,6 +31,7 @@ class TwacapicReader(Reader):
             Configuration with all the values TwacapicReader needs for it's thang.
         """
         super().__init__(config)
+        self.config = config
 
     @staticmethod
     def unpack_tweet(  # pylint: disable=W0102
@@ -68,16 +69,18 @@ class TwacapicReader(Reader):
             },
         }
 
-        def handle_item(job_item, job):
-            tweet_id_field: Optional[str] = job["tweet_id_field"]
-            id = job_item[tweet_id_field] if tweet_id_field is not None else job_item
+        def handle_item(_job_item, _job):
+            tweet_id_field: Optional[str] = _job["tweet_id_field"]
+            id = _job_item[tweet_id_field] if tweet_id_field is not None else _job_item
             if id is None:
-                raise f"id cannot be None in {job} and {job_item}"
-            includes_key = safe_access(job, ["includes_field"])
+                raise ValueError(f"ID cannot be None in {_job} and {_job_item}")
+            includes_key = safe_access(_job, ["includes_field"])
             if includes_key not in includes:
-                log.warning(f"key not present in additional information dict in: {job}")
+                log.warning(
+                    f"key not present in additional information dict in: {_job}"
+                )
                 return
-            return unpack(id, includes[includes_key], job["includes_id_field"])
+            return unpack(id, includes[includes_key], _job["includes_id_field"])
 
         for key in keys:
             if key in possible_keys:
@@ -116,27 +119,27 @@ class TwacapicReader(Reader):
         type: Iterator[Record]
         """
 
-        config: TwacapicReaderConfiguration = self.config
-
-        for file_path in self.files:
-            with file_path.open() as file:
-                if config.lines is True:
+        for record in self.records:
+            with record.payload.open() as file:
+                if self.config.lines is True:
                     results = (loads(line) for line in file)
                 else:
                     results = [load(file)]
             for res in results:
                 data: List[Dict] = safe_access(res, ["data"])
                 includes: Optional[Dict] = safe_access(res, ["includes"])
-                if data is not None:
-                    if config.emit_references:
-                        # If we emit references we need to join the data
-                        data.extend(includes.get("tweets", []))
-                    for post in data:
-                        post = TwacapicReader.unpack_tweet(post, includes)
-                        if config.flatten is True:
-                            post = flatten(post)
+                if data is None:
+                    log.warning(f"No data in {res}")
+                    continue
+                if self.config.emit_references:
+                    # If we emit references we need to join the data
+                    data.extend(includes.get("tweets", []))
+                for post in data:
+                    post = TwacapicReader.unpack_tweet(post, includes)
+                    if self.config.flatten is True:
+                        post = flatten(post)
 
-                        yield Record(payload=post, source=file_path)
+                    yield Record(payload=post, source=record)
 
 
 class TwacapicReaderConfiguration(ReaderConfiguration):

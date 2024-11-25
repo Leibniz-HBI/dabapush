@@ -1,5 +1,5 @@
 """A writer that persists records in NDJSON format."""
-# pylint: disable=R0913
+
 from pathlib import Path
 
 import ujson
@@ -8,12 +8,15 @@ from loguru import logger as log
 from ..Configuration.FileWriterConfiguration import FileWriterConfiguration
 from .Writer import Writer
 
+# pylint: disable=R0913,R0917
+
 
 class NDJSONWriter(Writer):
     """A writer that persists records in NDJSON format."""
 
     def __init__(self, config: "NDJSONWriterConfiguration"):
         super().__init__(config=config)
+        self.config = config
 
     def persist(self):
         """Persist the buffer to the file and flush."""

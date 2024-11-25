@@ -1,5 +1,6 @@
 """Tests for the Record module.
 """
+
 from pathlib import Path
 
 from dabapush.Record import Record
@@ -40,7 +41,7 @@ def test_splitting_record():
         assert _record_.uuid
         assert _record_.processed_at
         assert _record_.payload == {"key": "value"}
-        assert _record_.source == Path()
+        assert _record_.source == record
         assert _record_ in record.children
 
 
@@ -61,7 +62,7 @@ def test_splitting_record_with_children_ids():
         assert _record_.uuid == n
         assert _record_.processed_at
         assert _record_.payload == {"key": "value", "id": n}
-        assert _record_.source is None
+        assert _record_.source is record
         assert _record_ in record.children
 
 

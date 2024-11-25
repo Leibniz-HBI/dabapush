@@ -1,9 +1,16 @@
+"""PlugInConfiguration module.
+"""
+
 import abc
-from uuid import  uuid4
+from uuid import uuid4
+
 import yaml
 
+# pylint: disable=W0622
+
+
 class PlugInConfiguration(yaml.YAMLObject):
-    """ """
+    """Abstract Base class for all PlugInConfigurations."""
 
     yaml_tag = "!dabapush:PluginConfiguration"
 
@@ -14,9 +21,6 @@ class PlugInConfiguration(yaml.YAMLObject):
         self.id = id if id is not None else str(uuid4())
 
     @classmethod
-    @abc.abstractclassmethod
-    def get_instance(self) -> object or None:
-        """Get a configured instance of the appropriate reader or writer plugin.
-        
-        """
-     
+    @abc.abstractmethod
+    def get_instance(cls) -> object or None:
+        """Get a configured instance of the appropriate reader or writer plugin."""

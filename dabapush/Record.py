@@ -4,7 +4,7 @@ This module contains the Record dataclass, which is used to store the data and a
 
 import dataclasses
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, List, Optional
 from uuid import uuid4
 
 
@@ -21,9 +21,9 @@ class Record:
 
     Attributes
     ----------
-    payload : Dict[str, Any]
+    payload : Any
         The data of the record.
-    source : Optional[Any]
+    source : Optional[Record]
         The source of the record.
     uuid : Optional[str]
         The unique identifier of the record.
@@ -48,8 +48,8 @@ class Record:
 
     """
 
-    payload: Optional[Dict[str, Any]] = None
-    source: Optional[Any] = None
+    payload: Optional[Any] = None
+    source: Optional["Record"] = None
     uuid: Optional[str] = uuid4().hex
     processed_at: datetime = datetime.now()
     children: List["Record"] = dataclasses.field(default_factory=list)
@@ -59,7 +59,7 @@ class Record:
         key: Optional[str] = None,
         id_key: Optional[str] = None,
         func: Optional[Callable[["Record", ...], List["Record"]]] = None,
-        **kwargs
+        **kwargs,
     ) -> List["Record"]:
         """Splits the record bases on either a keyword or a function. If a function is provided,
         it will be used to split the payload, even if you provide a key. If a key is provided, it
@@ -107,6 +107,7 @@ class Record:
                 **{
                     "payload": value,
                     "uuid": value.get(id_key) if id_key else uuid4().hex,
+                    "source": self,
                 }
             )
             for value in self.payload[key]
@@ -121,6 +122,43 @@ class Record:
             "processed_at": self.processed_at.isoformat(),
             # We cannot allow the source to be a Record, as it would create a circular reference
             # while serializing the dataclass to JSON.
-            "source": str(self.source) if not isinstance(self.source, Record) else None,
-            "children": [str(child.uuid) for child in self.children],
+            "source": (
+                str(self.source)
+                if not isinstance(self.source, Record)
+                else self.source.uuid
+            ),
+            "children": [child.to_log() for child in self.children],
         }
+
+    def walk_tree(self, only_leafs=True) -> List["Record"]:
+        """Walk the record tree and return a list of all records.
+
+        Parameters:
+            only_leafs (bool, optional): If True, only the leaf nodes will be returned.
+                Defaults to True.
+        """
+        records = []
+        if self.__is_leaf__() and only_leafs:
+            return [self]
+        if not only_leafs:
+            records.append(self)
+        for child in self.children:
+            records.extend(child.walk_tree(only_leafs=only_leafs))
+        return records
+
+    def __eq__(self, other):
+        if not isinstance(other, Record):
+            raise ValueError(
+                "Cannot compare Record with non-Record type"
+                f" Comparison was Record == {type(other)}"
+            )
+        if not self.payload:
+            return self.uuid == other.uuid
+
+        return self.payload == other.payload
+
+    def __is_leaf__(self):
+        return not self.children
+
+
+RecordRegistry = {}

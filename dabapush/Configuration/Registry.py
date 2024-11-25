@@ -1,4 +1,5 @@
 """fetching plug-ins from entrypoints and helper methods"""
+
 # pylint: disable=W0622
 from importlib.metadata import entry_points
 from typing import Any, List, Optional
@@ -10,8 +11,8 @@ from .WriterConfiguration import WriterConfiguration
 class Registry:
     """receive plug-ins from entry point"""
 
-    readers = entry_points()["dabapush_readers"]
-    writers = entry_points()["dabapush_writers"]
+    readers = entry_points(group="dabapush_readers")
+    writers = entry_points(group="dabapush_writers")
 
     # --- static methods --- #
 

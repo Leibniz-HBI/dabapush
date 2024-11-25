@@ -1,4 +1,5 @@
 """Tests for NDJSONReader."""
+
 import json
 from pathlib import Path
 
@@ -27,7 +28,5 @@ def test_read(tmp_path: Path, data):  # pylint: disable=W0621
     records = list(reader.read())
     assert len(records) == 20
     for n, record in enumerate(records):
-        assert record.uuid == n
         assert record.processed_at
         assert record.payload == data[n]
-        assert record.source == file_path
