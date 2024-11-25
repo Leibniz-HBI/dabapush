@@ -6,6 +6,7 @@ from typing import Dict, List
 import yaml
 from loguru import logger as log
 
+from dabapush.Configuration import Registry
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
 from dabapush.Configuration.Registry import list_all_readers, list_all_writers
 
@@ -73,6 +74,12 @@ class Dabapush:
             bool: Indicates whether loading was successful
 
         """
+        # attach all plugins once, so they can be used inside the configuration.
+        for reader in Registry.list_all_readers():
+            Registry.get_reader(reader)
+        for writer in Registry.list_all_writers():
+            Registry.get_writer(writer)
+        # read the configuration file
         conf_path = self.working_dir / "dabapush.yml"
         if conf_path.exists():
             with conf_path.open("r") as file:
