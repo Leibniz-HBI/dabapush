@@ -17,7 +17,7 @@ def read_and_split(
 ) -> List[Record]:
     """Reads a file and splits it into records by line."""
     with record.payload.open("rt", encoding="utf8") as file:
-        return [
+        children = [
             Record(
                 uuid=f"{str(record.uuid)}:{str(line_number)}",
                 payload=(
@@ -29,6 +29,9 @@ def read_and_split(
             )
             for line_number, line in enumerate(file)
         ]
+        record.children.extend(children)
+
+    return children
 
 
 class NDJSONReader(FileReader):
