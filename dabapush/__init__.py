@@ -166,4 +166,5 @@ from .Reader import (
     TegracliReaderConfiguration,
     TwacapicReaderConfiguration,
 )
-from .Writer import CSVWriterConfiguration, NDJSONWriterConfiguration
+from .Writer import CSVWriterConfiguration, NDJSONWriterConfiguration, STDOUTWriterConfiguration
+
