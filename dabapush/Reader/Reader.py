@@ -79,7 +79,7 @@ class FileReader(Reader):
         """Generator for all files matching the pattern in the read_path."""
         if self.log_path.exists():
             with self.log_path.open("rt", encoding="utf8") as f:
-                self.back_log = (ujson.loads(_) for _ in f.readlines())
+                self.back_log = [Record(**ujson.loads(_)) for _ in f.readlines()]
         else:
             self.log_path.touch()
 

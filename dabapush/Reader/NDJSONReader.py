@@ -51,10 +51,15 @@ class NDJSONReader(FileReader):
 
     def read(self) -> Iterator[Record]:
         """reads multiple NDJSON files and emits them line by line"""
+
         for file_record in self.records:
-            yield from file_record.split(
-                func=read_and_split, flatten_records=self.config.flatten_dicts
+            filtered_records = filter(
+                lambda x: x not in self.back_log,
+                file_record.split(
+                    func=read_and_split, flatten_records=self.config.flatten_dicts
+                ),
             )
+            yield from filtered_records
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):
@@ -63,7 +68,7 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
     Attributes
     ----------
     flatten_dicts: bool
-        wether to flatten those nested dictioniaries
+        whether to flatten those nested dicts
 
     """
 
