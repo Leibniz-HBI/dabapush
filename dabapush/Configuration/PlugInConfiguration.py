@@ -20,7 +20,6 @@ class PlugInConfiguration(yaml.YAMLObject):
         self.name = name
         self.id = id if id is not None else str(uuid4())
 
-    @classmethod
     @abc.abstractmethod
-    def get_instance(cls) -> object or None:
+    def get_instance(self) -> object or None:
         """Get a configured instance of the appropriate reader or writer plugin."""
