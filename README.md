@@ -1,6 +1,12 @@
 # dabapush
 
-Database pusher for social media data (Twitter for the beginning) – pre-alpha version
+Database pusher and version control for social media data – early-alpha version
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/dabapush)
+![GitHub top language](https://img.shields.io/github/languages/top/Leibniz-HBI/dabapush)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Leibniz-HBI/dabapush)
+
+---
 
 ## Using dabapush
 
