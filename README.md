@@ -5,6 +5,10 @@ Database pusher and version control for social media data – early-alpha versio
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/dabapush)
 ![GitHub top language](https://img.shields.io/github/languages/top/Leibniz-HBI/dabapush)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Leibniz-HBI/dabapush)
+![GitHub License](https://img.shields.io/github/license/Leibniz-HBI/dabapush)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/Leibniz-HBI/dabapush)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Leibniz-HBI/dabapush)
+
 
 ---
 
