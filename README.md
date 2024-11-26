@@ -17,6 +17,25 @@ Database pusher and version control for social media data – early-alpha versio
 `dabapush` is a tool to read longer running data collections and write them to another file format or persist them into a database. It is designed to run periodically, e.g. controlled by chron, thus, for convenience ot use project-based configurations which contain all required information on what to read where and what to do with it.
 A **project** may have one or more **jobs**, each job consists of a reader and a writer configuration, e.g. read JSON-files from the Twitter API that we stored in folder `/home/user/fancy-project/twitter/` and write the flattened and compiled data set in to `/some/where/else` as CSV files.
 
+
+```text
+
+Usage: dabapush [OPTIONS] COMMAND [ARGS]...
+
+  Dabapush
+
+Options:
+  -l, --logfile FILENAME  File to log in, defaults to stdout.
+  -v, --verbose           Increases verbosity, maximally vvvv.
+  --help                  Show this message and exit.
+
+Commands:
+  create
+  reader  reader command
+  run     Run dabapush job in the current working directory.
+  update  Update the project's status.
+  writer  writer command
+```
 ### First steps
 
 In order to run a first `dabapush`-job we'll need to create a project configuration. This is done by calling:
@@ -77,10 +96,6 @@ Options:
 
 `run <target>` -- run a single writer and/or named target
 
-Options:
-
-`--force-rerun, -r`: forces all data  to be read, ignores already logged data
-
 ----
 
 `reader` -- interact with readers
@@ -101,12 +116,6 @@ Options:
 
 `remove <name>`: remove a reader from the project configuration.
 
-`register <path>`: not there yet
-
-----
-
-`discover` -- discover (possible) targets in project directory and configure them automagically -- yeah, you dream of that, don't you?
-
 ----
 
 `writer` -- interact with writers
@@ -121,17 +130,6 @@ Options:
 
 `writer configure <name>` or `writer configure all`
 
-Options:
-
-`--output-dir, -o <path>`: default for all targets: `<project-dir>/output/<target-name>`
-
-`--output-pattern, -p <pattern>`: pattern used for file name creation e.g. 'YYYY-MM-dd', file extension is added by the writer and cannot be overwritten
-
-`--roll-over, -r ``<file-size>`:
-
-`--roll-over, -r` `<lines>`:
-
-`--roll-over -r <None>`: should be the output chunked? Give either a file-size or a number of lines for roll-over or None to disable chunking
 
 ## Extending dabapush and developers guide
 

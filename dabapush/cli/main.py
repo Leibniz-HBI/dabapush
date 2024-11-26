@@ -1,7 +1,5 @@
 """Entrypoint for Dabapush CLI"""
 
-import sys
-
 import click
 from loguru import logger as log
 
@@ -13,24 +11,45 @@ from .run_subcommand import run
 from .update_subcommand import update
 from .writer_subcommand import writer
 
+_log_levels_ = {
+    0: "CRITICAL",
+    1: "ERROR",
+    2: "WARNING",
+    3: "INFO",
+    4: "DEBUG",
+}
+
 
 @click.group()
-@click.option("--logfile", help="file to log in (optional)")
-@click.option("--loglevel", default="INFO", help="the level to log, yk")
+@click.option(
+    "--logfile",
+    "-l",
+    type=click.File("at", encoding="utf8"),
+    help="File to log in, defaults to stdout.",
+    default="-",
+)
+@click.option(
+    "--json",
+    "-j",
+    is_flag=True,
+    help="Output log in JSON format, defaults to False.",
+    default=False,
+)
+@click.option(
+    "--verbose",
+    "-v",
+    count=True,
+    help="Increases verbosity, maximally vvvv.",
+    default=0,
+)
 @click.pass_context
-def cli(ctx: click.Context, logfile, loglevel):
+def cli(ctx: click.Context, logfile, json, verbose):
     """Dabapush"""
     # prepare log options
     log.remove()
+    log_level = _log_levels_.get(verbose, "CRITICAL")
+    log.add(logfile, level=log_level, serialize=json)
 
-    if logfile is not None:
-        if loglevel is None:
-            loglevel = "DEBUG"
-            log.add(sys.stdout, level=loglevel)
-        log.add(logfile, level=loglevel)
-    # do standard logging into STDOUT
-    else:
-        log.add(sys.stdout, level="DEBUG")
     # prepare context
     ctx.ensure_object(Dabapush)
 

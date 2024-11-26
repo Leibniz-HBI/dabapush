@@ -1,22 +1,50 @@
 """
 # dabapush
 
-Database pusher for social media data (Twitter for the beginning) – pre-alpha version
+Database pusher and version control for social media data – early-alpha version
 
-Version: 0.4.0-alpha, date: 2023/03/19
+Version: 0.4.0-alpha1, date: 2023/03/19
+
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/dabapush)
+![GitHub top language](https://img.shields.io/github/languages/top/Leibniz-HBI/dabapush)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Leibniz-HBI/dabapush)
+![GitHub License](https://img.shields.io/github/license/Leibniz-HBI/dabapush)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/Leibniz-HBI/dabapush)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Leibniz-HBI/dabapush)
+
+---
 
 ## Using dabapush
 
-`dabapush` is a tool to read longer running data collections and write them to
-another file format or persist them into a database. It is designed to run
-periodically, e.g. controlled by chron, thus, for convenience ot use
-project-based configurations which contain all required information on what to
-read where and what to do with it.
-A **project** may have one or more **jobs**, each job consists of a reader and
-a writer configuration, e.g. read JSON-files from the Twitter API that we stored
-in folder `/home/user/fancy-project/twitter/` and write the flattened and
-compiled data set in to `/some/where/else` as CSV files.
+`dabapush` is a tool to read longer running data collections and write them to another file format
+or persist them into a database. It is designed to run periodically, e.g. controlled by chron, thus,
+for convenience ot use project-based configurations which contain all required information on what
+to read where and what to do with it.
+A **project** may have one or more **jobs**, each job consists of a reader and a writer
+configuration, e.g. read JSON-files from the Twitter API that we stored in folder
+`/home/user/fancy-project/twitter/` and write the flattened and compiled data set in to
+`/some/where/else` as CSV files.
 
+
+```text
+
+Usage: dabapush [OPTIONS] COMMAND [ARGS]...
+
+  Dabapush
+
+Options:
+  -l, --logfile FILENAME  File to log in, defaults to stdout.
+  -v, --verbose           Increases verbosity, maximally vvvv.
+  --help                  Show this message and exit.
+
+Commands:
+  create
+  reader  reader command
+  run     Run dabapush job in the current working directory.
+  update  Update the project's status.
+  writer  writer command
+```
 ### First steps
 
 In order to run a first `dabapush`-job we'll need to create a project configuration.
@@ -26,26 +54,26 @@ This is done by calling:
 dabapush create
 ```
 
-By default this walks you through the configuration process in a step-by-step
-manner. Alternatively, you could call:
+By default this walks you through the configuration process in a step-by-step manner.
+Alternatively, you could call:
 
 ```bash
 dabapush create --non-interactive
 ```
 
-This will create an empty configuration, you'll have to fill out the required
-information by e.g. calling:
+This will create an empty configuration, you'll have to fill out the required information by e.g.
+calling:
 
 ```bash
 dabapush reader add NDJSON default
 dabapush writer add CSV default
 ```
 
-Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin
-to add and `default` is the pipeline name.
+Whereas `reader add`/`writer add` is the verb, `NDJSON` or `CSV` is the plugin to add and `default`
+is the pipeline name.
 
-Of course you can edit the configration after creation in your favorite editor,
-but **BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!**.
+Of course you can edit the configration after creation in your favorite editor, but
+**BEWARE NOT TO TEMPER WITH THE YAMl-TAGS!!!**.
 
 To run the newly configured job, please call:
 
@@ -82,17 +110,13 @@ Options:
 
 `run <target>` -- run a single writer and/or named target
 
-Options:
-
-`--force-rerun, -r`: forces all data  to be read, ignores already logged data
-
 ----
 
 `reader` -- interact with readers
 
-`reader configure <name>` -- configure the reader for one or more subproject(s);
-Reader configuration is inherited from global to local level;
-throws if configuration is incomplete and defaults are missing
+`reader configure <name>` -- configure the reader for one or more subproject(s); Reader
+configuration is inherited from global to local level; throws if configuration is incomplete
+and defaults are missing.
 
 `reader list`: returns a table of all configured readers, with `<path> <target> <class> <id>`
 
@@ -108,13 +132,6 @@ Options:
 
 `remove <name>`: remove a reader from the project configuration.
 
-`register <path>`: not there yet
-
-----
-
-`discover` -- discover (possible) targets in project directory and configure
-them automagically -- yeah, you dream of that, don't you?
-
 ----
 
 `writer` -- interact with writers
@@ -129,24 +146,11 @@ them automagically -- yeah, you dream of that, don't you?
 
 `writer configure <name>` or `writer configure all`
 
-Options:
-
-`--output-dir, -o <path>`: default for all targets: `<project-dir>/output/<target-name>`
-
-`--output-pattern, -p <pattern>`: pattern used for file name creation e.g. 'YYYY-MM-dd',
-file extension is added by the writer and cannot be overwritten
-
-`--roll-over, -r ``<file-size>`:
-
-`--roll-over, -r` `<lines>`:
-
-`--roll-over -r <None>`: should be the output chunked? Give either a file-size
-or a number of lines for roll-over or None to disable chunking
 
 ## Extending dabapush and developers guide
 
-Dabapush's reader and writer plug-ins are registered via entry point: `dabapush_readers`
-for readers and `dabapush_writers` for writers. Both expect `Configuration`-subclass.
+Dabapush's reader and writer plug-ins are registered via entry point: `dabapush_readers` for
+readers and `dabapush_writers` for writers. Both expect `Configuration`-subclass.
 
 ### Developer Installation
 
@@ -166,5 +170,8 @@ from .Reader import (
     TegracliReaderConfiguration,
     TwacapicReaderConfiguration,
 )
-from .Writer import CSVWriterConfiguration, NDJSONWriterConfiguration, STDOUTWriterConfiguration
-
+from .Writer import (
+    CSVWriterConfiguration,
+    NDJSONWriterConfiguration,
+    STDOUTWriterConfiguration,
+)
