@@ -10,6 +10,7 @@ from .reader_subcommand import reader
 from .run_subcommand import run
 from .update_subcommand import update
 from .writer_subcommand import writer
+from dabapush import __version__
 
 _log_levels_ = {
     0: "CRITICAL",
@@ -43,6 +44,7 @@ _log_levels_ = {
     default=0,
 )
 @click.pass_context
+@click.version_option(__version__)
 def cli(ctx: click.Context, logfile, json, verbose):
     """Dabapush"""
     # prepare log options
