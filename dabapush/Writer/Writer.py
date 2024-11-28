@@ -4,6 +4,7 @@ The Writer class is an abstract base class for writing records to a destination.
 It provides a write method to consume a queue of records and a persist method to
 write the records to the destination.
 """
+
 import abc
 from typing import Iterator, List
 
@@ -40,6 +41,9 @@ class Writer:
             self.buffer.append(item)
             if len(self.buffer) >= self.config.chunk_size:
                 self.persist()
+                for record in self.buffer:
+                    record.done()
+                self.buffer = []
 
     @abc.abstractmethod
     def persist(self) -> None:

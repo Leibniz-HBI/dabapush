@@ -1,7 +1,6 @@
 """This module contains the abstract base class for all reader plugins."""
 
 import abc
-from itertools import tee
 from pathlib import Path
 from typing import Iterator
 
@@ -83,20 +82,18 @@ class FileReader(Reader):
         else:
             self.log_path.touch()
 
-        fresh = (
-            Record(uuid=str(a), payload=a)
+        yield from (
+            Record(
+                uuid=str(a),
+                payload=a,
+                event_handlers={"on_done": [self.log]},
+            )
             for a in Path(self.config.read_path).rglob(self.config.pattern)
         )
-        fresh, back = tee(fresh)
-        yield from fresh
 
-        for record in back:
-            for sub_record in record.walk_tree(only_leafs=True):
-                self._log_(sub_record)
-
-    def _log_(self, record: Record) -> Record:
+    def log(self, record: Record):
+        """Log the record to the persistent record log file."""
         with self.log_path.open("a", encoding="utf8") as f:
             ujson.dump(record.to_log(), f)
             f.write("\n")
             log.debug(f"Done with {record.uuid}")
-        return record

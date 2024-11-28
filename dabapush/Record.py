@@ -3,9 +3,15 @@ This module contains the Record dataclass, which is used to store the data and a
 """
 
 import dataclasses
+import weakref
 from datetime import datetime
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Dict, List, Literal, Optional, Self, Union
 from uuid import uuid4
+
+from loguru import logger as log
+
+EventHandler = Callable[[Self], None]
+EventType = Literal["on_done", "on_error", "on_start"]
 
 
 @dataclasses.dataclass
@@ -49,18 +55,21 @@ class Record:
     """
 
     payload: Optional[Any] = None
-    source: Optional["Record"] = None
+    source: Optional[weakref.ReferenceType] = None
     uuid: Optional[str] = uuid4().hex
     processed_at: datetime = datetime.now()
-    children: List["Record"] = dataclasses.field(default_factory=list)
+    children: List[Self] = dataclasses.field(default_factory=list)
+    event_handlers: Dict[EventType, List[EventHandler]] = dataclasses.field(
+        default_factory=dict
+    )
 
     def split(
         self,
         key: Optional[str] = None,
         id_key: Optional[str] = None,
-        func: Optional[Callable[["Record", ...], List["Record"]]] = None,
+        func: Optional[Callable[[Self, ...], List[Self]]] = None,
         **kwargs,
-    ) -> List["Record"]:
+    ) -> List[Self]:
         """Splits the record bases on either a keyword or a function. If a function is provided,
         it will be used to split the payload, even if you provide a key. If a key is provided, it
         will split the payload.
@@ -107,7 +116,7 @@ class Record:
                 **{
                     "payload": value,
                     "uuid": value.get(id_key) if id_key else uuid4().hex,
-                    "source": self,
+                    "source": weakref.ref(self),
                 }
             )
             for value in self.payload[key]
@@ -115,22 +124,25 @@ class Record:
         self.children.extend(split_payload)
         return split_payload
 
-    def to_log(self):
+    def to_log(self) -> Dict[str, Union[str, List[Dict[str, Any]]]]:
         """Return a loggable representation of the record."""
+        if self.source:
+            source = self.source()
+            if not source:
+                log.critical(f"Source of record {self.uuid} is not available")
+                raise ValueError(f"Source of record {self.uuid} is not available")
+        else:
+            source = None
         return {
             "uuid": str(self.uuid),
             "processed_at": self.processed_at.isoformat(),
             # We cannot allow the source to be a Record, as it would create a circular reference
             # while serializing the dataclass to JSON.
-            "source": (
-                str(self.source)
-                if not isinstance(self.source, Record)
-                else self.source.uuid
-            ),
+            "source": (source if not isinstance(source, Record) else source.uuid),
             "children": [child.to_log() for child in self.children],
         }
 
-    def walk_tree(self, only_leafs=True) -> List["Record"]:
+    def walk_tree(self, only_leafs=True) -> List[Self]:
         """Walk the record tree and return a list of all records.
 
         Parameters:
@@ -146,19 +158,36 @@ class Record:
             records.extend(child.walk_tree(only_leafs=only_leafs))
         return records
 
-    def __eq__(self, other):
+    def done(self):
+        """Call the on_done event handler."""
+        self.__dispatch_event__("on_done")
+        # Clean up the record
+        self.children = []
+        self.source = None
+        self.payload = None
+
+    def destroy(self):
+        """Destroy the record and all its children."""
+        for child in self.children:
+            child.destroy()
+
+        del self
+
+    def __eq__(self, other: Self) -> bool:
         if not isinstance(other, Record):
             raise ValueError(
                 "Cannot compare Record with non-Record type"
                 f" Comparison was Record == {type(other)}"
             )
-        if not self.payload:
+        if not self.payload or not other.payload:
             return self.uuid == other.uuid
 
         return self.payload == other.payload
 
+    def __dispatch_event__(self, event: EventType):
+        """Dispatch an event to the event handlers."""
+        for handler in self.event_handlers.get(event, []):
+            handler(self)
+
     def __is_leaf__(self):
         return not self.children
-
-
-RecordRegistry = {}
