@@ -41,7 +41,7 @@ def test_splitting_record():
         assert _record_.uuid
         assert _record_.processed_at
         assert _record_.payload == {"key": "value"}
-        assert _record_.source == record
+        assert _record_.source() == record
         assert _record_ in record.children
 
 
@@ -62,7 +62,7 @@ def test_splitting_record_with_children_ids():
         assert _record_.uuid == n
         assert _record_.processed_at
         assert _record_.payload == {"key": "value", "id": n}
-        assert _record_.source is record
+        assert _record_.source() is record
         assert _record_ in record.children
 
 
@@ -90,10 +90,10 @@ def test_splitting_record_without_payload():
 
 def test_logging_record():
     """Should log a Record."""
-    record = Record({"key": "value"}, Path())
+    record = Record({"key": "value"})
 
     assert record.to_log() == {
-        "source": str(Path()),
+        "source": None,
         "uuid": record.uuid,
         "processed_at": record.processed_at.isoformat(),
         "children": [],
