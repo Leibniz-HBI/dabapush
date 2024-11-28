@@ -27,6 +27,7 @@ Usage: dabapush [OPTIONS] COMMAND [ARGS]...
 Options:
   -l, --logfile FILENAME  File to log in, defaults to stdout.
   -v, --verbose           Increases verbosity, maximally vvvv.
+  --version               Show the version and exit.
   --help                  Show this message and exit.
 
 Commands:
