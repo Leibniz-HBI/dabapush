@@ -1,4 +1,5 @@
 """This module contains the STDOUTWriter and STDOUTWriterConfiguration classes."""
+
 from ..Configuration.WriterConfiguration import WriterConfiguration
 from .Writer import Writer
 
@@ -11,7 +12,6 @@ class STDOUTWriter(Writer):
 
     def persist(self):
         last_rows = self.buffer
-        self.buffer = []
         for row in last_rows:
             print(row)
 
@@ -21,6 +21,6 @@ class STDOUTWriterConfiguration(WriterConfiguration):
 
     yaml_tag = "!dabapush:STDOUTWriterConfiguration"
 
-    def get_writer(self):
+    def get_instance(self):  # pylint: disable=W0221
         """Returns a STDOUTWriter instance."""
         return STDOUTWriter(self)

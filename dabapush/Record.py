@@ -12,6 +12,7 @@ from loguru import logger as log
 
 EventHandler = Callable[[Self], None]
 EventType = Literal["on_done", "on_error", "on_start"]
+RecordState = Literal["done", "error", "start", "rejected"]
 
 
 @dataclasses.dataclass
@@ -62,6 +63,7 @@ class Record:
     event_handlers: Dict[EventType, List[EventHandler]] = dataclasses.field(
         default_factory=dict
     )
+    state: RecordState = "start"
 
     def split(
         self,
@@ -126,6 +128,7 @@ class Record:
 
     def to_log(self) -> Dict[str, Union[str, List[Dict[str, Any]]]]:
         """Return a loggable representation of the record."""
+        log.debug(f"Logging record {self.uuid}.")
         if self.source:
             source = self.source()
             if not source:
@@ -160,11 +163,29 @@ class Record:
 
     def done(self):
         """Call the on_done event handler."""
+        # Signal parent that this record is done
+        self.state = "done"
+        log.debug(f"Record {self.uuid} is set as done.")
+        if self.source:
+            parent: Record = self.source()
+            if not parent:
+                log.critical(f"Source of record {self.uuid} is not available")
+                raise ValueError(f"Source of record {self.uuid} is not available")
+            parent.signal_done()
+            log.debug(f"Signaled parent {parent.uuid} of record {self.uuid}.")
         self.__dispatch_event__("on_done")
-        # Clean up the record
-        self.children = []
-        self.source = None
-        self.payload = None
+
+    def signal_done(self):
+        """Signal that a child record is done."""
+        # If all children are done, so is the parent.
+        _children_status_ = [child.state == "done" for child in self.children]
+        log.debug(
+            f"Signaled that children of {self.uuid} is done."
+            f" Children status: {list(zip(self.children, _children_status_))}"
+        )
+        if all(_children_status_):
+            self.done()
+            log.debug(f"Record {self.uuid} is done.")
 
     def destroy(self):
         """Destroy the record and all its children."""
@@ -186,6 +207,7 @@ class Record:
 
     def __dispatch_event__(self, event: EventType):
         """Dispatch an event to the event handlers."""
+        log.debug(f"Dispatching event '{event}' for '{self.uuid}'.")
         for handler in self.event_handlers.get(event, []):
             handler(self)
 

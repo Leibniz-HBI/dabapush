@@ -8,6 +8,8 @@ write the records to the destination.
 import abc
 from typing import Iterator, List
 
+from loguru import logger as log
+
 from ..Configuration.WriterConfiguration import WriterConfiguration
 from ..Record import Record
 
@@ -35,13 +37,16 @@ class Writer:
 
         Args:
             queue (Iterator[Record]): Items to be consumed.
-
         """
         for item in queue:
             self.buffer.append(item)
             if len(self.buffer) >= self.config.chunk_size:
                 self.persist()
+                log.debug(
+                    f"Persisted {self.config.chunk_size} records. Setting to done."
+                )
                 for record in self.buffer:
+                    log.debug(f"Setting record {record.uuid} as done.")
                     record.done()
                 self.buffer = []
 
