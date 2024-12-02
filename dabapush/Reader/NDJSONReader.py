@@ -1,7 +1,5 @@
 """NDJSON Writer plug-in for dabapush"""
 
-import weakref
-
 # pylint: disable=R,I1101
 from typing import Iterator, List
 
@@ -27,7 +25,7 @@ def read_and_split(
                     if not flatten_records
                     else flatten(ujson.loads(line))
                 ),
-                source=weakref.ref(record),
+                source=record,
             )
             for line_number, line in enumerate(file)
         ]
