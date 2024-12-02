@@ -3,7 +3,7 @@
 
 Database pusher and version control for social media data – early-alpha version
 
-Version: 0.4.0-alpha5, date: 2024/12/02
+Version: 0.4.0-alpha6, date: 2024/12/02
 
 
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/dabapush)
@@ -163,7 +163,7 @@ readers and `dabapush_writers` for writers. Both expect `Configuration`-subclass
 
 """
 
-__version__ = "0.4.0-alpha5"
+__version__ = "0.4.0-alpha6"
 
 from .Reader import (
     NDJSONReaderConfiguration,
