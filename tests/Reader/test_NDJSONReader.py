@@ -14,12 +14,12 @@ def data():
     return [{"key": "value"} for _ in range(20)]
 
 
-def test_read(tmp_path: Path, data):  # pylint: disable=W0621
+def test_read(isolated_test_dir: Path, data):  # pylint: disable=W0621
     """Should read the data from the file."""
     reader = NDJSONReader(
-        NDJSONReaderConfiguration("test", read_path=str(tmp_path.resolve()))
+        NDJSONReaderConfiguration("test", read_path=str(isolated_test_dir.resolve()))
     )
-    file_path = tmp_path / "test.ndjson"
+    file_path = isolated_test_dir / "test.ndjson"
     with file_path.open("wt") as file:
         for line in data:
             json.dump(line, file)
@@ -30,3 +30,26 @@ def test_read(tmp_path: Path, data):  # pylint: disable=W0621
     for n, record in enumerate(records):
         assert record.processed_at
         assert record.payload == data[n]
+
+
+def test_read_with_backlog(isolated_test_dir: Path, data):  # pylint: disable=W0621
+    """Should only read the new data."""
+    reader = NDJSONReaderConfiguration(
+        "test", read_path=str(isolated_test_dir.resolve())
+    ).get_instance()
+    file_path = isolated_test_dir / "test.ndjson"
+    with file_path.open("wt") as file:
+        for line in data:
+            json.dump(line, file)
+            file.write("\n")
+
+    records = list(reader.read())
+    assert len(records) == 20
+
+    reader2 = NDJSONReaderConfiguration(
+        "test", read_path=str(isolated_test_dir.resolve())
+    ).get_instance()
+
+    records = list(reader2.read())
+    assert len(records) == 0
+    assert len(reader2.back_log) == 20
