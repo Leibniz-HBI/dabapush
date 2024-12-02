@@ -10,6 +10,8 @@ from loguru import logger as log
 from ..Configuration.FileWriterConfiguration import FileWriterConfiguration
 from .Writer import Writer
 
+# pylint: disable=R0917
+
 
 class CSVWriter(Writer):
     """Writes CSVs from buffered stream"""
@@ -23,11 +25,9 @@ class CSVWriter(Writer):
         """persist buffer to disk"""
 
         last_rows = self.buffer
-        self.buffer = []
 
-        log.info(f"Persisted {len(last_rows)} records")
         _path = Path(self.config.path) / self.config.make_file_name(
-            {"chunk_number": self.chunk_number}
+            {"chunk_number": self.chunk_number, "type": "csv"}
         )
         pd.DataFrame(
             (a.payload for a in last_rows),
@@ -35,6 +35,9 @@ class CSVWriter(Writer):
             r"\n|\r", r"\\n", regex=True
         ).to_csv(_path, index=False)
         self.chunk_number += 1
+        self.buffer = []
+
+        log.info(f"Persisted {len(last_rows)} records")
 
         return len(last_rows)
 
@@ -56,14 +59,6 @@ class CSVWriterConfiguration(FileWriterConfiguration):
             name, id=id, chunk_size=chunk_size, path=path, name_template=name_template
         )
         self.type = "csv"
-
-    @property
-    def file_path(self) -> Path:
-        """get the path to a file to write in"""
-        # evalutate self.name_template
-        file_name = self.make_file_name({"type": "csv"})
-        # append to self.path and return
-        return Path(self.path) / file_name
 
     def get_instance(self):  # pylint: disable=W0221
         """get configured instance of CSVWriter"""
