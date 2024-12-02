@@ -200,10 +200,9 @@ class Record:
                 "Cannot compare Record with non-Record type"
                 f" Comparison was Record == {type(other)}"
             )
-        if not self.payload or not other.payload:
-            return self.uuid == other.uuid
-
-        return self.payload == other.payload
+        # if self.payload or other.payload:
+        #    return self.payload == other.payload
+        return self.uuid == other.uuid
 
     def __dispatch_event__(self, event: EventType):
         """Dispatch an event to the event handlers."""

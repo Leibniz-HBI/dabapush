@@ -3,7 +3,7 @@
 import pytest
 
 from dabapush.Record import Record
-from dabapush.Writer.NDJSONWriter import NDJSONWriterConfiguration
+from dabapush.Writer.ndjson_writer import NDJSONWriterConfiguration
 
 
 @pytest.mark.parametrize(
