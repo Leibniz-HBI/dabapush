@@ -3,7 +3,6 @@ This module contains the Record dataclass, which is used to store the data and a
 """
 
 import dataclasses
-import weakref
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Literal, Optional, Self, Union
 from uuid import uuid4
@@ -56,7 +55,7 @@ class Record:
     """
 
     payload: Optional[Any] = None
-    source: Optional[weakref.ReferenceType] = None
+    source: Optional[Self] = None
     uuid: Optional[str] = uuid4().hex
     processed_at: datetime = datetime.now()
     children: List[Self] = dataclasses.field(default_factory=list)
@@ -118,7 +117,7 @@ class Record:
                 **{
                     "payload": value,
                     "uuid": value.get(id_key) if id_key else uuid4().hex,
-                    "source": weakref.ref(self),
+                    "source": self,
                 }
             )
             for value in self.payload[key]
@@ -129,19 +128,15 @@ class Record:
     def to_log(self) -> Dict[str, Union[str, List[Dict[str, Any]]]]:
         """Return a loggable representation of the record."""
         log.debug(f"Logging record {self.uuid}.")
-        if self.source:
-            source = self.source()
-            if not source:
-                log.critical(f"Source of record {self.uuid} is not available")
-                raise ValueError(f"Source of record {self.uuid} is not available")
-        else:
-            source = None
+
         return {
             "uuid": str(self.uuid),
             "processed_at": self.processed_at.isoformat(),
             # We cannot allow the source to be a Record, as it would create a circular reference
             # while serializing the dataclass to JSON.
-            "source": (source if not isinstance(source, Record) else source.uuid),
+            "source": (
+                self.source if not isinstance(self.source, Record) else self.source.uuid
+            ),
             "children": [child.to_log() for child in self.children],
         }
 
@@ -167,12 +162,8 @@ class Record:
         self.state = "done"
         log.debug(f"Record {self.uuid} is set as done.")
         if self.source:
-            parent: Record = self.source()
-            if not parent:
-                log.critical(f"Source of record {self.uuid} is not available")
-                raise ValueError(f"Source of record {self.uuid} is not available")
-            parent.signal_done()
-            log.debug(f"Signaled parent {parent.uuid} of record {self.uuid}.")
+            self.source.signal_done()
+            log.debug(f"Signaled parent {self.source.uuid} of record {self.uuid}.")
         self.__dispatch_event__("on_done")
 
     def signal_done(self):
