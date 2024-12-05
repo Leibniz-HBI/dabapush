@@ -6,6 +6,7 @@ from typing import Iterator
 
 import ujson
 from loguru import logger as log
+from tqdm.auto import tqdm
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
@@ -77,6 +78,9 @@ class FileReader(Reader):
     def records(self) -> Iterator[Record]:
         """Generator for all files matching the pattern in the read_path."""
         if self.log_path.exists():
+            log.debug(
+                f"Found log file for {self.config.name} at {self.log_path}. Loading..."
+            )
             with self.log_path.open("rt", encoding="utf8") as f:
                 self.back_log = [Record(**ujson.loads(_)) for _ in f.readlines()]
         else:
@@ -88,7 +92,7 @@ class FileReader(Reader):
                 payload=a,
                 event_handlers={"on_done": [self.log]},
             )
-            for a in Path(self.config.read_path).rglob(self.config.pattern)
+            for a in tqdm(list(Path(self.config.read_path).rglob(self.config.pattern)))
         )
 
     def log(self, record: Record):
