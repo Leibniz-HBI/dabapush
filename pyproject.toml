@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dabapush"
-version = "0.4.0-alpha7"
+version = "0.4.0-alpha8"
 description = ""
 authors = [
 	"Philipp Kessling <p.kessling@leibniz-hbi.de>",

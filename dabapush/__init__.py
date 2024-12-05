@@ -3,7 +3,7 @@
 
 Database pusher and version control for social media data – early-alpha version
 
-Version: 0.4.0-alpha7, date: 2024/12/05
+Version: 0.4.0-alpha8, date: 2024/12/05
 
 
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/dabapush)
