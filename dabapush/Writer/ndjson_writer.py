@@ -24,7 +24,9 @@ class NDJSONWriter(Writer):
         last_rows = self.buffer
         self.buffer = []
 
-        _file: Path = Path(self.config.path) / self.config.make_file_name()
+        _file: Path = Path(self.config.path) / self.config.make_file_name(
+            additional_keys={"type": "ndjson"}
+        )
 
         with _file.open("a", encoding="utf8") as file:
             for row in last_rows:
