@@ -163,7 +163,7 @@ readers and `dabapush_writers` for writers. Both expect `Configuration`-subclass
 
 """
 
-__version__ = "0.4.0-alpha7"
+__version__ = "0.4.0-alpha8"
 
 from .Reader import (
     NDJSONReaderConfiguration,
