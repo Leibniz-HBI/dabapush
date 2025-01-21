@@ -24,7 +24,7 @@ def test_id(writer: Writer):
 
 def test_writer_write_method(writer: Writer):
     """Should write to the buffer."""
-    queue = (Record(i, i) for i in range(10))
+    queue = (Record(i, uuid=str(i)) for i in range(10))
     writer.write(queue)
     assert [_.payload for _ in writer.buffer] == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
