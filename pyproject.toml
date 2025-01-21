@@ -47,6 +47,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.plugins.dabapush_readers]
 "Twacapic" = "dabapush.Reader.TwacapicReader:TwacapicReaderConfiguration"
 "NDJSON" = "dabapush.Reader.NDJSONReader:NDJSONReaderConfiguration"
+"JSON" = "dabapush.Reader.JSONReader:JSONReaderConfiguration"
 "Tegracli" = "dabapush.Reader.tegracli_reader:TegracliReaderConfiguration"
 
 [tool.poetry.plugins.dabapush_writers]
