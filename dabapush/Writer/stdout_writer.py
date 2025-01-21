@@ -13,7 +13,7 @@ class STDOUTWriter(Writer):
     def persist(self):
         last_rows = self.buffer
         for row in last_rows:
-            print(row)
+            print(row.payload)
 
 
 class STDOUTWriterConfiguration(WriterConfiguration):
