@@ -53,13 +53,9 @@ class NDJSONReader(FileReader):
         """reads multiple NDJSON files and emits them line by line"""
 
         for file_record in self.records:
-            filtered_records = filter(
-                lambda x: x not in self.back_log,
-                file_record.split(
-                    func=read_and_split, flatten_records=self.config.flatten_dicts
-                ),
+            yield from file_record.split(
+                func=read_and_split, flatten_records=self.config.flatten_dicts
             )
-            yield from filtered_records
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):

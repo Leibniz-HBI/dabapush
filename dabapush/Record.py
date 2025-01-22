@@ -185,10 +185,10 @@ class Record:
         # Signal parent that this record is done
         self._state_ = "done"
         log.debug(f"Record {self.uuid} is set as done.")
-        if self.source:
-            self.source.signal_done()
-            log.debug(f"Signaled parent {self.source.uuid} of record {self.uuid}.")
-        self.__dispatch_event__("on_done")
+        # if self.source:
+        #     self.source.signal_done()
+        #     log.debug(f"Signaled parent {self.source.uuid} of record {self.uuid}.")
+        # self.__dispatch_event__("on_done")
 
     def signal_done(self):
         """Signal that a child record is done."""
