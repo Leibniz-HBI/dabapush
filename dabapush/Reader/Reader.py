@@ -73,7 +73,6 @@ class FileReader(Reader):
             Record(
                 uuid=str(a),
                 payload=a,
-                # event_handlers={"on_done": [self.log]},
             )
             for a in tqdm(list(Path(self.config.read_path).rglob(self.config.pattern)))
         )

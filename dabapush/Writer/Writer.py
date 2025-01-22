@@ -105,8 +105,4 @@ class Writer:
         ujson.dump(record.to_log(), self.log_file)  # pylint: disable=I1101
         self.log_file.write("\n")
 
-        # with self.log_path.open("a", encoding="utf8") as f:
-        #     for sub_record in record.walk_tree(only_leafs=True):
-        #         ujson.dump(sub_record.to_log(), f)
-        #         f.write("\n")
         log.debug(f"Done with {record.uuid}")
