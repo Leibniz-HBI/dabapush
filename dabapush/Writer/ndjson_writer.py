@@ -22,7 +22,6 @@ class NDJSONWriter(Writer):
         """Persist the buffer to the file and flush."""
 
         last_rows = self.buffer
-        self.buffer = []
 
         _file: Path = Path(self.config.path) / self.config.make_file_name(
             additional_keys={"type": "ndjson"}

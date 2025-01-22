@@ -1,7 +1,7 @@
 """NDJSON Writer plug-in for dabapush"""
 
 # pylint: disable=R,I1101
-from typing import Iterator, List
+from typing import Iterator
 
 import ujson
 
@@ -14,10 +14,10 @@ from .Reader import FileReader
 def read_and_split(
     record: Record,
     flatten_records: bool = False,
-) -> List[Record]:
+) -> Iterator[Record]:
     """Reads a file and splits it into records by line."""
     with record.payload.open("rt", encoding="utf8") as file:
-        children = [
+        children = (
             Record(
                 uuid=f"{str(record.uuid)}:{str(line_number)}",
                 payload=(
@@ -28,10 +28,10 @@ def read_and_split(
                 source=record,
             )
             for line_number, line in enumerate(file)
-        ]
-        record.children.extend(children)
-
-    return children
+        )
+        for child in children:
+            record.children.append(child)
+            yield child
 
 
 class NDJSONReader(FileReader):
@@ -53,13 +53,9 @@ class NDJSONReader(FileReader):
         """reads multiple NDJSON files and emits them line by line"""
 
         for file_record in self.records:
-            filtered_records = filter(
-                lambda x: x not in self.back_log,
-                file_record.split(
-                    func=read_and_split, flatten_records=self.config.flatten_dicts
-                ),
+            yield from file_record.split(
+                func=read_and_split, flatten_records=self.config.flatten_dicts
             )
-            yield from filtered_records
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):

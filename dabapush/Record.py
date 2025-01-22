@@ -5,7 +5,7 @@ This module contains the Record dataclass, which is used to store the data and a
 # pylint: disable=R0917, R0913
 
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Literal, Optional, Self, Union
+from typing import Any, Callable, Dict, Iterable, List, Literal, Optional, Self, Union
 from uuid import uuid4
 
 from loguru import logger as log
@@ -92,9 +92,9 @@ class Record:
         self,
         key: Optional[str] = None,
         id_key: Optional[str] = None,
-        func: Optional[Callable[[Self, ...], List[Self]]] = None,
+        func: Optional[Callable[[Self, ...], Iterable[Self]]] = None,
         **kwargs,
-    ) -> List[Self]:
+    ) -> Iterable[Self]:
         """Splits the record bases on either a keyword or a function. If a function is provided,
         it will be used to split the payload, even if you provide a key. If a key is provided, it
         will split the payload.
@@ -134,22 +134,20 @@ class Record:
     def _handle_key_split_(self, id_key, key):
         payload = self.payload  # Get the payload, the original payload
         # will be set to None to free memory.
-        if key not in payload:
-            return []
-        if not isinstance(payload[key], list):
-            return []
-        split_payload = [
-            Record(
-                **{
-                    "payload": value,
-                    "uuid": value.get(id_key) if id_key else uuid4().hex,
-                    "source": self,
-                }
+        if key in payload and isinstance(payload[key], list):
+            split_payload = (
+                Record(
+                    **{
+                        "payload": value,
+                        "uuid": value.get(id_key) if id_key else uuid4().hex,
+                        "source": self,
+                    }
+                )
+                for value in payload[key]
             )
-            for value in payload[key]
-        ]
-        self.children.extend(split_payload)
-        return split_payload
+            for child in split_payload:
+                self.children.append(child)
+                yield child
 
     def to_log(self) -> Dict[str, Union[str, List[Dict[str, Any]]]]:
         """Return a loggable representation of the record."""
@@ -187,19 +185,6 @@ class Record:
         # Signal parent that this record is done
         self._state_ = "done"
         log.debug(f"Record {self.uuid} is set as done.")
-        if self.source:
-            self.source.signal_done()
-            log.debug(f"Signaled parent {self.source.uuid} of record {self.uuid}.")
-        self.__dispatch_event__("on_done")
-
-    def signal_done(self):
-        """Signal that a child record is done."""
-        # If all children are done, so is the parent.
-        _children_status_ = [child.state == "done" for child in self.children]
-        log.debug(f"Signaled that children of {self.uuid} is done.")
-        if all(_children_status_):
-            self.done()
-            log.debug(f"Record {self.uuid} is done.")
 
     def destroy(self):
         """Destroy the record and all its children."""

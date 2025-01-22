@@ -1,12 +1,13 @@
 """Test the STDOUTWriter class."""
 
 from dabapush import STDOUTWriterConfiguration
+from dabapush.Record import Record
 
 
 def test_stdout_writer(capsys):
     """Should write to stdout."""
     writer = STDOUTWriterConfiguration("stdout1").get_instance()
-    writer.buffer = ["test"]
+    writer.buffer = [Record(uuid="test.01", source=None, payload="test")]
     writer.persist()
 
     captured = capsys.readouterr()
