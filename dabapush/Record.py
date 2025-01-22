@@ -185,19 +185,6 @@ class Record:
         # Signal parent that this record is done
         self._state_ = "done"
         log.debug(f"Record {self.uuid} is set as done.")
-        # if self.source:
-        #     self.source.signal_done()
-        #     log.debug(f"Signaled parent {self.source.uuid} of record {self.uuid}.")
-        # self.__dispatch_event__("on_done")
-
-    def signal_done(self):
-        """Signal that a child record is done."""
-        # If all children are done, so is the parent.
-        _children_status_ = [child.state == "done" for child in self.children]
-        log.debug(f"Signaled that children of {self.uuid} is done.")
-        if all(_children_status_):
-            self.done()
-            log.debug(f"Record {self.uuid} is done.")
 
     def destroy(self):
         """Destroy the record and all its children."""
