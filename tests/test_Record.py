@@ -36,7 +36,7 @@ def test_splitting_record():
 
     record = Record(payload, Path())
     records = record.split("key")
-    assert len(records) == 3
+    assert len(list(records)) == 3
     for _record_ in records:
         assert _record_.uuid
         assert _record_.processed_at
@@ -57,7 +57,7 @@ def test_splitting_record_with_children_ids():
 
     record = Record(payload, Path())
     records = record.split("key", id_key="id")
-    assert len(records) == 3
+    assert len(list(records)) == 3
     for n, _record_ in enumerate(records, 1):
         assert _record_.uuid == n
         assert _record_.processed_at
@@ -78,14 +78,14 @@ def test_splitting_record_without_key():
 
     record = Record(payload, Path())
     records = record.split("key2")
-    assert len(records) == 0
+    assert len(list(records)) == 0
 
 
 def test_splitting_record_without_payload():
     """Should not split a Record without a payload."""
     record = Record({}, Path())
     records = record.split("key")
-    assert len(records) == 0
+    assert len(list(records)) == 0
 
 
 def test_logging_record():
