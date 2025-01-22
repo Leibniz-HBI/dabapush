@@ -35,11 +35,8 @@ class CSVWriter(Writer):
             r"\n|\r", r"\\n", regex=True
         ).to_csv(_path, index=False)
         self.chunk_number += 1
-        self.buffer = []
 
         log.info(f"Persisted {len(last_rows)} records")
-
-        return len(last_rows)
 
 
 class CSVWriterConfiguration(FileWriterConfiguration):
