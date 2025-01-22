@@ -1,6 +1,6 @@
 """Tests for the Writer class."""
 
-# pylint: disable=W0212, W0621, C0114, C0115, C0116
+# pylint: disable=W0212, W0621, W0613, C0114, C0115, C0116
 from pytest import fixture
 
 from dabapush.Configuration.WriterConfiguration import WriterConfiguration
@@ -9,8 +9,8 @@ from dabapush.Writer.Writer import Writer
 
 
 @fixture
-def writer(monkeypatch, tmp_path) -> Writer:
-    monkeypatch.chdir(tmp_path)
+def writer(isolated_test_dir) -> Writer:
+
     config = WriterConfiguration(name="test")
     return Writer(config)
 
@@ -39,9 +39,8 @@ class MyTestWriter(Writer):
         self.persisted_data.extend((_.payload for _ in self.buffer))
 
 
-def test_writer_persist_method(monkeypatch, tmp_path):
+def test_writer_persist_method(isolated_test_dir):
     """Should persist the buffer."""
-    monkeypatch.chdir(tmp_path)
 
     config = WriterConfiguration(name="test", id=1, chunk_size=3)
     writer = MyTestWriter(config)
@@ -52,9 +51,8 @@ def test_writer_persist_method(monkeypatch, tmp_path):
     assert not writer.buffer
 
 
-def test_writer_persist_method_with_backlog(monkeypatch, tmp_path):
+def test_writer_persist_method_with_backlog(isolated_test_dir):
     """Should persist the buffer."""
-    monkeypatch.chdir(tmp_path)
 
     config = WriterConfiguration(name="test", id=1, chunk_size=3)
     queue = [Record(uuid=str(i), payload=i) for i in range(10)]
