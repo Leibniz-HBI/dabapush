@@ -11,7 +11,6 @@ from ..utils import flatten
 from .Reader import FileReader
 
 
-
 class JSONReader(FileReader):
     """Reader to read ready to read directories containing multiple json files.
     It matches files in the path-tree against the pattern and reads the
@@ -36,14 +35,11 @@ class JSONReader(FileReader):
                 record = Record(
                     uuid=f"{str(file_record.uuid)}",
                     payload=(
-                        parsed
-                        if not self.config.flatten_dicts
-                        else flatten(parsed)
+                        parsed if not self.config.flatten_dicts else flatten(parsed)
                     ),
                     source=file_record,
                 )
-                if record not in self.back_log:
-                    yield record
+                yield record
 
 
 class JSONReaderConfiguration(ReaderConfiguration):

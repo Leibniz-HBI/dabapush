@@ -1,6 +1,6 @@
 """Tests for the Writer class."""
 
-# pylint: disable=W0621, C0114, C0115, C0116
+# pylint: disable=W0212, W0621, W0613, C0114, C0115, C0116
 from pytest import fixture
 
 from dabapush.Configuration.WriterConfiguration import WriterConfiguration
@@ -9,7 +9,8 @@ from dabapush.Writer.Writer import Writer
 
 
 @fixture
-def writer() -> Writer:
+def writer(isolated_test_dir) -> Writer:
+
     config = WriterConfiguration(name="test")
     return Writer(config)
 
@@ -36,15 +37,35 @@ class MyTestWriter(Writer):
 
     def persist(self):
         self.persisted_data.extend((_.payload for _ in self.buffer))
-        self.buffer = []
 
 
-def test_writer_persist_method():
+def test_writer_persist_method(isolated_test_dir):
     """Should persist the buffer."""
+
     config = WriterConfiguration(name="test", id=1, chunk_size=3)
     writer = MyTestWriter(config)
     queue = (Record(uuid=str(i), payload=i) for i in range(10))
     writer.write(queue)
-    writer.persist()
+    writer._trigger_persist()
     assert writer.persisted_data == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     assert not writer.buffer
+
+
+def test_writer_persist_method_with_backlog(isolated_test_dir):
+    """Should persist the buffer."""
+
+    config = WriterConfiguration(name="test", id=1, chunk_size=3)
+    queue = [Record(uuid=str(i), payload=i) for i in range(10)]
+    writer = MyTestWriter(config)
+    writer.write((_ for _ in queue))
+    writer._trigger_persist()
+
+    del writer
+
+    writer = MyTestWriter(config)
+    writer._trigger_persist()
+
+    assert not writer.persisted_data
+    assert not writer.buffer
+    assert len(writer.back_log) == 10
+    assert all(_.uuid == str(i) for i, _ in enumerate(writer.back_log))
