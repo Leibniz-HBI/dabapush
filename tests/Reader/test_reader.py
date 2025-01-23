@@ -29,9 +29,10 @@ def test_backlogging(monkeypatch, tmp_path):
 
     writer.write(reader.read())
 
-    log_path = Path(".dabapush/test.jsonl")
+    log_path = Path(".dabapush/test/backlog")
     assert log_path.exists()
-    with log_path.open("rt", encoding="utf8") as f:
-        content = f.readlines()
-        # assert content != []
-        assert len(content) == len(records)
+    content_count = 0
+    for file_path in log_path.glob('*.jsonl'):
+        with file_path.open("rt", encoding="utf8") as f:
+            content_count += len(f.readlines())
+    assert content_count  == len(records)
