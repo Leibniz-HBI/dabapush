@@ -9,7 +9,6 @@ import abc
 from pathlib import Path
 from typing import Iterator, List
 
-import ujson
 from loguru import logger as log
 
 from ..Backlog import Backlog
@@ -35,9 +34,7 @@ class Writer:
             Path(".dabapush/").mkdir()
 
         self.log_path = Path(f".dabapush/{config.name}.jsonl")
-        self.back_log = Backlog(
-            len_prefix_persist=2, len_prefix_memory=2, writer_config=config
-        )
+        self.back_log = Backlog(writer_config=config)
         self.back_log.load()
 
     def __del__(self):
