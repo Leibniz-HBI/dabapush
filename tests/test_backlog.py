@@ -62,6 +62,7 @@ def test_conversion(existing_log, writer_config):
     dabapush_pth = Path(".dabapush")
     old_log_path = dabapush_pth / f"{name_writer}.jsonl"
     assert not old_log_path.exists()
+    assert old_log_path.with_suffix(".jsonl.old").exists()
     db_pth = dabapush_pth / name_writer / "backlog" / "backlog.sqlite3"
     assert db_pth.is_file()
     all_uuids = []

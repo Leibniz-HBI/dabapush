@@ -1,5 +1,6 @@
 "Backlog for keeping track of already written records."
 from pathlib import Path
+from shutil import copy
 from sqlite3 import IntegrityError, connect
 from typing import Any, Dict, List, Union
 
@@ -59,6 +60,7 @@ class Backlog:
         log_file_pth = dabapush_dir / f"{self.writer_config.name}.jsonl"
         if log_file_pth.exists():
             self._convert_log(log_file_pth)
+            copy(log_file_pth, log_file_pth.with_suffix(log_file_pth.suffix + ".old"))
             log_file_pth.unlink()
         self._load_db()
 
