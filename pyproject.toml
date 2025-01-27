@@ -25,6 +25,7 @@ PyYAML = "*"
 importlib-metadata = "*"
 ujson = "*"
 tqdm = "^4.67.1"
+plyvel = "^1.5.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"

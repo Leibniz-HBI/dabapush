@@ -1,9 +1,9 @@
 "Backlog for keeping track of already written records."
 from pathlib import Path
 from shutil import copy
-from sqlite3 import IntegrityError, connect
 from typing import Any, Dict, List, Union
 
+import plyvel
 import ujson
 
 from .Configuration.WriterConfiguration import WriterConfiguration
@@ -30,18 +30,17 @@ class UuidExistsException(Exception):
 class Backlog:
     """A backlog for keeping track of written Records."""
 
-    def __init__(
-        self,
-        writer_config: WriterConfiguration,
-    ):
+    def __init__(self, writer_config: WriterConfiguration, cache_size: int = 1000):
         """Initialize the backlog configuration.
 
         Args:
             writer_config: The config used for the writer.
                 This is mainly used for getting the name."""
         self.writer_config = writer_config
-        self._sqlite_connection = None
+        self._level_db = None
         self._locked = False
+        self.cache_size = cache_size
+        self._cache = {}
 
     def load(self):
         "Load the backlog from the file system."
@@ -72,17 +71,9 @@ class Backlog:
                 self._write_json_record(record_json)
 
     def _init_db(self):
-        if self._sqlite_connection is None:
-            self._sqlite_connection = connect(self._backlog_db_path.as_posix())
-        columns = self._sqlite_connection.execute(
-            f"""SELECT name
-            FROM sqlite_schema
-            WHERE name='{_backlog_table_name}'"""
-        )
-        column = columns.fetchone()
-        if column is None:
-            self._sqlite_connection.execute(
-                f"""CREATE TABLE {_backlog_table_name}(uuid TEXT PRIMARY KEY, record)"""
+        if self._level_db is None:
+            self._level_db = plyvel.DB(
+                self._backlog_db_path.as_posix(), create_if_missing=True
             )
 
     def write_record(self, record: Record):
@@ -97,7 +88,7 @@ class Backlog:
 
     @property
     def _backlog_db_path(self) -> Path:
-        return self._backlog_root_dir / "backlog.sqlite3"
+        return self._backlog_root_dir / "backlog_level_db"
 
     @property
     def _backlog_root_dir(self) -> Path:
@@ -107,35 +98,27 @@ class Backlog:
         self, record_dict: Dict[str, Union[str, List[Dict[str, Any]]]]
     ):
         uuid = record_dict["uuid"]
-        try:
-            self._sqlite_connection.execute(
-                f"""INSERT INTO {_backlog_table_name} VALUES
-                    (:uuid, :record)""",
-                {
-                    "uuid": uuid,
-                    "record": ujson.dumps(  # pylint: disable=c-extension-no-member
-                        record_dict
-                    ),
-                },
-            )
-            self._sqlite_connection.commit()
-        except IntegrityError as exc:
-            raise UuidExistsException(uuid) from exc
+        self._cache[uuid] = record_dict
+        if len(self._cache) >= self.cache_size:
+            self._dump_cache()
 
     def _load_db(self):
-        if self._sqlite_connection is None:
-            self._sqlite_connection = connect(self._backlog_db_path.as_posix())
+        if self._level_db is None:
+            self._level_db = plyvel.DB(self._backlog_db_path.as_posix())
 
     def __contains__(self, item: Record):
         if not isinstance(item, Record):
             raise TypeError("Can only check for the the presence of records")
         uuid = item.uuid
-        results = self._sqlite_connection.execute(
-            f"""SELECT uuid
-            from {_backlog_table_name}
-            where uuid='{uuid}'"""
-        )
-        return results.fetchone() is not None
+        if uuid in self._cache:
+            return True
+        return self._level_db.get(uuid.encode("utf-8")) is not None
+
+    def _dump_cache(self):
+        with self._level_db.write_batch() as batch:
+            for k, v in self._cache.items():
+                batch.put(k.encode("utf-8"), ujson.dumps(v).encode("utf-8"))
+        self._cache = {}
 
     def close(self):
         "Unlocks the log."
@@ -143,8 +126,10 @@ class Backlog:
         if lock_pth.exists():
             lock_pth.unlink()
         self._locked = False
-        if self._sqlite_connection is not None:
-            self._sqlite_connection.close()
+        if self._level_db is not None:
+            self._dump_cache()
+            self._level_db.close()
+            self._level_db = None
 
     def __del__(self):
         self.close()
