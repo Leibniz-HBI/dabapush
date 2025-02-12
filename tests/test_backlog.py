@@ -1,7 +1,7 @@
 # pylint: disable=redefined-outer-name,protected-access,unused-argument,c-extension-no-member
 """Test for the Backlog"""
+import dbm
 from pathlib import Path
-from sqlite3 import connect
 
 import pytest
 import ujson
@@ -55,20 +55,17 @@ def test_contains(writer_config, isolated_test_dir):
     assert record in backlog
 
 
-def test_conversion(existing_log, writer_config):
-    "Test the conversion from old log format to new log format."
+def test_conversion(existing_log, writer_config, isolated_test_dir):
+    """Test the conversion from old log format to new log format."""
     backlog = Backlog(writer_config=writer_config)
     backlog.load()
     dabapush_pth = Path(".dabapush")
     old_log_path = dabapush_pth / f"{name_writer}.jsonl"
     assert not old_log_path.exists()
     assert old_log_path.with_suffix(".jsonl.old").exists()
-    db_pth = dabapush_pth / name_writer / "backlog" / "backlog.sqlite3"
+    db_pth = dabapush_pth / name_writer / "backlog" / "backlog.db"
     assert db_pth.is_file()
-    all_uuids = []
-    query = connect(db_pth.as_posix()).execute("SELECT uuid FROM dabapush_backlog")
-    for item in query:
-        all_uuids.append(item[0])
+    all_uuids = dbm.open(db_pth.as_posix(), "r").keys()
     assert len(all_uuids) == 20
     assert len(set(all_uuids)) == 20
 

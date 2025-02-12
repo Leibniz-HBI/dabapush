@@ -1,7 +1,8 @@
 "Backlog for keeping track of already written records."
+
+import dbm
 from pathlib import Path
 from shutil import copy
-from sqlite3 import IntegrityError, connect
 from typing import Any, Dict, List, Union
 
 import ujson
@@ -9,11 +10,9 @@ import ujson
 from .Configuration.WriterConfiguration import WriterConfiguration
 from .Record import Record
 
-_backlog_table_name = "dabapush_backlog"
-
 
 class BacklogLockedException(Exception):
-    "Raised when trying to open a locked backlog"
+    """Raised when trying to open a locked backlog"""
 
     def __init__(self):
         super().__init__("Can not open locked backlog.")
@@ -40,11 +39,11 @@ class Backlog:
             writer_config: The config used for the writer.
                 This is mainly used for getting the name."""
         self.writer_config = writer_config
-        self._sqlite_connection = None
+        self._db_connection = None
         self._locked = False
 
     def load(self):
-        "Load the backlog from the file system."
+        """Load the backlog from the file system."""
         dabapush_dir = Path(".dabapush")
         if not dabapush_dir.exists():
             dabapush_dir.mkdir()
@@ -57,36 +56,27 @@ class Backlog:
         self._log_lock_path.touch()
         self._locked = True
         self._init_db()
+        self._load_db()
+
         log_file_pth = dabapush_dir / f"{self.writer_config.name}.jsonl"
         if log_file_pth.exists():
             self._convert_log(log_file_pth)
             copy(log_file_pth, log_file_pth.with_suffix(log_file_pth.suffix + ".old"))
             log_file_pth.unlink()
-        self._load_db()
 
     def _convert_log(self, log_file_pth):
-        self._init_db()
         with open(log_file_pth, "rt", encoding="utf8") as log_file:
             for line in log_file.readlines():
                 record_json = ujson.loads(line)  # pylint: disable=c-extension-no-member
                 self._write_json_record(record_json)
 
     def _init_db(self):
-        if self._sqlite_connection is None:
-            self._sqlite_connection = connect(self._backlog_db_path.as_posix())
-        columns = self._sqlite_connection.execute(
-            f"""SELECT name
-            FROM sqlite_schema
-            WHERE name='{_backlog_table_name}'"""
-        )
-        column = columns.fetchone()
-        if column is None:
-            self._sqlite_connection.execute(
-                f"""CREATE TABLE {_backlog_table_name}(uuid TEXT PRIMARY KEY, record)"""
-            )
+        if not self._backlog_db_path.exists():
+            _db = dbm.open(self._backlog_db_path.as_posix(), "n")
+            _db.close()
 
     def write_record(self, record: Record):
-        "Persist a record to the log"
+        """Persist a record to the log"""
         if self._locked:
             log_dict = record.to_log()
             self._write_json_record(log_dict)
@@ -97,7 +87,7 @@ class Backlog:
 
     @property
     def _backlog_db_path(self) -> Path:
-        return self._backlog_root_dir / "backlog.sqlite3"
+        return self._backlog_root_dir / "backlog.db"
 
     @property
     def _backlog_root_dir(self) -> Path:
@@ -107,44 +97,30 @@ class Backlog:
         self, record_dict: Dict[str, Union[str, List[Dict[str, Any]]]]
     ):
         uuid = record_dict["uuid"]
-        try:
-            self._sqlite_connection.execute(
-                f"""INSERT INTO {_backlog_table_name} VALUES
-                    (:uuid, :record)""",
-                {
-                    "uuid": uuid,
-                    "record": ujson.dumps(  # pylint: disable=c-extension-no-member
-                        record_dict
-                    ),
-                },
-            )
-            self._sqlite_connection.commit()
-        except IntegrityError as exc:
-            raise UuidExistsException(uuid) from exc
+        if uuid in self._db_connection:
+            raise UuidExistsException(uuid)
+        self._db_connection[uuid] = ujson.dumps(
+            record_dict
+        )  # pylint: disable=c-extension-no-member
 
     def _load_db(self):
-        if self._sqlite_connection is None:
-            self._sqlite_connection = connect(self._backlog_db_path.as_posix())
+        if self._db_connection is None:
+            self._db_connection = dbm.open(self._backlog_db_path.as_posix(), "w")
 
     def __contains__(self, item: Record):
         if not isinstance(item, Record):
             raise TypeError("Can only check for the the presence of records")
         uuid = item.uuid
-        results = self._sqlite_connection.execute(
-            f"""SELECT uuid
-            from {_backlog_table_name}
-            where uuid='{uuid}'"""
-        )
-        return results.fetchone() is not None
+        return uuid in self._db_connection
 
     def close(self):
-        "Unlocks the log."
+        """Unlocks the log."""
         lock_pth = self._log_lock_path
         if lock_pth.exists():
             lock_pth.unlink()
         self._locked = False
-        if self._sqlite_connection is not None:
-            self._sqlite_connection.close()
+        if self._db_connection is not None:
+            self._db_connection.close()
 
     def __del__(self):
         self.close()
