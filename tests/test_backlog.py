@@ -59,6 +59,9 @@ def test_conversion(existing_log, writer_config, isolated_test_dir):
     """Test the conversion from old log format to new log format."""
     backlog = Backlog(writer_config=writer_config)
     backlog.load()
+
+    del backlog
+
     dabapush_pth = Path(".dabapush")
     old_log_path = dabapush_pth / f"{name_writer}.jsonl"
     assert not old_log_path.exists()
