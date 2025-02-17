@@ -1,10 +1,9 @@
 """Test suite for the Reader class and its backlog."""
 
-from pathlib import Path
-
 import ujson
 
 from dabapush import NDJSONReaderConfiguration, STDOUTWriterConfiguration
+from dabapush.Record import Record
 
 
 def test_backlogging(monkeypatch, tmp_path):
@@ -28,10 +27,7 @@ def test_backlogging(monkeypatch, tmp_path):
             ujson.dump(record, f)  # pylint: disable=I1101
 
     writer.write(reader.read())
-
-    log_path = Path(".dabapush/test.jsonl")
-    assert log_path.exists()
-    with log_path.open("rt", encoding="utf8") as f:
-        content = f.readlines()
-        # assert content != []
-        assert len(content) == len(records)
+    for idx in range(3):
+        assert (
+            Record(uuid=(data_dir / f"test{idx}.json:0").as_posix()) in writer.back_log
+        )

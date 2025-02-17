@@ -67,5 +67,5 @@ def test_writer_persist_method_with_backlog(isolated_test_dir):
 
     assert not writer.persisted_data
     assert not writer.buffer
-    assert len(writer.back_log) == 10
-    assert all(_.uuid == str(i) for i, _ in enumerate(writer.back_log))
+    for record in queue:
+        assert record in writer.back_log

@@ -3,7 +3,7 @@
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def isolated_test_dir(monkeypatch, tmp_path):
     """Create an isolated test tmp-directory."""
     monkeypatch.chdir(tmp_path)

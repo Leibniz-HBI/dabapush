@@ -9,9 +9,9 @@ import abc
 from pathlib import Path
 from typing import Iterator, List
 
-import ujson
 from loguru import logger as log
 
+from ..Backlog import Backlog
 from ..Configuration.WriterConfiguration import WriterConfiguration
 from ..Record import Record
 
@@ -29,31 +29,18 @@ class Writer:
 
         self.config = config
         self.buffer: List[Record] = []
-        self.back_log: List[Record] = []
         # initialize file log
         if not Path(".dabapush/").exists():
             Path(".dabapush/").mkdir()
 
         self.log_path = Path(f".dabapush/{config.name}.jsonl")
-        if self.log_path.exists():
-            log.debug(
-                f"Found log file for {self.config.name} at {self.log_path}. Loading..."
-            )
-            with self.log_path.open("rt", encoding="utf8") as f:
-                self.back_log = [
-                    Record(**ujson.loads(_))  # pylint: disable=I1101
-                    for _ in f.readlines()
-                ]
-        else:
-            self.log_path.touch()
-        self.log_file = self.log_path.open(  # pylint: disable=R1732
-            "a", encoding="utf8"
-        )
+        self.back_log = Backlog(writer_config=config)
+        self.back_log.load()
 
     def __del__(self):
         """Ensures the buffer is flushed before the object is destroyed."""
         self._trigger_persist()
-        self.log_file.close()
+        self.back_log.close()
 
     def write(self, queue: Iterator[Record]) -> None:
         """Consumes items from the provided queue.
@@ -75,7 +62,6 @@ class Writer:
             log.debug(f"Setting record {record.uuid} as done.")
             record.done()
             self.log(record)
-            self.log_file.flush()
         self.buffer = []
 
     @abc.abstractmethod
@@ -102,7 +88,6 @@ class Writer:
 
     def log(self, record: Record):
         """Log the record to the persistent record log file."""
-        ujson.dump(record.to_log(), self.log_file)  # pylint: disable=I1101
-        self.log_file.write("\n")
+        self.back_log.write_record(record)
 
         log.debug(f"Done with {record.uuid}")
