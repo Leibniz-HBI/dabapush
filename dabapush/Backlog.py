@@ -72,7 +72,7 @@ class Backlog:
 
     def _init_db(self):
         if not self._backlog_db_path.exists():
-            _db = dbm.open(self._backlog_db_path.as_posix(), "n")
+            _db = dbm.open(self._backlog_db_path.as_posix(), "c")
             _db.close()
 
     def write_record(self, record: Record):
