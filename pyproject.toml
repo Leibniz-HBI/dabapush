@@ -1,11 +1,11 @@
-[tool.poetry]
+[project]
 name = "dabapush"
 version = "0.4.0-alpha10"
-description = ""
+description = "A data base pusher"
 authors = [
-	"Philipp Kessling <p.kessling@leibniz-hbi.de>",
-	"Aditya Kumar <a.kumar@leibniz-hbi.de>",
-	"Felix Victor Münch <f.muench@leibniz-hbi.de>"
+	{"name"="Philipp Kessling", "email"="p.kessling@leibniz-hbi.de"},
+	{"name"="Aditya Kumar", "email"="a.kumar@leibniz-hbi.de"},
+	{"name"="Felix Victor Münch", "email"="f.muench@leibniz-hbi.de>"}
 ]
 license = "MIT"
 readme = "README.md"
@@ -15,30 +15,30 @@ classifiers = [
 		"Environment :: Console",
 		"Intended Audience :: Science/Research",
 ]
+requires-python = ">=3.12,<4.0"
+dependencies= [
+	"click",
+	"loguru",
+	"pandas",
+	"PyYAML",
+	"ujson",
+	"tqdm"
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-click = "*"
-loguru = "*"
-pandas = "*"
-PyYAML = "*"
-importlib-metadata = "*"
-ujson = "*"
-tqdm = "^4.67.1"
-
-[tool.poetry.dev-dependencies]
-pytest = "*"
-pytest-cov = "*"
-black = "*"
-coverage = "*"
-pdoc3 = "*"
-pre-commit = "*"
-isort = "*"
-pylint = "*"
-pytest-html = "*"
-pydocstyle = "*"
-mypy = "*"
-
+[project.optional-dependencies]
+dev = [
+	"pytest",
+	"pytest-cov",
+	"black",
+	"coverage",
+	"pdoc3",
+	"pre-commit",
+	"isort",
+	"pylint",
+	"pytest-html",
+	"pydocstyle",
+	"mypy"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
