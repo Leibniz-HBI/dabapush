@@ -11,7 +11,6 @@ from typing import Iterator, List
 
 from loguru import logger as log
 
-from ..Backlog import Backlog
 from ..Configuration.WriterConfiguration import WriterConfiguration
 from ..Record import Record
 
@@ -33,14 +32,9 @@ class Writer:
         if not Path(".dabapush/").exists():
             Path(".dabapush/").mkdir()
 
-        self.log_path = Path(f".dabapush/{config.name}.jsonl")
-        self.back_log = Backlog(writer_config=config)
-        self.back_log.load()
-
     def __del__(self):
         """Ensures the buffer is flushed before the object is destroyed."""
         self._trigger_persist()
-        self.back_log.close()
 
     def write(self, queue: Iterator[Record]) -> None:
         """Consumes items from the provided queue.
@@ -49,8 +43,6 @@ class Writer:
             queue (Iterator[Record]): Items to be consumed.
         """
         for item in queue:
-            if item in self.back_log:
-                continue
             self.buffer.append(item)
             if len(self.buffer) >= self.config.chunk_size:
                 self._trigger_persist()
@@ -61,7 +53,6 @@ class Writer:
         for record in self.buffer:
             log.debug(f"Setting record {record.uuid} as done.")
             record.done()
-            self.log(record)
         self.buffer = []
 
     @abc.abstractmethod
@@ -85,9 +76,3 @@ class Writer:
             str: The ID of the writer.
         """
         return self.config.id
-
-    def log(self, record: Record):
-        """Log the record to the persistent record log file."""
-        self.back_log.write_record(record)
-
-        log.debug(f"Done with {record.uuid}")
