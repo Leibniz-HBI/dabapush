@@ -1,6 +1,7 @@
 """This module contains the abstract base class for all reader plugins."""
 
 import abc
+from dbm import gnu
 from pathlib import Path
 from typing import Iterator, List, Set
 
@@ -79,8 +80,6 @@ class FileReader(Reader):
             files,
             desc="Reading files",
         ):
-            if a in ignored_files:
-                continue
             # Create a Record for each file found
             yield Record(
                 uuid=str(a),
@@ -119,3 +118,32 @@ class FileReader(Reader):
 
         # Deduplicate the list of files to ignore
         return set(files_to_ignore)
+
+
+class StatefulFileReader(FileReader):
+    """A file reader that maintains state across reads.
+
+    This class extends FileReader to provide functionality for reading files
+    while keeping track of the state of the reading process.
+    """
+
+    def __init__(self, config: ReaderConfiguration):
+        super().__init__(config)
+        self._state_path = Path(".dabapush") / config.name / "reader_state"
+        if not self._state_path.parent.exists():
+            self._state_path.parent.mkdir(parents=True, exist_ok=True)
+        self._state = gnu.open(self._state_path, "c")
+
+    @property
+    def records(self) -> Iterator[Record]:
+        """Generator for all files matching the pattern in the read_path."""
+        for record in super().records:
+            # Check if the record has been processed before
+            if record.uuid in self._state:
+                log.debug(f"Already known record: {record.uuid}")
+                # Determine whether the record was updated since last read
+
+            # Mark the record as processed
+            yield record
+
+            self._state[record.uuid] = record.state

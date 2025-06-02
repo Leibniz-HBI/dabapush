@@ -6,7 +6,7 @@ from dabapush import NDJSONReaderConfiguration, STDOUTWriterConfiguration
 from dabapush.Record import Record
 
 
-def test_backlogging(monkeypatch, tmp_path):
+def test_backlogging(monkeypatch, tmp_path, n=10):
     """
     Should write the records to a file if the log_path is set.
     """
@@ -19,7 +19,7 @@ def test_backlogging(monkeypatch, tmp_path):
         "test", id="testing", chunk_size=1
     ).get_instance()
 
-    records = [{"key": f"value_{n}"} for n in range(3)]
+    records = [{"key": f"value_{n}"} for n in range(n)]
     data_dir = tmp_path / "data"
     data_dir.mkdir()
     for file_num, record in enumerate(records):
@@ -27,7 +27,7 @@ def test_backlogging(monkeypatch, tmp_path):
             ujson.dump(record, f)  # pylint: disable=I1101
 
     writer.write(reader.read())
-    for idx in range(3):
+    for idx in range(n):
         assert (
-            Record(uuid=(data_dir / f"test{idx}.json:0").as_posix()) in writer.back_log
+            Record(uuid=(data_dir / f"test{idx}.json:17").as_posix()) in writer.back_log
         )
