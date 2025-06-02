@@ -2,8 +2,9 @@
 
 import abc
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, List, Set
 
+from loguru import logger as log
 from tqdm.auto import tqdm
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
@@ -69,10 +70,52 @@ class FileReader(Reader):
     @property
     def records(self) -> Iterator[Record]:
         """Generator for all files matching the pattern in the read_path."""
-        yield from (
-            Record(
+        ignored_files = self._get_ignored_files_()
+        files = Path(self.config.read_path).rglob(self.config.pattern)
+        # Filter out ignored files
+        files = [f for f in files if f not in ignored_files]
+
+        for a in tqdm(
+            files,
+            desc="Reading files",
+        ):
+            if a in ignored_files:
+                continue
+            # Create a Record for each file found
+            yield Record(
                 uuid=str(a),
                 payload=a,
             )
-            for a in tqdm(list(Path(self.config.read_path).rglob(self.config.pattern)))
+
+    def _get_ignored_files_(self) -> Set[Path]:
+        # Collect all .dabapushignore files
+        ignore_files: List[Path] = list(
+            Path(self.config.read_path).rglob(".dabapushignore")
         )
+
+        log.debug(f"Found {len(ignore_files)} ignore files in {self.config.read_path}")
+
+        # Evaluate glob patterns in the ignore files
+        files_to_ignore = []
+
+        for ignore_file in ignore_files:
+            with ignore_file.open("r", encoding="utf8") as f:
+
+                log.debug(f"Reading ignore file: {ignore_file}")
+
+                for line in f.readlines():
+                    # Ignore empty lines and comments
+                    if not line.strip() or line.startswith("#"):
+                        continue
+                    # Expand the glob pattern and add to the list
+                    # Use Path.glob to ensure it works with relative paths
+                    # from the ignore file's parent directory
+                    log.debug(f"Processing line: {line.strip()} in {ignore_file}")
+                    _files_ = Path(ignore_file.parent).glob(line.strip())
+                    if _files_:
+                        files_to_ignore.extend(list(_files_))
+                    else:
+                        continue
+
+        # Deduplicate the list of files to ignore
+        return set(files_to_ignore)
