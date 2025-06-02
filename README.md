@@ -69,6 +69,21 @@ To run the newly configured job, please call:
 dabapush run default
 ```
 
+## Ignore Files
+
+You can add a `.dabapushignore` file to your project directory to ignore files and directories that should not be processed by dabapush.
+Each line in the `.dabapushignore` file specifies a pattern to match files or directories that should be ignored. Lines starting with `#` are comments and will be ignored.
+The patterns can include wildcards (`*`) to match multiple files or directories.
+All patterns are relative to the directory where the `.dabapushignore` file is located.
+
+For example:
+
+```text
+# Ignore all files in the temp directory
+
+temp/*
+```
+
 ## Command Reference
 
 ### Invocation Pattern
