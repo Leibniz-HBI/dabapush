@@ -28,7 +28,7 @@ class NDJSONReader(StatefulFileReader):
     def __init__(self, config: "NDJSONReaderConfiguration") -> None:
         super().__init__(config)
         self.config = config
-        self._timer = Timer(micros=10000)  # 10 ms timer for reading
+        self._timer = Timer(micros=100000)  # 100 ms timer for reading
 
     def read(self) -> Iterator[Record]:
         """reads multiple NDJSON files and emits them line by line"""
