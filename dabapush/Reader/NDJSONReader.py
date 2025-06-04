@@ -10,7 +10,7 @@ from loguru import logger as log
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
-from ..utils import flatten
+from ..utils import Timer, flatten
 from .Reader import StatefulFileReader
 
 
@@ -28,6 +28,7 @@ class NDJSONReader(StatefulFileReader):
     def __init__(self, config: "NDJSONReaderConfiguration") -> None:
         super().__init__(config)
         self.config = config
+        self._timer = Timer(micros=1000)  # 1ms timer for reading
 
     def read(self) -> Iterator[Record]:
         """reads multiple NDJSON files and emits them line by line"""
@@ -44,6 +45,8 @@ class NDJSONReader(StatefulFileReader):
     ) -> Iterator[Record]:
         """Reads a file and splits it into records by line."""
         path: Path = record.payload
+
+        self._timer.mark()
 
         if not path:
             raise ValueError("Record payload must be a valid file path.")
@@ -82,8 +85,11 @@ class NDJSONReader(StatefulFileReader):
 
                 yield child
 
-                log.debug(f"Setting state for {record.uuid} at position {position}.")
-                self._state[str(record.uuid)] = str(position)
+                if self._timer.ok():
+                    log.debug(
+                        f"Setting state for {record.uuid} at position {position}."
+                    )
+                    self._state[str(record.uuid)] = str(position)
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):

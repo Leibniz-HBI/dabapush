@@ -147,3 +147,7 @@ class StatefulFileReader(FileReader):
             yield record
 
             self._state[record.uuid] = record.state
+
+    @abc.abstractmethod
+    def read(self) -> Iterator[Record]:
+        pass
