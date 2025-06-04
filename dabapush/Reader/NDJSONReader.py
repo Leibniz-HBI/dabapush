@@ -55,11 +55,12 @@ class NDJSONReader(StatefulFileReader):
             done = False
             stat = path.stat()
             offset = (
-                int(self._state[str(record.uuid)])
-                if str(record.uuid) in self._state
-                else 0
+                self._state[str(record.uuid)] if str(record.uuid) in self._state else 0
             )
-            # if the offset is larger than the file size, the file has been overwritten on disk
+            if offset == "start":
+                offset = 0
+            offset = int(offset)
+            # if the offset is larger than the file size, the file has been overwritten on disk,
             # and we need to start reading from the beginning.
             if offset >= stat.st_size:
                 offset = 0
