@@ -146,7 +146,9 @@ class StatefulFileReader(FileReader):
             # Mark the record as processed
             yield record
 
-            self._state[record.uuid] = record.state
+    def __del__(self):
+        self._state.close()
+        log.debug("Closed state backend.")
 
     @abc.abstractmethod
     def read(self) -> Iterator[Record]:
