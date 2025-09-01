@@ -132,15 +132,15 @@ class Dabapush:
         self.config.add_writer(kind, name)
 
     def writer_rm(self, name: str):
-        """remove a reader from the current configuration"""
-        if name in self.config.readers:
-            del self.config.readers[name]
+        """remove a writer from the current configuration"""
+        if name in self.config.writers:
+            del self.config.writers[name]
         else:
             log.warning(f"Cannot delete {name} as it does not exist.")
 
     def writer_update(self, name: str, config: Dict[str, str]):
-        """update a reader's configuration"""
-        obj = self.config.writers[name] if name in self.config.readers else None
+        """update a writer's configuration"""
+        obj = self.config.writers[name] if name in self.config.writers else None
 
         if obj is not None:
             for k, v in config.items():
