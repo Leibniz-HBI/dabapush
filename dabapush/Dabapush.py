@@ -6,9 +6,11 @@ from typing import Dict, List
 import yaml
 from loguru import logger as log
 
+from dabapush.Backlog import Backlog
 from dabapush.Configuration import Registry
 from dabapush.Configuration.ProjectConfiguration import ProjectConfiguration
 from dabapush.Configuration.Registry import list_all_readers, list_all_writers
+from dabapush.Lifecycle import LifecycleManager
 
 
 class Dabapush:
@@ -193,11 +195,9 @@ class Dabapush:
         log.info(f"Dispatching job for {target}")
         reader = self.config.readers[target].get_instance()
         writer = self.config.writers[target].get_instance()
-        try:
-            writer.write(reader.read())
-        except Exception as e:
-            log.exception(f"Error while running job {target}")
-            raise e  # reraise the exception to stop the job
+        back_log = Backlog(writer.config)
+        manager = LifecycleManager(reader, writer, back_log)
+        manager.run()
 
     def job_update(self):
         """update the current job's targets"""

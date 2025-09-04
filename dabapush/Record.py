@@ -15,7 +15,7 @@ EventType = Literal["on_done", "on_error", "on_start"]
 RecordState = Literal["done", "error", "start", "rejected"]
 
 
-class Record:
+class Record:  # pylint: disable=too-many-instance-attributes
     """This dataclass represents a single record in a data set.
     It is used to store the data and additional information about the record and helps to keep
     the data organized.
@@ -62,6 +62,8 @@ class Record:
         processed_at: Optional[datetime] = None,
         children: Optional[List[Self]] = None,
         event_handlers: Dict[str, List[EventHandler]] = None,
+        group_id: Optional[str] = None,
+        group_offset: int = -1,
     ):
         self._payload_: Optional[Any] = payload
         self.source: Optional[Self] = source
@@ -70,6 +72,8 @@ class Record:
         self.children: List[Self] = children or []
         self.event_handlers: Dict[str, List[EventHandler]] = event_handlers or {}
         self._state_: RecordState = "start"
+        self.group_id: Optional[str] = group_id
+        self.group_offset: Optional[int] = group_offset
 
     @property
     def payload(self):

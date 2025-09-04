@@ -27,7 +27,7 @@ def test_write_ndjson(data, expected, tmp_path):
     )
     file_path = tmp_path / "test.ndjson"
     writer = configuration.get_instance()
-    writer.write((Record(_) for _ in data))
+    writer.write([Record(_) for _ in data])
 
     with file_path.open("rt", encoding="utf8") as f:
         result = f.read()
@@ -53,7 +53,7 @@ def test_write_ndjson_line_count(data, expected, tmp_path):
     )
     file_path = tmp_path / "test.ndjson"
     writer = configuration.get_instance()
-    writer.write((Record(_) for _ in data))
+    writer.write([Record(_) for _ in data])
 
     with file_path.open("rt", encoding="utf8") as f:
         result = f.readlines()

@@ -7,9 +7,7 @@ write the records to the destination.
 
 import abc
 from pathlib import Path
-from typing import Iterator, List
-
-from loguru import logger as log
+from typing import Iterator, Set
 
 from ..Configuration.WriterConfiguration import WriterConfiguration
 from ..Record import Record
@@ -27,37 +25,21 @@ class Writer:
         super().__init__()
 
         self.config = config
-        self.buffer: List[Record] = []
         # initialize file log
-        if not Path(".dabapush/").exists():
-            Path(".dabapush/").mkdir()
 
-    def __del__(self):
-        """Ensures the buffer is flushed before the object is destroyed."""
-        self._trigger_persist()
-
-    def write(self, queue: Iterator[Record]) -> None:
-        """Consumes items from the provided queue.
-
-        Args:
-            queue (Iterator[Record]): Items to be consumed.
-        """
-        for item in queue:
-            self.buffer.append(item)
-            if len(self.buffer) >= self.config.chunk_size:
-                self._trigger_persist()
-
-    def _trigger_persist(self):
-        self.persist()
-        log.debug(f"Persisted {len(self.buffer)} records. Setting to done.")
-        for record in self.buffer:
-            log.debug(f"Setting record {record.uuid} as done.")
-            record.done()
-        self.buffer = []
+        # TODO(@pekasen): is this still needed?
+        self.log_path = Path(f".dabapush/{config.name}.jsonl")
 
     @abc.abstractmethod
-    def persist(self) -> None:
-        """Abstract method to persist the records to the destination."""
+    def write(self, queue: Iterator[Record]) -> Set[str] | None:
+        """Abstract method to persist the records to the destination.
+        Subclasses **must** implement this method.
+
+        Args:
+            record_batch (List[Record]): Items to be consumed.
+        Returns:
+            error_set: set of record uuids which failed to be written.
+        """
 
     @property
     def name(self):

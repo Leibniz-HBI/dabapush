@@ -38,8 +38,7 @@ def test_write_csv(data, expected, config_factory, tmp_path):
     """Should write the correct data to the file."""
     config = config_factory(path=tmp_path)
     writer = config.get_instance()
-    writer.write((Record(payload=d) for d in data))
-    writer.persist()
+    writer.write([Record(payload=d) for d in data])
 
     files = tmp_path.glob("*.csv")
 
@@ -59,8 +58,7 @@ def test_write_csv_line_count(data, expected, config_factory, tmp_path):
     """Should write the correct number of lines to the file."""
     config = config_factory(path=tmp_path)
     writer = config.get_instance()
-    writer.write((Record(payload=d) for d in data))
-    writer.persist()
+    writer.write([Record(payload=d) for d in data])
 
     files = tmp_path.glob("*.csv")
 

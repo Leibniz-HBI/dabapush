@@ -18,24 +18,22 @@ class NDJSONWriter(Writer):
         super().__init__(config=config)
         self.config = config
 
-    def persist(self):
+    def write(self, queue):
         """Persist the buffer to the file and flush."""
-
-        last_rows = self.buffer
 
         _file: Path = Path(self.config.path) / self.config.make_file_name(
             additional_keys={"type": "ndjson"}
         )
 
         with _file.open("a", encoding="utf8") as file:
-            for row in last_rows:
+            for row in queue:
                 ujson.dump(  # pylint: disable=I1101
                     row.payload, file, ensure_ascii=False
                 )
                 file.write("\n")
-        log.info(f"Persisted {len(last_rows)} records")
+        log.info(f"Persisted {len(queue)} records")
 
-        return len(last_rows)
+        return len(queue)
 
 
 class NDJSONWriterConfiguration(FileWriterConfiguration):

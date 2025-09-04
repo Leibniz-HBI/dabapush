@@ -10,9 +10,8 @@ class STDOUTWriter(Writer):
     def __init__(self, config: "STDOUTWriterConfiguration"):
         super().__init__(config)
 
-    def persist(self):
-        last_rows = self.buffer
-        for row in last_rows:
+    def write(self, queue):
+        for row in queue:
             print(row.payload)
 
 

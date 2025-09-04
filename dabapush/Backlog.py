@@ -41,6 +41,7 @@ class Backlog:
         self.writer_config = writer_config
         self._db_connection = None
         self._locked = False
+        self._last_progress_dict = None
 
     def load(self):
         """Load the backlog from the file system."""
@@ -81,6 +82,21 @@ class Backlog:
             log_dict = record.to_log()
             self._write_json_record(log_dict)
 
+    def update_progress(
+        self, group_id: str, group_offset: int, read_records: List[Record]
+    ):
+        """Persist the progress of a group to the log"""
+        registered_progress = self.get_progress(group_id)
+        if group_offset <= registered_progress:
+            return
+        if self._locked:
+            progress_dict = {"uuid": group_id, "max_group_offset": group_offset}
+            self._write_json_record(progress_dict)
+            # make sure the cached progress info is also updated
+            self._last_progress_dict = progress_dict
+            for record in read_records:
+                del self._db_connection[record.uuid]
+
     @property
     def _log_lock_path(self) -> Path:
         return self._backlog_root_dir / "lock"
@@ -99,9 +115,8 @@ class Backlog:
         uuid = record_dict["uuid"]
         if uuid in self._db_connection:
             raise UuidExistsException(uuid)
-        self._db_connection[uuid] = ujson.dumps(
-            record_dict
-        )  # pylint: disable=c-extension-no-member
+        # pylint: disable=c-extension-no-member
+        self._db_connection[uuid] = ujson.dumps(record_dict)
 
     def _load_db(self):
         if self._db_connection is None:
@@ -110,8 +125,32 @@ class Backlog:
     def __contains__(self, item: Record):
         if not isinstance(item, Record):
             raise TypeError("Can only check for the the presence of records")
+        if item.group_id is not None:
+            group_id = item.group_id
+            group_offset = item.group_offset
+            progress_offset = self.get_progress(group_id)
+            if group_offset <= progress_offset:
+                return True
         uuid = item.uuid
         return uuid in self._db_connection
+
+    def get_progress(self, group_id: str) -> int:
+        """Get the maximum group offset for a given group id."""
+        if (
+            self._last_progress_dict is not None
+            and self._last_progress_dict.get("uuid") == group_id
+        ):
+            return self._last_progress_dict.get("max_group_offset", -1)
+        progress_json = self._db_connection.get(group_id)
+        if progress_json is not None:
+            progress_dict = ujson.loads(  # pylint: disable=c-extension-no-member
+                progress_json
+            )
+            progress_offset = progress_dict.get("max_group_offset")
+            if progress_offset is not None:
+                self._last_progress_dict = progress_dict
+                return progress_offset
+        return -1
 
     def close(self):
         """Unlocks the log."""
@@ -121,6 +160,7 @@ class Backlog:
         self._locked = False
         if self._db_connection is not None:
             self._db_connection.close()
+            self._db_connection = None
 
     def __del__(self):
         self.close()
