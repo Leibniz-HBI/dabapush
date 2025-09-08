@@ -50,6 +50,7 @@ def test_lifecycle_run_triggers_persist(lifecycle_controller_with_mocks):
     controller.writer.write.assert_called_with(records)
     assert controller.write_buffer == []
     assert controller.read_records_of_group_offset == []
+    assert controller.back_log.write_record.call_count == 2
     controller.back_log.write_record.assert_has_calls(
         [call(records[0]), call(records[1])]
     )
@@ -72,6 +73,7 @@ def test_backlog_progress_updated_on_group_change(lifecycle_controller_with_mock
     records = mk_records(2, group_id="group1") + mk_records(1, group_id="group2")
     controller.reader.read.return_value = (x for x in records)
     controller.run()
+    assert controller.back_log.update_progress.call_count == 2
     controller.back_log.update_progress.assert_has_calls(
         [
             call("group1", 0, [records[0], records[1]]),
@@ -93,6 +95,7 @@ def test_does_not_update_progress_with_errors(lifecycle_controller_with_mocks):
     controller.back_log.update_progress.assert_called_with(  # call after iterator finishes
         "group2", 0, [records[2]]
     )
+    assert controller.back_log.write_record.call_count == 2
     controller.back_log.write_record.assert_has_calls(
         [
             call(records[0]),
@@ -110,6 +113,7 @@ def test_backlog_progress_updated_on_offset_change(lifecycle_controller_with_moc
     records = mk_records(3, group_id="group1", sub_group_size=2)
     controller.reader.read.return_value = (x for x in records)
     controller.run()
+    assert controller.back_log.update_progress.call_count == 2
     controller.back_log.update_progress.assert_has_calls(
         [
             call("group1", 0, [records[0], records[1]]),
@@ -127,6 +131,7 @@ def test_errors_not_cleared_on_offset_change(lifecycle_controller_with_mocks):
     controller.writer.write.side_effect = [{records[1].uuid}, {}]
     controller.run()
     controller.back_log.update_progress.assert_not_called()
+    assert controller.back_log.write_record.call_count == 2
     controller.back_log.write_record.assert_has_calls(
         [
             call(records[0]),
@@ -152,7 +157,7 @@ def test_persist_on_controller_destruction(lifecycle_controller_with_mocks):
     controller.__del__()  # pylint: disable=unnecessary-dunder-call
     writer.write_called_once_with(records)
     back_log.write_record.assert_called_once_with(records[0])
-    back_log.close.assert_has_calls([call()])
+    back_log.close.assert_called_once()
 
 
 def test_sets_reader_progress(lifecycle_controller_with_mocks):
