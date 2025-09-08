@@ -40,27 +40,31 @@ class LifecycleManager:  # pylint: disable=too-many-instance-attributes
         last_group_offset = -1
         self._timer.mark()
         for record in self.reader.read():
-            group_changed = record.group_progress.group_id != last_group_id
-            if group_changed or record.group_progress.group_offset != last_group_offset:
-                # write all records of previous group
-                self._trigger_persist()
-                # if possible compress backlog
+            if record.group_progress is not None:
+                group_changed = record.group_progress.group_id != last_group_id
                 if (
-                    len(self.error_uuids) == 0
-                    and last_group_id is not None
-                    and self._timer.ok()
+                    group_changed
+                    or record.group_progress.group_offset != last_group_offset
                 ):
-                    self.back_log.update_progress(
-                        last_group_id,
-                        last_group_offset,
-                        self.read_records_of_group_offset,
-                    )
-                if group_changed:
-                    self.error_uuids = set()
-                self.read_records_of_group_offset = []
-                last_group_offset = record.group_progress.group_offset
-                last_group_id = record.group_progress.group_id
-            self.read_records_of_group_offset.append(record)
+                    # write all records of previous group
+                    self._trigger_persist()
+                    # if possible compress backlog
+                    if (
+                        len(self.error_uuids) == 0
+                        and last_group_id is not None
+                        and self._timer.ok()
+                    ):
+                        self.back_log.update_progress(
+                            last_group_id,
+                            last_group_offset,
+                            self.read_records_of_group_offset,
+                        )
+                    if group_changed:
+                        self.error_uuids = set()
+                    self.read_records_of_group_offset = []
+                    last_group_offset = record.group_progress.group_offset
+                    last_group_id = record.group_progress.group_id
+                self.read_records_of_group_offset.append(record)
             try:
                 do_write = not record in self.back_log
             except AlreadyProgressedException as exc:
