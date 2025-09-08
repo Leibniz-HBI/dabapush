@@ -33,8 +33,6 @@ class NDJSONWriter(Writer):
                 file.write("\n")
         log.info(f"Persisted {len(queue)} records")
 
-        return len(queue)
-
 
 class NDJSONWriterConfiguration(FileWriterConfiguration):
     """Configuration for the NDJSONWriter."""
