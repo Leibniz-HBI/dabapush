@@ -88,6 +88,7 @@ class LifecycleManager:  # pylint: disable=too-many-instance-attributes
                     # reader does not support grouping
                     self.read_records_of_group_offset = []
         # write last progress.
+        self._trigger_persist()
         if last_group_id is not None and len(self.error_uuids) == 0:
             self.back_log.update_progress(
                 last_group_id, last_group_offset, self.read_records_of_group_offset

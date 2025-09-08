@@ -93,7 +93,12 @@ def test_does_not_update_progress_with_errors(lifecycle_controller_with_mocks):
     controller.back_log.update_progress.assert_called_with(  # call after iterator finishes
         "group2", 0, [records[2]]
     )
-    controller.back_log.write_record.assert_called_once_with(records[0])
+    controller.back_log.write_record.assert_has_calls(
+        [
+            call(records[0]),
+            call(records[2]),  # call after iterator finishes
+        ]
+    )
     assert controller.read_records_of_group_offset == [records[2]]
     assert controller.error_uuids == set()
 
@@ -122,7 +127,12 @@ def test_errors_not_cleared_on_offset_change(lifecycle_controller_with_mocks):
     controller.writer.write.side_effect = [{records[1].uuid}, {}]
     controller.run()
     controller.back_log.update_progress.assert_not_called()
-    controller.back_log.write_record.assert_called_once_with(records[0])
+    controller.back_log.write_record.assert_has_calls(
+        [
+            call(records[0]),
+            call(records[2]),  # call after iterator stops
+        ]
+    )
     assert controller.read_records_of_group_offset == [records[2]]
     assert controller.error_uuids == {records[1].uuid}
 
@@ -132,10 +142,8 @@ def test_persist_on_controller_destruction(lifecycle_controller_with_mocks):
 
     controller = lifecycle_controller_with_mocks
     records = mk_records(1)
-    reader = controller.reader
-    reader.read.return_value = (x for x in records)
-    controller.run()
 
+    controller.write_buffer = records
     writer = controller.writer
     writer.write.assert_not_called()
     back_log = controller.back_log
@@ -144,7 +152,7 @@ def test_persist_on_controller_destruction(lifecycle_controller_with_mocks):
     controller.__del__()  # pylint: disable=unnecessary-dunder-call
     writer.write_called_once_with(records)
     back_log.write_record.assert_called_once_with(records[0])
-    back_log.close.assert_has_calls([call(), call()])  # once in run and once in del
+    back_log.close.assert_has_calls([call()])
 
 
 def test_sets_reader_progress(lifecycle_controller_with_mocks):
