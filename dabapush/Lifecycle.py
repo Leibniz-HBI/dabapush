@@ -52,7 +52,7 @@ class LifecycleManager:  # pylint: disable=too-many-instance-attributes
                     if (
                         len(self.error_uuids) == 0
                         and last_group_id is not None
-                        and self._timer.ok()
+                        and (group_changed or self._timer.ok())
                     ):
                         self.back_log.update_progress(
                             last_group_id,
