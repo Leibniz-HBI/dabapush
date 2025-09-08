@@ -1,6 +1,7 @@
 """Utility functions for working with dictionaries and lists of dictionaries."""
 
 import datetime
+from collections import namedtuple
 from functools import reduce
 from typing import Any, Dict, List, Optional
 
@@ -183,3 +184,6 @@ class Timer:
         if self._mark is None:
             return 0.0
         return (Timer._now_() - self._mark).total_seconds() * 1_000_000
+
+
+Progress = namedtuple("Progress", ["group_id", "group_offset"])

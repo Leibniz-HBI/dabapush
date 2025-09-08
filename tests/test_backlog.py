@@ -8,9 +8,10 @@ from unittest.mock import MagicMock
 import pytest
 import ujson
 
-from dabapush.Backlog import Backlog, BacklogLockedException
+from dabapush.Backlog import AlreadyProgressedException, Backlog, BacklogLockedException
 from dabapush.Configuration.WriterConfiguration import WriterConfiguration
 from dabapush.Record import Record
+from dabapush.utils import Progress
 
 name_writer = "backlog_writer_for_test"
 
@@ -80,8 +81,11 @@ def test_contains_progress(writer_config, isolated_test_dir):
     backlog.load()
     group_id = "group"
     backlog.update_progress(group_id, 1, [])
-    record = Record(uuid="some_id", group_id=group_id, group_offset=1)
-    assert record in backlog
+    record = Record(uuid="some_id", group_progress=Progress(group_id, 1))
+    with pytest.raises(AlreadyProgressedException) as exc:
+        record in backlog  # pylint: disable=pointless-statement
+    assert exc.value.group_id == group_id
+    assert exc.value.group_offset == 1
 
 
 def test_contains_progress_falls_back_to_uuid_missing(writer_config, isolated_test_dir):
@@ -90,7 +94,7 @@ def test_contains_progress_falls_back_to_uuid_missing(writer_config, isolated_te
     backlog.load()
     group_id = "group"
     backlog.update_progress(group_id, 1, [])
-    record = Record(uuid="some_id", group_id=group_id, group_offset=2)
+    record = Record(uuid="some_id", group_progress=Progress(group_id, 2))
     assert record not in backlog
 
 
@@ -100,7 +104,7 @@ def test_contains_progress_falls_back_to_uuid_present(writer_config, isolated_te
     backlog.load()
     group_id = "group"
     backlog.update_progress(group_id, 1, [])
-    record = Record(uuid="some_id", group_id=group_id, group_offset=2)
+    record = Record(uuid="some_id", group_progress=Progress(group_id, 2))
     backlog.write_record(record)
     assert record in backlog
 
@@ -111,14 +115,18 @@ def test_update_progress_deletes_records(writer_config, isolated_test_dir):
     backlog.load()
     group_id = "group"
     records = [
-        Record(uuid=f"some_id_{i}", group_id=group_id, group_offset=2) for i in range(5)
+        Record(uuid=f"some_id_{i}", group_progress=Progress(group_id, 2))
+        for i in range(5)
     ]
     for record in records:
         backlog.write_record(record)
     backlog.update_progress(group_id, 2, records)
     for record in records:
         assert record.uuid not in backlog._db_connection
-        assert record in backlog
+        with pytest.raises(AlreadyProgressedException) as exc:
+            assert record in backlog
+        assert exc.value.group_id == group_id
+        assert exc.value.group_offset == 2
     assert backlog.get_progress(group_id) == 2
 
 
@@ -133,7 +141,7 @@ def test_last_progress_cache(writer_config):
     backlog._db_connection.__contains__.assert_not_called()
 
 
-def test_does_not_revert_progress(writer_config, isolated_test_dir):
+def test_does_revert_progress(writer_config, isolated_test_dir):
     """Make sure progress is not reverted when updating with lower offset."""
     backlog = Backlog(writer_config=writer_config)
     backlog._locked = True
@@ -143,8 +151,10 @@ def test_does_not_revert_progress(writer_config, isolated_test_dir):
         {"uuid": group_id, "max_group_offset": 2}
     )
     backlog.update_progress(group_id, 1, [])
-    assert backlog.get_progress(group_id) == 2
-    backlog._db_connection.__setitem__.assert_not_called()
+    assert backlog.get_progress(group_id) == 1
+    backlog._db_connection.__setitem__.assert_called_once_with(
+        group_id, ujson.dumps({"uuid": group_id, "max_group_offset": 1})
+    )
 
 
 def test_conversion(existing_log, writer_config, isolated_test_dir):

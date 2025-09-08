@@ -26,6 +26,15 @@ class UuidExistsException(Exception):
         super().__init__(f"Record with uuid {uuid} already exists in the db.")
 
 
+class AlreadyProgressedException(Exception):
+    """Raised when the current record progress occurs before the stored progress."""
+
+    def __init__(self, group_id: str, group_offset: int):
+        super().__init__()
+        self.group_id = group_id
+        self.group_offset = group_offset
+
+
 class Backlog:
     """A backlog for keeping track of written Records."""
 
@@ -85,10 +94,12 @@ class Backlog:
     def update_progress(
         self, group_id: str, group_offset: int, read_records: List[Record]
     ):
-        """Persist the progress of a group to the log"""
-        registered_progress = self.get_progress(group_id)
-        if group_offset <= registered_progress:
-            return
+        """Persist the progress of a group to the log
+        Args:
+            group_id: The id of the group to update the progress for.
+            group_offset: The new maximum group offset.
+            read_records: The records that have been read and can be removed from the backlog.
+        """
         if self._locked:
             progress_dict = {"uuid": group_id, "max_group_offset": group_offset}
             self._write_json_record(progress_dict)
@@ -110,10 +121,10 @@ class Backlog:
         return Path(f".dabapush/{self.writer_config.name}/backlog")
 
     def _write_json_record(
-        self, record_dict: Dict[str, Union[str, List[Dict[str, Any]]]]
+        self, record_dict: Dict[str, Union[str, List[Dict[str, Any]]]], overwrite=False
     ):
         uuid = record_dict["uuid"]
-        if uuid in self._db_connection:
+        if overwrite and uuid in self._db_connection:
             raise UuidExistsException(uuid)
         # pylint: disable=c-extension-no-member
         self._db_connection[uuid] = ujson.dumps(record_dict)
@@ -125,12 +136,12 @@ class Backlog:
     def __contains__(self, item: Record):
         if not isinstance(item, Record):
             raise TypeError("Can only check for the the presence of records")
-        if item.group_id is not None:
-            group_id = item.group_id
-            group_offset = item.group_offset
-            progress_offset = self.get_progress(group_id)
-            if group_offset <= progress_offset:
-                return True
+        if item.group_progress is not None:
+            group_id = item.group_progress.group_id
+            group_offset = item.group_progress.group_offset
+            progress_offset_from_db = self.get_progress(group_id)
+            if group_offset <= progress_offset_from_db:
+                raise AlreadyProgressedException(group_id, progress_offset_from_db)
         uuid = item.uuid
         return uuid in self._db_connection
 

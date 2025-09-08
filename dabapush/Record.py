@@ -10,6 +10,8 @@ from uuid import uuid4
 
 from loguru import logger as log
 
+from .utils import Progress
+
 EventHandler = Callable[[Self], None]
 EventType = Literal["on_done", "on_error", "on_start"]
 RecordState = Literal["done", "error", "start", "rejected"]
@@ -37,6 +39,8 @@ class Record:  # pylint: disable=too-many-instance-attributes
         The time the record was processed.
     children : List["Record"]
         The list of child records of the record.
+    group_progress : Optional[Progress]
+        The progress of the record in its group.
 
     Examples
     --------
@@ -62,8 +66,7 @@ class Record:  # pylint: disable=too-many-instance-attributes
         processed_at: Optional[datetime] = None,
         children: Optional[List[Self]] = None,
         event_handlers: Dict[str, List[EventHandler]] = None,
-        group_id: Optional[str] = None,
-        group_offset: int = -1,
+        group_progress: Optional[Progress] = None,
     ):
         self._payload_: Optional[Any] = payload
         self.source: Optional[Self] = source
@@ -72,8 +75,7 @@ class Record:  # pylint: disable=too-many-instance-attributes
         self.children: List[Self] = children or []
         self.event_handlers: Dict[str, List[EventHandler]] = event_handlers or {}
         self._state_: RecordState = "start"
-        self.group_id: Optional[str] = group_id
-        self.group_offset: Optional[int] = group_offset
+        self.group_progress: Optional[Progress] = group_progress
 
     @property
     def payload(self):

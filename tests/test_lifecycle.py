@@ -5,8 +5,10 @@ from unittest.mock import MagicMock, call
 
 from pytest import fixture
 
-from dabapush.Lifecycle import LifecycleManager
+from dabapush.Lifecycle import AlreadyProgressedException, LifecycleManager
+from dabapush.Reader.Reader import ProgressInvalidException
 from dabapush.Record import Record
+from dabapush.utils import Progress
 
 
 @fixture
@@ -34,7 +36,7 @@ def mk_records(end, group_id=None, sub_group_size=5):
             return i // sub_group_size
 
     return [
-        Record(uuid=str(i), group_id=group_id, group_offset=group_offset_func(i))
+        Record(uuid=str(i), group_progress=Progress(group_id, group_offset_func(i)))
         for i in range(0, end)
     ]
 
@@ -66,11 +68,15 @@ def test_keeps_read_records_with_grouped(lifecycle_controller_with_mocks):
 def test_backlog_progress_updated_on_group_change(lifecycle_controller_with_mocks):
     """Make sure backlog progress is updated when group changes."""
     controller = lifecycle_controller_with_mocks
+    controller._timer.micros = 1  # pylint: disable=protected-access
     records = mk_records(2, group_id="group1") + mk_records(1, group_id="group2")
     controller.reader.read.return_value = (x for x in records)
     controller.run()
-    controller.back_log.update_progress.assert_called_with(
-        "group1", 0, [records[0], records[1]]
+    controller.back_log.update_progress.assert_has_calls(
+        [
+            call("group1", 0, [records[0], records[1]]),
+            call("group2", 0, [records[2]]),
+        ]
     )
     assert controller.read_records_of_group_offset == [records[2]]
 
@@ -78,11 +84,15 @@ def test_backlog_progress_updated_on_group_change(lifecycle_controller_with_mock
 def test_does_not_update_progress_with_errors(lifecycle_controller_with_mocks):
     """Make sure backlog progress is not updated when there are write errors."""
     controller = lifecycle_controller_with_mocks
+    controller._timer.micros = 1  # pylint: disable=protected-access
     records = mk_records(2, group_id="group1") + mk_records(1, group_id="group2")
     controller.reader.read.return_value = (x for x in records)
     controller.writer.write.side_effect = [{records[1].uuid}, {}]
     controller.run()
-    controller.back_log.update_progress.assert_not_called()
+
+    controller.back_log.update_progress.assert_called_with(  # call after iterator finishes
+        "group2", 0, [records[2]]
+    )
     controller.back_log.write_record.assert_called_once_with(records[0])
     assert controller.read_records_of_group_offset == [records[2]]
     assert controller.error_uuids == set()
@@ -91,11 +101,15 @@ def test_does_not_update_progress_with_errors(lifecycle_controller_with_mocks):
 def test_backlog_progress_updated_on_offset_change(lifecycle_controller_with_mocks):
     """Make sure backlog progress is updated when group offset changes."""
     controller = lifecycle_controller_with_mocks
+    controller._timer.micros = 1  # pylint: disable=protected-access
     records = mk_records(3, group_id="group1", sub_group_size=2)
     controller.reader.read.return_value = (x for x in records)
     controller.run()
-    controller.back_log.update_progress.assert_called_with(
-        "group1", 0, [records[0], records[1]]
+    controller.back_log.update_progress.assert_has_calls(
+        [
+            call("group1", 0, [records[0], records[1]]),
+            call("group1", 1, [records[2]]),  # call after iterator stops
+        ]
     )
     assert controller.read_records_of_group_offset == [records[2]]
 
@@ -131,3 +145,46 @@ def test_persist_on_controller_destruction(lifecycle_controller_with_mocks):
     writer.write_called_once_with(records)
     back_log.write_record.assert_called_once_with(records[0])
     back_log.close.assert_has_calls([call(), call()])  # once in run and once in del
+
+
+def test_sets_reader_progress(lifecycle_controller_with_mocks):
+    """Make sure reader progress is set when AlreadyProgressedException is raised."""
+    controller = lifecycle_controller_with_mocks
+    records = mk_records(3, group_id="group1", sub_group_size=2)
+    controller.reader.read.return_value = (x for x in records)
+    controller.writer.write.side_effect = [
+        None,
+        None,
+    ]
+    controller.back_log.__contains__.side_effect = [
+        False,
+        AlreadyProgressedException("group1", 5),
+        False,
+    ]
+    controller.run()
+    controller.reader.set_progress.assert_called_once_with("group1", 5)
+    assert controller.read_records_of_group_offset == [records[2]]
+
+
+def clears_backlog_progress_on_invalid(lifecycle_controller_with_mocks):
+    """Make sure backlog progress is cleared when ProgressInvalidException is raised."""
+    controller = lifecycle_controller_with_mocks
+    records = mk_records(3, group_id="group1", sub_group_size=2)
+    controller.reader.read.return_value = (x for x in records)
+    controller.writer.write.side_effect = [
+        None,
+        None,
+        None,
+    ]
+    controller.back_log.__contains__.side_effect = [
+        False,
+        AlreadyProgressedException("group1", 5),
+        False,
+    ]
+    controller.reader.set_progress.side_effect = [
+        ProgressInvalidException(),
+    ]
+    controller.run()
+    controller.back_log.update_progress.assert_called_with("group1", -1, [])
+    controller.reader.set_progress.assert_called_once_with("group1", 5)
+    assert controller.read_records_of_group_offset == [records[2]]

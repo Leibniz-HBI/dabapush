@@ -6,15 +6,14 @@ from pathlib import Path
 from typing import Iterator
 
 import ujson
-from loguru import logger as log
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
-from ..utils import Timer, flatten
-from .Reader import StatefulFileReader
+from ..utils import Progress, Timer, flatten
+from .Reader import FileReader, ProgressInvalidException
 
 
-class NDJSONReader(StatefulFileReader):
+class NDJSONReader(FileReader):
     """Reader to read ready to read NDJSON data.
     It matches files in the path-tree against the pattern and reads all
     files and all lines in these files as JSON.
@@ -29,6 +28,8 @@ class NDJSONReader(StatefulFileReader):
         super().__init__(config)
         self.config = config
         self._timer = Timer(micros=100000)  # 100 ms timer for reading
+        self._progress_state = Progress(None, -1)
+        self._size_state = Progress(None, -1)
 
     def read(self) -> Iterator[Record]:
         """reads multiple NDJSON files and emits them line by line"""
@@ -51,25 +52,19 @@ class NDJSONReader(StatefulFileReader):
         if not path:
             raise ValueError("Record payload must be a valid file path.")
         with path.open("rt", encoding="utf8") as file:
-            # read the file line by line and create a Record for each line
-            done = False
             stat = path.stat()
-            offset = (
-                self._state[str(record.uuid)] if str(record.uuid) in self._state else 0
-            )
-            if isinstance(offset, bytes):
-                # if the offset is a byte string, decode it to a string
-                offset = offset.decode("utf-8")
-            if offset == "start":
-                offset = 0
-            offset = int(offset)
-            # if the offset is larger than the file size, the file has been overwritten on disk,
-            # and we need to start reading from the beginning.
-            if offset >= stat.st_size:
-                offset = 0
-            file.seek(offset)
-            # read the file line by line
+            self._size_state = Progress(record.uuid, stat.st_size)
+            done = False
+            position = file.tell()
+            # read the file line by line and create a Record for each line
             while not done:
+                progress = -1
+                if record.uuid == self._progress_state.group_id:
+                    progress = self._progress_state.group_offset
+                # if the current position is smaller than progress,
+                # we can skip ahead.
+                if position < progress:
+                    file.seek(progress)
                 line = file.readline()
                 position = file.tell()
                 if not line and position >= stat.st_size:
@@ -84,16 +79,19 @@ class NDJSONReader(StatefulFileReader):
                     uuid=f"{record.uuid}:{str(position)}",
                     payload=payload,
                     source=record,
+                    group_progress=Progress(record.uuid, position),
                 )
                 record.children.append(child)
 
                 yield child
 
-                if self._timer.ok():
-                    log.debug(
-                        f"Setting state for {record.uuid} at position {position}."
-                    )
-                    self._state[str(record.uuid)] = str(position)
+    def set_progress(self, group_id: str, group_offset: int):
+        """Set the progress for a given group_id to group_offset."""
+        if group_id != self._size_state.group_id:
+            return
+        if group_offset > self._size_state.group_offset:
+            raise ProgressInvalidException()
+        self._progress_state = Progress(group_id, group_offset)
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):
