@@ -1,9 +1,10 @@
 # pylint: disable=redefined-outer-name,protected-access,unused-argument,c-extension-no-member
 """Test for the Backlog"""
 import dbm
+from datetime import datetime
 from pathlib import Path
 from shutil import copy
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 import ujson
@@ -147,13 +148,21 @@ def test_does_revert_progress(writer_config, isolated_test_dir):
     backlog._locked = True
     backlog._db_connection = MagicMock()
     group_id = "group1"
+    timestamp = datetime(2024, 1, 1, 12, 0, 0)
+    timestamp_str = timestamp.isoformat()
     backlog._db_connection.get.return_value = ujson.dumps(
-        {"uuid": group_id, "max_group_offset": 2}
+        {"uuid": group_id, "max_group_offset": 2, "processed_at": timestamp_str}
     )
-    backlog.update_progress(group_id, 1, [])
+    mock = MagicMock()
+    mock.now.return_value = timestamp
+    with patch("dabapush.Backlog.datetime", mock):
+        backlog.update_progress(group_id, 1, [])
     assert backlog.get_progress(group_id) == 1
     backlog._db_connection.__setitem__.assert_called_once_with(
-        group_id, ujson.dumps({"uuid": group_id, "max_group_offset": 1})
+        group_id,
+        ujson.dumps(
+            {"uuid": group_id, "max_group_offset": 1, "processed_at": timestamp_str}
+        ),
     )
 
 

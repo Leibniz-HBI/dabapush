@@ -1,6 +1,7 @@
 "Backlog for keeping track of already written records."
 
 import dbm
+from datetime import datetime
 from pathlib import Path
 from shutil import copy
 from typing import Any, Dict, List, Union
@@ -101,7 +102,11 @@ class Backlog:
             read_records: The records that have been read and can be removed from the backlog.
         """
         if self._locked:
-            progress_dict = {"uuid": group_id, "max_group_offset": group_offset}
+            progress_dict = {
+                "uuid": group_id,
+                "max_group_offset": group_offset,
+                "processed_at": datetime.now().isoformat(),
+            }
             self._write_json_record(progress_dict)
             # make sure the cached progress info is also updated
             self._last_progress_dict = progress_dict
