@@ -36,7 +36,6 @@ def test_backlogging(monkeypatch, tmp_path, capsys):
         writer_config.get_instance(),
         back_log,
     )
-    manager._timer.micros = 1  # pylint: disable=protected-access
     records = [{"key": f"value_{n}"} for n in range(3)]
     data_dir = tmp_path / "data"
     data_dir.mkdir()
@@ -74,7 +73,6 @@ def test_resets_progress_for_overwritten_files(monkeypatch, tmp_path, capsys):
         writer_config.get_instance(),
         back_log,
     )
-    manager._timer.micros = 1  # pylint: disable=protected-access
     # value needs to be longer to allow for detection of overwrite.
     records = [{"key": f"value_{n}"} for n in range(3)]
     data_dir = tmp_path / "data"

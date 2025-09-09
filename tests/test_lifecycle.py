@@ -69,7 +69,6 @@ def test_keeps_read_records_with_grouped(lifecycle_controller_with_mocks):
 def test_backlog_progress_updated_on_group_change(lifecycle_controller_with_mocks):
     """Make sure backlog progress is updated when group changes."""
     controller = lifecycle_controller_with_mocks
-    controller._timer.micros = 1  # pylint: disable=protected-access
     records = mk_records(2, group_id="group1") + mk_records(1, group_id="group2")
     controller.reader.read.return_value = (x for x in records)
     controller.run()
@@ -86,7 +85,6 @@ def test_backlog_progress_updated_on_group_change(lifecycle_controller_with_mock
 def test_does_not_update_progress_with_errors(lifecycle_controller_with_mocks):
     """Make sure backlog progress is not updated when there are write errors."""
     controller = lifecycle_controller_with_mocks
-    controller._timer.micros = 1  # pylint: disable=protected-access
     records = mk_records(2, group_id="group1") + mk_records(1, group_id="group2")
     controller.reader.read.return_value = (x for x in records)
     controller.writer.write.side_effect = [{records[1].uuid}, {}]
