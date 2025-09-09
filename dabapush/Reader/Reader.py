@@ -13,6 +13,10 @@ from ..Record import Record
 # pylint: disable=I1101
 
 
+class ProgressInvalidException(Exception):
+    """Indicates that the current progress is invalid."""
+
+
 class Reader(abc.ABC):
     """Abstract base class for all reader plugins.
 
@@ -56,6 +60,9 @@ class Reader(abc.ABC):
             Generator which _should_ be one item per element.
         """
 
+    def set_progress(self, group_id: str, group_offset: int):
+        """Set the progress for a given group_id to group_offset."""
+
 
 class FileReader(Reader):
     """Reader to read files from a path.
@@ -79,8 +86,6 @@ class FileReader(Reader):
             files,
             desc="Reading files",
         ):
-            if a in ignored_files:
-                continue
             # Create a Record for each file found
             yield Record(
                 uuid=str(a),

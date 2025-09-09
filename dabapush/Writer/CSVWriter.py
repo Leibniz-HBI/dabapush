@@ -21,22 +21,20 @@ class CSVWriter(Writer):
         self.config = config
         self.chunk_number = 1
 
-    def persist(self):
+    def write(self, queue):
         """persist buffer to disk"""
-
-        last_rows = self.buffer
 
         _path = Path(self.config.path) / self.config.make_file_name(
             {"chunk_number": self.chunk_number, "type": "csv"}
         )
         pd.DataFrame(
-            (a.payload for a in last_rows),
+            (a.payload for a in queue),
         ).replace(
             r"\n|\r", r"\\n", regex=True
         ).to_csv(_path, index=False)
         self.chunk_number += 1
 
-        log.info(f"Persisted {len(last_rows)} records")
+        log.info(f"Persisted {len(queue)} records")
 
 
 class CSVWriterConfiguration(FileWriterConfiguration):
