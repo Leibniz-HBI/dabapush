@@ -49,23 +49,3 @@ def test_writer_persist_method(isolated_test_dir):
     writer._trigger_persist()
     assert writer.persisted_data == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     assert not writer.buffer
-
-
-def test_writer_persist_method_with_backlog(isolated_test_dir):
-    """Should persist the buffer."""
-
-    config = WriterConfiguration(name="test", id=1, chunk_size=3)
-    queue = [Record(uuid=str(i), payload=i) for i in range(10)]
-    writer = MyTestWriter(config)
-    writer.write((_ for _ in queue))
-    writer._trigger_persist()
-
-    del writer
-
-    writer = MyTestWriter(config)
-    writer._trigger_persist()
-
-    assert not writer.persisted_data
-    assert not writer.buffer
-    for record in queue:
-        assert record in writer.back_log

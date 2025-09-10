@@ -193,7 +193,11 @@ class Dabapush:
         log.info(f"Dispatching job for {target}")
         reader = self.config.readers[target].get_instance()
         writer = self.config.writers[target].get_instance()
-        writer.write(reader.read())
+        try:
+            writer.write(reader.read())
+        except Exception as e:
+            log.exception(f"Error while running job {target}")
+            raise e  # reraise the exception to stop the job
 
     def job_update(self):
         """update the current job's targets"""

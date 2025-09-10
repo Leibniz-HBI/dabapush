@@ -1,6 +1,8 @@
 """Utility functions for working with dictionaries and lists of dictionaries."""
+
+import datetime
 from functools import reduce
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 def flatten(thing: dict, namespace: str = None, sep: str = ".") -> dict:
@@ -136,3 +138,48 @@ def unpack(
         if id == included[id_key]:
             return included
     return None
+
+
+class Timer:
+    """A Timer for inhibiting the execution of a function for a given amount of time."""
+
+    def __init__(self, micros: int = 0):
+        """Initializes the Timer with a given amount of microseconds."""
+        self.micros = micros
+        self._mark: Optional[datetime] = None
+        self._last_request: Optional[datetime] = None
+
+    def mark(self):
+        """Marks the current time."""
+        self._mark = datetime.datetime.now(datetime.timezone.utc)
+
+    def ok(self, auto_reset: bool = True) -> bool:
+        """Checks if the timer is ok, i.e., if the time since the last mark is greater than
+        the specified amount of microseconds."""
+        if self._mark is None:
+            return True
+        self._last_request = Timer._now_()
+
+        _ok = self.elapsed_at_last_request > self.micros
+        if _ok and auto_reset:
+            self.mark()
+        return _ok
+
+    @staticmethod
+    def _now_() -> datetime:
+        """Returns the current time in UTC."""
+        return datetime.datetime.now(datetime.timezone.utc)
+
+    @property
+    def elapsed_at_last_request(self) -> Optional[datetime]:
+        """Returns the time of the last mark."""
+        if self._mark is None or self._last_request is None:
+            return 0.0
+        return (self._last_request - self._mark).total_seconds() * 1_000_000
+
+    @property
+    def elapsed(self) -> float:
+        """Returns the elapsed time since the last mark in microseconds."""
+        if self._mark is None:
+            return 0.0
+        return (Timer._now_() - self._mark).total_seconds() * 1_000_000

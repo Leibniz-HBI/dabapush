@@ -3,6 +3,7 @@
 import click
 from loguru import logger as log
 
+from dabapush import __version__
 from dabapush.Dabapush import Dabapush
 
 from .create_subcommand import create
@@ -10,7 +11,6 @@ from .reader_subcommand import reader
 from .run_subcommand import run
 from .update_subcommand import update
 from .writer_subcommand import writer
-from dabapush import __version__
 
 _log_levels_ = {
     0: "CRITICAL",
@@ -50,7 +50,7 @@ def cli(ctx: click.Context, logfile, json, verbose):
     # prepare log options
     log.remove()
     log_level = _log_levels_.get(verbose, "CRITICAL")
-    log.add(logfile, level=log_level, serialize=json)
+    log.add(logfile, level=log_level, serialize=json, diagnose=True)
 
     # prepare context
     ctx.ensure_object(Dabapush)

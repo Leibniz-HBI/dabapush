@@ -2,7 +2,7 @@
 
 import pytest
 
-from dabapush.utils import flatten, safe_access, safe_write, unpack
+from dabapush.utils import Timer, flatten, safe_access, safe_write, unpack
 
 # pylint: disable=W0622
 
@@ -76,3 +76,18 @@ def test_safe_write(nested_dict, path, key, value, expected):
 def test_unpack(includes, id, id_key, expected):
     """Should unpack a dict from a list of dicts."""
     assert unpack(id, includes, id_key) == expected
+
+
+@pytest.mark.parametrize("n", [10, 100, 1000])
+def test_timer(n: int):
+    """Test the timer utility."""
+
+    t = Timer(micros=n)
+    t.mark()
+
+    while True:
+        if not t.ok(auto_reset=False):
+            assert t.elapsed_at_last_request <= n
+        else:
+            assert t.elapsed_at_last_request > n
+            break

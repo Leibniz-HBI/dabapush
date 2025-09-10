@@ -1,40 +1,20 @@
 """NDJSON Writer plug-in for dabapush"""
 
+from pathlib import Path
+
 # pylint: disable=R,I1101
 from typing import Iterator
 
 import ujson
+from loguru import logger as log
 
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
-from ..utils import flatten
-from .Reader import FileReader
+from ..utils import Timer, flatten
+from .Reader import StatefulFileReader
 
 
-def read_and_split(
-    record: Record,
-    flatten_records: bool = False,
-) -> Iterator[Record]:
-    """Reads a file and splits it into records by line."""
-    with record.payload.open("rt", encoding="utf8") as file:
-        children = (
-            Record(
-                uuid=f"{str(record.uuid)}:{str(line_number)}",
-                payload=(
-                    ujson.loads(line)
-                    if not flatten_records
-                    else flatten(ujson.loads(line))
-                ),
-                source=record,
-            )
-            for line_number, line in enumerate(file)
-        )
-        for child in children:
-            record.children.append(child)
-            yield child
-
-
-class NDJSONReader(FileReader):
+class NDJSONReader(StatefulFileReader):
     """Reader to read ready to read NDJSON data.
     It matches files in the path-tree against the pattern and reads all
     files and all lines in these files as JSON.
@@ -48,14 +28,72 @@ class NDJSONReader(FileReader):
     def __init__(self, config: "NDJSONReaderConfiguration") -> None:
         super().__init__(config)
         self.config = config
+        self._timer = Timer(micros=100000)  # 100 ms timer for reading
 
     def read(self) -> Iterator[Record]:
         """reads multiple NDJSON files and emits them line by line"""
 
         for file_record in self.records:
             yield from file_record.split(
-                func=read_and_split, flatten_records=self.config.flatten_dicts
+                func=self.read_and_split, flatten_records=self.config.flatten_dicts
             )
+
+    def read_and_split(
+        self,
+        record: Record,
+        flatten_records: bool = False,
+    ) -> Iterator[Record]:
+        """Reads a file and splits it into records by line."""
+        path: Path = record.payload
+
+        self._timer.mark()
+
+        if not path:
+            raise ValueError("Record payload must be a valid file path.")
+        with path.open("rt", encoding="utf8") as file:
+            # read the file line by line and create a Record for each line
+            done = False
+            stat = path.stat()
+            offset = (
+                self._state[str(record.uuid)] if str(record.uuid) in self._state else 0
+            )
+            if isinstance(offset, bytes):
+                # if the offset is a byte string, decode it to a string
+                offset = offset.decode("utf-8")
+            if offset == "start":
+                offset = 0
+            offset = int(offset)
+            # if the offset is larger than the file size, the file has been overwritten on disk,
+            # and we need to start reading from the beginning.
+            if offset >= stat.st_size:
+                offset = 0
+            file.seek(offset)
+            # read the file line by line
+            while not done:
+                line = file.readline()
+                position = file.tell()
+                if not line and position >= stat.st_size:
+                    done = True
+                    continue
+                payload = (
+                    ujson.loads(line)
+                    if not flatten_records
+                    else flatten(ujson.loads(line))
+                )
+                child = Record(
+                    uuid=f"{record.uuid}:{str(position)}",
+                    payload=payload,
+                    source=record,
+                )
+                record.children.append(child)
+
+                yield child
+
+                if self._timer.ok():
+                    log.debug(
+                        f"Setting state for {record.uuid} at position {position}."
+                    )
+                    self._state[str(record.uuid)] = str(position)
 
 
 class NDJSONReaderConfiguration(ReaderConfiguration):
@@ -92,7 +130,7 @@ class NDJSONReaderConfiguration(ReaderConfiguration):
         pattern: str
             filename pattern to match files in `read_path` against
         flatten_dicts: bool
-            whether nested dictionaries are flattend (for details see `dabapush.utils.flatten`)
+            whether nested dictionaries are flattened (for details see `dabapush.utils.flatten`)
 
         """
         super().__init__(name, id=id, read_path=read_path, pattern=pattern)
