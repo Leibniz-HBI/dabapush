@@ -8,10 +8,10 @@ import ujson
 from ..Configuration.ReaderConfiguration import ReaderConfiguration
 from ..Record import Record
 from ..utils import flatten
-from .Reader import FileReader
+from .Reader import StatefulFileReader
 
 
-class JSONReader(FileReader):
+class JSONReader(StatefulFileReader):
     """Reader to read ready to read directories containing multiple json files.
     It matches files in the path-tree against the pattern and reads the
     content of each file as JSON.
